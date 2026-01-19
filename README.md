@@ -6,16 +6,16 @@
 
 ![Flowlet Dashboard](docs/images/dashboard.bmp)
 
-> **Note**: This project is under active development. Features and functionalities are continuously being enhanced to improve embedded finance capabilities and user experience. The repository has been significantly updated from its original state, migrating to a more robust, containerized, and microservices-oriented architecture.
+> **Note**: This project is under active development. Features and functionalities are continuously being enhanced to improve embedded finance capabilities and user experience.
 
 ---
 
 ## Table of Contents
 
 - [Overview](#overview)
-- [Core Value Proposition](#core-value-proposition)
-- [Key Features Implemented](#key-features-implemented)
 - [Project Structure](#project-structure)
+- [Core Value Proposition](#core-value-proposition)
+- [Key Features](#key-features)
 - [Technology Stack](#technology-stack)
 - [Technical Architecture](#technical-architecture)
 - [Installation & Setup](#installation--setup)
@@ -29,25 +29,9 @@
 
 ## Overview
 
-Flowlet is engineered to abstract away the complexities of financial infrastructure, allowing businesses to concentrate on their primary offerings while delivering sophisticated financial services to their customers. The platform's design prioritizes **scalability, security, and regulatory compliance**. Flowlet connects to banking partners, payment processors, card networks, and regulatory services through a unified API layer. This strategic architecture allows businesses across various sectors to embed financial services without the burden of building complex financial infrastructure from scratch or navigating the intricate regulatory landscape independently.
+Flowlet simplifies embedded finance by exposing payments, wallets, card issuance, and compliance through a single unified API. It is cloud-native and microservices-based, emphasizing scalability, security, and regulatory readiness while reducing operational overhead. Developer SDKs, documentation, and built-in AI for fraud detection and observability accelerate integration so teams can deliver auditable finance features without rebuilding core banking primitives.
 
-Flowlet maintains a **developer-first approach**, providing comprehensive documentation, SDKs, and a robust developer portal to simplify integration and accelerate time-to-market. Its modular design ensures businesses can select and implement only the necessary components, creating a tailored embedded finance solution that is flexible and scalable to meet evolving requirements.
-
-### Key Highlights
-
-| Highlight                           | Description                                                                                                                                  |
-| :---------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Complete Embedded Finance Stack** | Provides a full range of services, including digital wallets, payment processing, card issuance, KYC/AML, and ledger management.             |
-| **Cloud-Agnostic Microservices**    | Utilizes a Kubernetes-based infrastructure for high availability and horizontal scalability across any major cloud provider.                 |
-| **Developer-Friendly Integration**  | Features a comprehensive API gateway, detailed SDKs, and a dedicated developer portal to ensure seamless and rapid integration.              |
-| **Bank-Grade Security**             | Implements end-to-end encryption, tokenization, and comprehensive audit trails to safeguard all sensitive data and transactions.             |
-| **Regulatory Compliance**           | Offers built-in workflows for adherence to critical regulatory frameworks, including GDPR, PSD2, and FinCEN.                                 |
-| **AI-Enhanced Capabilities**        | Incorporates artificial intelligence for advanced fraud detection, intelligent support chatbots, and developer assistance.                   |
-| **Operational Excellence**          | Achieved through robust DevOps automation, advanced observability tools (Prometheus & Grafana), and managed services for reliable operation. |
-
----
-
-## Key Features Implemented
+## Key Features
 
 Flowlet's strength lies in its comprehensive suite of embedded finance capabilities, meticulously implemented across its microservices architecture.
 
