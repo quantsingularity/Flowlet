@@ -67,15 +67,15 @@ Flowlet's strength lies in its comprehensive suite of embedded finance capabilit
 
 Flowlet utilizes a monorepo structure, separating the core backend services, frontend applications, and infrastructure configurations.
 
-| Directory         | Description                                                                                                                                            |
-| :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `backend/`        | Contains the core Python microservices, shared libraries, and the main application logic.                                                              |
-| `web-frontend/`   | The main web application built with React and TypeScript.                                                                                              |
-| `scripts/`        | Essential shell scripts for setup, building, and running the application.                                                                              |
-| `tests/`          | Comprehensive test suite covering unit, integration, performance, and security testing.                                                                |
-| `docs/`           | Documentation, including API reference and architecture specifications.                                                                                |
-| `infrastructure/` | Comprehensive DevOps and Infrastructure-as-Code (IaC) configurations, including Ansible, CI/CD pipelines, Docker, Kubernetes manifests, and Terraform. |
-| `.github/`        | Configuration for GitHub Actions and repository templates.                                                                                             |
+| Directory         | Description                                                                               |
+| :---------------- | :---------------------------------------------------------------------------------------- |
+| `backend/`        | Contains the core Python microservices, shared libraries, and the main application logic. |
+| `web-frontend/`   | The main web application built with React and TypeScript.                                 |
+| `scripts/`        | Essential shell scripts for setup, building, and running the application.                 |
+| `tests/`          | Comprehensive test suite covering unit, integration, performance, and security testing.   |
+| `docs/`           | Documentation, including API reference and architecture specifications.                   |
+| `infrastructure/` | Comprehensive DevOps and Infrastructure-as-Code (IaC) configurations.                     |
+| `.github/`        | Configuration for GitHub Actions and repository templates.                                |
 
 ---
 
