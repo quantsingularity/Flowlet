@@ -158,18 +158,22 @@ This directory contains the **React-based Single-Page Application (SPA)** built 
 
 ### Documentation (`docs/`)
 
-The `docs/` directory is a comprehensive repository of documentation catering to various audiences.
-
-| Directory                       | Description                                                      | Key Documents                                                                       |
-| :------------------------------ | :--------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
-| `01_Introduction/`              | High-level overview of the platform's vision and mission.        | `Introduction.md`                                                                   |
-| `02_Architecture/`              | Detailed explanation of the microservices design and principles. | `Architecture_Overview.md`, `Microservices_Design.md`                               |
-| `03_API_Reference/`             | Exhaustive documentation for all exposed APIs.                   | `API_Documentation.md`, `Backend_API.md`, `API_Gateway.md`                          |
-| `04_Compliance_and_Regulatory/` | Details on adherence to financial regulations.                   | `Compliance_Overview.md`, `KYC_AML.md`                                              |
-| `05_Core_Financial_Services/`   | In-depth documentation on each core financial service.           | `Banking_Integrations.md`, `Card_Services.md`, `Ledger.md`, `Payment_Processing.md` |
-| `06_Developer_Guides/`          | Practical, hands-on guides for developers.                       | `Setup_Guide.md`, `Authentication.md`, `web-frontend_Development.md`                |
-| `07_Security/`                  | Details on robust security measures and architecture.            | `Security_Overview.md`                                                              |
-| `08_Infrastructure/`            | Documentation for DevOps and operations teams.                   | `Deployment_Guide.md`, `Monitoring_and_Observability.md`                            |
+| Document                    | Path                 | Description                                                            |
+| :-------------------------- | :------------------- | :--------------------------------------------------------------------- |
+| **README**                  | `README.md`          | High-level overview, project scope, and repository entry point         |
+| **Quickstart Guide**        | `QUICKSTART.md`      | Fast-track guide to get the system running with minimal setup          |
+| **Installation Guide**      | `INSTALLATION.md`    | Step-by-step installation and environment setup                        |
+| **Deployment Guide**        | `DEPLOYMENT.md`      | Deployment procedures, environments, and operational considerations    |
+| **API Reference**           | `API.md`             | Detailed documentation for all API endpoints                           |
+| **CLI Reference**           | `CLI.md`             | Command-line interface usage, commands, and examples                   |
+| **User Guide**              | `USAGE.md`           | Comprehensive end-user guide, workflows, and examples                  |
+| **Architecture Overview**   | `ARCHITECTURE.md`    | System architecture, components, and design rationale                  |
+| **Configuration Guide**     | `CONFIGURATION.md`   | Configuration options, environment variables, and tuning               |
+| **Feature Matrix**          | `FEATURE_MATRIX.md`  | Feature coverage, capabilities, and roadmap alignment                  |
+| **Smart Contracts**         | `SMART_CONTRACTS.md` | Smart contract architecture, interfaces, and security considerations   |
+| **Security Guide**          | `SECURITY.md`        | Security model, threat assumptions, and responsible disclosure process |
+| **Contributing Guidelines** | `CONTRIBUTING.md`    | Contribution workflow, coding standards, and PR requirements           |
+| **Troubleshooting**         | `TROUBLESHOOTING.md` | Common issues, diagnostics, and remediation steps                      |
 
 ### Infrastructure (`infrastructure/`)
 
@@ -184,13 +188,21 @@ This directory contains all the Infrastructure-as-Code (IaC) definitions for dep
 
 ### GitHub Actions Workflows (`.github/workflows/`)
 
-Contains the CI/CD pipeline definitions, automating the software delivery lifecycle.
-
-| Workflow File                   | Description                                                         | Key Stages                                                                                     |
-| :------------------------------ | :------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------- |
-| `backend-ci-cd.yml`             | Continuous Integration and Deployment for the backend services.     | Testing, Linting, Building Docker Images, Pushing to Registry, Deploying to Staging/Production |
-| `nodejs-web-frontend-ci-cd.yml` | CI/CD for the web-frontend application.                             | Testing, Linting, Building Static Assets, Deployment to CDN/Web Server                         |
-| `infrastructure-ci.yml`         | Continuous Integration for Infrastructure-as-Code (Terraform/Helm). | Plan/Validate Infrastructure Changes                                                           |
+| Stage                | Control Area                    | Institutional-Grade Detail                                                              |
+| :------------------- | :------------------------------ | :-------------------------------------------------------------------------------------- |
+| **Formatting Check** | Change Triggers                 | Enforced on all `push` and `pull_request` events to `main` and `develop`                |
+|                      | Manual Oversight                | On-demand execution via controlled `workflow_dispatch`                                  |
+|                      | Source Integrity                | Full repository checkout with complete Git history for auditability                     |
+|                      | Python Runtime Standardization  | Python 3.10 with deterministic dependency caching                                       |
+|                      | Backend Code Hygiene            | `autoflake` to detect unused imports/variables using non-mutating diff-based validation |
+|                      | Backend Style Compliance        | `black --check` to enforce institutional formatting standards                           |
+|                      | Non-Intrusive Validation        | Temporary workspace comparison to prevent unauthorized source modification              |
+|                      | Node.js Runtime Control         | Node.js 18 with locked dependency installation via `npm ci`                             |
+|                      | Web Frontend Formatting Control | Prettier checks for web-facing assets                                                   |
+|                      | Mobile Frontend Formatting      | Prettier enforcement for mobile application codebases                                   |
+|                      | Documentation Governance        | Repository-wide Markdown formatting enforcement                                         |
+|                      | Infrastructure Configuration    | Prettier validation for YAML/YML infrastructure definitions                             |
+|                      | Compliance Gate                 | Any formatting deviation fails the pipeline and blocks merge                            |
 
 ---
 
