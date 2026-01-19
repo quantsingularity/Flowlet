@@ -171,13 +171,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/abrar2030/Flowlet.git",
+    "url": "https://github.com/quantsingularity/Flowlet.git",
     "directory": "web-frontend"
   },
   "bugs": {
-    "url": "https://github.com/abrar2030/Flowlet/issues"
+    "url": "https://github.com/quantsingularity/Flowlet/issues"
   },
-  "homepage": "https://github.com/abrar2030/Flowlet#readme",
+  "homepage": "https://github.com/quantsingularity/Flowlet#readme",
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"

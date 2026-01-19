@@ -500,7 +500,7 @@ If your issue isn't covered here:
    npm run dev  # Check console output
    ```
 
-2. **Search GitHub Issues**: [https://github.com/abrar2030/Flowlet/issues](https://github.com/abrar2030/Flowlet/issues)
+2. **Search GitHub Issues**: [https://github.com/quantsingularity/Flowlet/issues](https://github.com/quantsingularity/Flowlet/issues)
 
 3. **Create New Issue**: Include:
    - Error message

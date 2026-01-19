@@ -6,7 +6,7 @@ Flowlet is a comprehensive, cloud-agnostic embedded finance platform that enable
 
 Get started with Flowlet in three simple steps:
 
-1. **Clone and Setup**: `git clone https://github.com/abrar2030/Flowlet && cd Flowlet && make setup`
+1. **Clone and Setup**: `git clone https://github.com/quantsingularity/Flowlet && cd Flowlet && make setup`
 2. **Configure Environment**: Copy `backend/.env.example` to `backend/.env` and update with your credentials
 3. **Run with Docker**: `make docker-dev` to start the development environment
 
@@ -46,7 +46,7 @@ Get started with Flowlet in three simple steps:
 
 ## Project Status
 
-![CI/CD Status](https://img.shields.io/github/actions/workflow/status/abrar2030/Flowlet/cicd.yml?branch=main)
+![CI/CD Status](https://img.shields.io/github/actions/workflow/status/quantsingularity/Flowlet/cicd.yml?branch=main)
 ![Test Coverage](https://img.shields.io/badge/coverage-91%25-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 

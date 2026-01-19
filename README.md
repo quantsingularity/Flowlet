@@ -1,6 +1,6 @@
 # Flowlet - Embedded Finance Platform
 
-![CI/CD Status](https://img.shields.io/github/actions/workflow/status/abrar2030/Flowlet/cicd.yml?branch=main&label=CI/CD&logo=github)
+![CI/CD Status](https://img.shields.io/github/actions/workflow/status/quantsingularity/Flowlet/cicd.yml?branch=main&label=CI/CD&logo=github)
 ![Test Coverage](https://img.shields.io/badge/coverage-91%25-green)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
@@ -209,11 +209,11 @@ All sensitive configurations are managed via environment variables. Before runni
 
 ### Setup with Docker Compose (Recommended)
 
-| Step                          | Command                                                        | Description                                                                                |
-| :---------------------------- | :------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
-| **1. Clone Repository**       | `git clone https://github.com/abrar2030/Flowlet && cd Flowlet` | Download the source code and navigate to the project directory.                            |
-| **2. Start the Services**     | `cd infrastructure/docker && docker compose up --build -d`     | Builds the images and runs all services (DB, Cache, Backend, web-frontend, Load Balancer). |
-| **3. Access the Application** | See access points below.                                       |                                                                                            |
+| Step                          | Command                                                               | Description                                                                                |
+| :---------------------------- | :-------------------------------------------------------------------- | :----------------------------------------------------------------------------------------- |
+| **1. Clone Repository**       | `git clone https://github.com/quantsingularity/Flowlet && cd Flowlet` | Download the source code and navigate to the project directory.                            |
+| **2. Start the Services**     | `cd infrastructure/docker && docker compose up --build -d`            | Builds the images and runs all services (DB, Cache, Backend, web-frontend, Load Balancer). |
+| **3. Access the Application** | See access points below.                                              |                                                                                            |
 
 **Access the Development Environment:**
 

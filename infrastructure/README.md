@@ -311,9 +311,9 @@ _Costs vary based on usage, data transfer, and regional pricing_
 
 ## Support & Contributing
 
-- Report issues: https://github.com/abrar2030/Flowlet/issues
-- Documentation: https://github.com/abrar2030/Flowlet/tree/main/docs
-- Contributing Guide: https://github.com/abrar2030/Flowlet/blob/main/CONTRIBUTING.md
+- Report issues: https://github.com/quantsingularity/Flowlet/issues
+- Documentation: https://github.com/quantsingularity/Flowlet/tree/main/docs
+- Contributing Guide: https://github.com/quantsingularity/Flowlet/blob/main/CONTRIBUTING.md
 
 ## License
 

@@ -14,7 +14,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    repoURL: https://github.com/abrar2030/Flowlet.git # Replace with your Git repository URL
+    repoURL: https://github.com/quantsingularity/Flowlet.git # Replace with your Git repository URL
     targetRevision: HEAD
     path: kubernetes/manifests # Path to your Kubernetes manifests
   syncPolicy:

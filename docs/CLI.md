@@ -17,7 +17,7 @@ The CLI is available through the project's `Makefile` and Flask's built-in CLI.
 
 ```bash
 # Clone repository
-git clone https://github.com/abrar2030/Flowlet
+git clone https://github.com/quantsingularity/Flowlet
 cd Flowlet
 
 # Make is available by default on Unix systems

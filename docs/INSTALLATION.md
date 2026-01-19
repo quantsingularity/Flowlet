@@ -42,7 +42,7 @@ This guide covers all installation methods for Flowlet, including local developm
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/abrar2030/Flowlet.git
+git clone https://github.com/quantsingularity/Flowlet.git
 cd Flowlet
 ```
 

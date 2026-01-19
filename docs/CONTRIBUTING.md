@@ -34,11 +34,11 @@ By participating in this project, you agree to:
 
 ```bash
 # Fork the repository on GitHub first
-git clone https://github.com/abrar2030/Flowlet.git
+git clone https://github.com/quantsingularity/Flowlet.git
 cd Flowlet
 
 # Add upstream remote
-git remote add upstream https://github.com/abrar2030/Flowlet.git
+git remote add upstream https://github.com/quantsingularity/Flowlet.git
 ```
 
 ### Setup Development Environment
