@@ -1,4 +1,4 @@
-# Flowlet Operational Scripts: Comprehensive Documentation
+# Flowlet Automation Scripts
 
 This document provides a comprehensive and structured overview of the operational scripts utilized within the Flowlet project. These scripts are essential for managing the application's lifecycle, including setup, deployment, monitoring, and maintenance. The design of these scripts emphasizes **automation, consistency, and operational integrity**, which are critical requirements for a financial technology platform.
 
