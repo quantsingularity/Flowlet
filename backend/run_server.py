@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
 """
 Run the Flask application
 """
+
 import os
 import sys
 

@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
 """
 Quick test script to verify backend functionality
 """
+
 import os
 import sys
 
