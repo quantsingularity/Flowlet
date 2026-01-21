@@ -1,5 +1,6 @@
 import logging
 from typing import Any, Dict, Optional
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -8,6 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import OneClassSVM
 from tensorflow import keras
 from tensorflow.keras import layers
+
 from . import FraudDetectionError, FraudModelBase, ModelNotTrainedError
 
 "\nAnomaly Detection Models for Fraud Detection\nImplements unsupervised learning models for detecting fraudulent transactions\n"

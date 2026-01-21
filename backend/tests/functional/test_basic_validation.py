@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+
 import pytest
 
 "\nBasic validation tests for banking integrations and fraud detection modules\n"

@@ -4,7 +4,6 @@ Card management routes
 
 from typing import Any
 
-
 from flask import Blueprint, jsonify, request
 
 card_bp = Blueprint("card", __name__, url_prefix="/cards")

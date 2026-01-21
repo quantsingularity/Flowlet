@@ -1,6 +1,6 @@
 import os
-from typing import Any
 from datetime import timedelta
+from typing import Any
 
 
 class SecurityConfig:

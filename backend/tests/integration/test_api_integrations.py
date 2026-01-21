@@ -1,6 +1,7 @@
 import os
 import sys
 from unittest.mock import Mock, patch
+
 import pytest
 from src.integrations.banking.fdx_integration import FDXIntegration
 from src.integrations.banking.open_banking_integration import OpenBankingIntegration

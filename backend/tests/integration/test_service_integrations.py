@@ -2,6 +2,7 @@ import json
 import os
 import sys
 from unittest.mock import patch
+
 import pytest
 from src.main import create_app
 from src.models.database import db

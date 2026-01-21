@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional
+
 from sqlalchemy.orm import Session
 
 "\nReal-Time Analytics\n==================\n\nReal-time analytics engine for financial data processing and monitoring.\nProvides streaming analytics, real-time alerts, and live dashboards.\n"

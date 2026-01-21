@@ -1,6 +1,8 @@
 import logging
 from typing import Any, Dict, Optional
+
 from sqlalchemy.exc import SQLAlchemyError
+
 from ..models.audit_log import AuditEventType, AuditLog, AuditSeverity
 from ..models.database import db
 

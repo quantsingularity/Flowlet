@@ -1,10 +1,11 @@
 """Authentication utilities"""
 
-from typing import Any
-from functools import wraps
-from flask import request, jsonify
-import jwt
 import os
+from functools import wraps
+from typing import Any
+
+import jwt
+from flask import jsonify, request
 
 
 def token_required(f: Any) -> Any:

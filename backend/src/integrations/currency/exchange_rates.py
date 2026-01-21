@@ -4,7 +4,8 @@ import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import ROUND_HALF_UP, Decimal
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 import redis
 import requests
 

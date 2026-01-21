@@ -1,10 +1,12 @@
-from typing import Any
 import random
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum as PyEnum
+from typing import Any
+
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Column,
     DateTime,
@@ -13,9 +15,9 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
-    BigInteger,
 )
 from sqlalchemy.orm import relationship
+
 from .database import Base, db
 
 

@@ -1,10 +1,12 @@
 """API Key model"""
 
-from typing import Any
-from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey
-from .database import Base
 import uuid
 from datetime import datetime, timezone
+from typing import Any
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
+
+from .database import Base
 
 
 class APIKey(Base):

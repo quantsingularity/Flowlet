@@ -1,5 +1,6 @@
 import logging
 from typing import Any, Dict
+
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
@@ -11,6 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 from tensorflow.keras import layers
+
 from . import FraudDetectionError, FraudModelBase, ModelNotTrainedError
 
 "\nSupervised Learning Models for Fraud Detection\nImplements supervised ML models for fraud classification\n"

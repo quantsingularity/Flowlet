@@ -1,6 +1,7 @@
 import logging
 from enum import Enum
 from typing import Any, Dict, List, Optional, Type
+
 from . import (
     BankAccount,
     BankingIntegrationBase,

@@ -1,8 +1,9 @@
 from datetime import datetime
 from unittest.mock import AsyncMock, patch
+
 import pytest
-from src.integrations.banking import BankAccount
 from src.integrations.banking import (
+    BankAccount,
     BankingIntegrationManager,
     FDXIntegration,
     IntegrationType,

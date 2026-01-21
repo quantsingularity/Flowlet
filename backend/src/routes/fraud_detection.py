@@ -1,10 +1,12 @@
-from typing import Any
 import asyncio
 import logging
 from datetime import datetime
+from typing import Any
+
 import pandas as pd
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
+
 from ..ml.fraud_detection import FraudDetectionError, RiskLevel
 from ..ml.fraud_detection.service import get_fraud_service
 

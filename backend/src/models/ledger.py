@@ -1,11 +1,13 @@
 """Ledger Entry Model for Double-Entry Bookkeeping"""
 
-from typing import Any
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum as PyEnum
+from typing import Any
+
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Numeric, String, Text
+
 from .database import Base
 
 

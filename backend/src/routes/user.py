@@ -1,19 +1,20 @@
-from typing import Any
 import logging
 from datetime import datetime, timezone
 from decimal import Decimal
+from typing import Any
+
 from flask import Blueprint, g, jsonify, request
-from ..utils.auth import token_required
 from sqlalchemy import and_, func, or_, select
 from sqlalchemy.exc import IntegrityError
+
 from ..models.account import Account
 from ..models.audit_log import AuditEventType, AuditSeverity
 from ..models.database import db
 from ..models.transaction import Transaction, TransactionStatus
 from ..models.user import User
 from ..security.audit_logger import audit_logger
+from ..utils.auth import admin_required, token_required
 from ..utils.validators import InputValidator
-from ..utils.auth import admin_required
 
 user_bp = Blueprint("user", __name__, url_prefix="/api/v1/users")
 logger = logging.getLogger(__name__)

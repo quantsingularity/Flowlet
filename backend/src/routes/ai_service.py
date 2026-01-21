@@ -1,17 +1,19 @@
-from typing import Any
 import logging
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
+from typing import Any
+
 from flask import Blueprint, g, jsonify, request
 from openai import OpenAI
 from sqlalchemy import and_, func, select
+
 from ..models.audit_log import AuditEventType, AuditSeverity
 from ..models.database import db
 from ..models.fraud_alert import FraudAlert, FraudAlertStatus
 from ..models.transaction import Transaction
 from ..models.user import User
-from ..utils.auth import token_required, admin_required
 from ..security.audit_logger import audit_logger
+from ..utils.auth import admin_required, token_required
 
 ai_service_bp = Blueprint("ai_service", __name__, url_prefix="/api/v1/ai")
 logger = logging.getLogger(__name__)

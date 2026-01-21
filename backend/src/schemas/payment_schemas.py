@@ -2,8 +2,9 @@
 Payment-related Pydantic schemas for request validation
 """
 
-from typing import Optional
 from decimal import Decimal
+from typing import Optional
+
 from pydantic import BaseModel, Field, field_validator
 
 

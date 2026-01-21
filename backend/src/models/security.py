@@ -1,9 +1,11 @@
-from typing import Any
 import uuid
 from datetime import datetime, timezone
 from enum import Enum as PyEnum
+from typing import Any
+
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
+
 from .database import Base, db
 
 

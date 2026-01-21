@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List
+
 import numpy as np
 from sqlalchemy.orm import Session
 

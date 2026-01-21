@@ -1,8 +1,9 @@
 """Audit logging utilities"""
 
 from typing import Any
-from src.models.audit_log import AuditLog, AuditEventType, AuditSeverity
+
 from src.models import db
+from src.models.audit_log import AuditEventType, AuditLog, AuditSeverity
 
 
 def log_audit_event(

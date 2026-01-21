@@ -1,8 +1,9 @@
 import os
 import sys
+
+from core.logging import get_logger
 from src.main import app
 from src.models.database import db
-from core.logging import get_logger
 
 logger = get_logger(__name__)
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -42,6 +43,7 @@ def test_service_functionality() -> Any:
     try:
         with app.app_context():
             import uuid
+
             from src.models.database import User, Wallet, db
 
             unique_email = f"test_{str(uuid.uuid4())[:8]}@example.com"

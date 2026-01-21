@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from decimal import ROUND_HALF_UP, Decimal
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 import numpy as np
 import redis
 from sqlalchemy import Boolean, Column, DateTime, Numeric, String, create_engine

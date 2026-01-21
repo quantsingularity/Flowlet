@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List
+
 from sqlalchemy.orm import Session
 
 "\nThreat Prevention Service\n========================\n\nAdvanced threat prevention and cybersecurity service for financial applications.\nProvides real-time threat detection, prevention, and response capabilities.\n"

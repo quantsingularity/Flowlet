@@ -3,8 +3,10 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List
+
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
+
 from .data_models import (
     AlertConfiguration,
     CustomerAnalytics,

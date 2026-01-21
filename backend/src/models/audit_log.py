@@ -1,8 +1,9 @@
-from typing import Any
 import json
 import uuid
 from datetime import datetime, timedelta, timezone
 from enum import Enum as PyEnum
+from typing import Any
+
 from sqlalchemy import (
     Boolean,
     Column,
@@ -14,6 +15,7 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.orm import relationship
+
 from .database import Base, db
 
 

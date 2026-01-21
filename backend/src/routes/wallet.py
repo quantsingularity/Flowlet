@@ -1,27 +1,31 @@
-from typing import Any
 import logging
+from functools import wraps
+from typing import Any
+
 from flask import Blueprint, g, jsonify, request
 from pydantic import ValidationError
-from functools import wraps
+
 from ..models.account import Account
 from ..models.audit_log import AuditEventType, AuditSeverity
 from ..models.database import db
-from ..utils.auth import token_required
+from ..schemas import DepositFundsRequest, TransferFundsRequest, WithdrawFundsRequest
+from ..security.audit_logger import audit_logger
 from ..services.wallet_service import (
     WalletServiceError,
-    process_deposit,
-    process_withdrawal,
-    process_transfer,
-    get_user_accounts as service_get_user_accounts,
     get_account_details_with_transactions,
 )
-from ..schemas import DepositFundsRequest, WithdrawFundsRequest, TransferFundsRequest
+from ..services.wallet_service import get_user_accounts as service_get_user_accounts
+from ..services.wallet_service import (
+    process_deposit,
+    process_transfer,
+    process_withdrawal,
+)
+from ..utils.auth import token_required
 from ..utils.error_handlers import (
+    handle_generic_exception,
     handle_validation_error,
     handle_wallet_service_error,
-    handle_generic_exception,
 )
-from ..security.audit_logger import audit_logger
 
 wallet_bp = Blueprint("account", __name__, url_prefix="/api/v1/accounts")
 logger = logging.getLogger(__name__)

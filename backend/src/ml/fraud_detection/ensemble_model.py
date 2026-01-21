@@ -1,8 +1,10 @@
 import logging
 from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
+
 from . import (
     AutoencoderModel,
     FraudAlert,

@@ -1,7 +1,8 @@
-import unittest
-from unittest.mock import patch, MagicMock
-from decimal import Decimal
 import os
+import unittest
+from decimal import Decimal
+from unittest.mock import MagicMock, patch
+
 import stripe
 
 os.environ["STRIPE_SECRET_KEY"] = "sk_test_123"

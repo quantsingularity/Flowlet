@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from io import BytesIO
 from typing import Any, Dict, List, Optional
+
 import pyotp
 import qrcode
 from sqlalchemy.orm import Session

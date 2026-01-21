@@ -5,10 +5,10 @@ Tracks and logs errors for monitoring and debugging
 
 import logging
 import traceback
-from datetime import datetime
-from typing import Dict, Any, Optional, List
 from collections import defaultdict
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 

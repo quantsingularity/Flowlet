@@ -1,11 +1,13 @@
 """Fraud Alert model"""
 
-from typing import Any
-from enum import Enum as PyEnum
-from sqlalchemy import Column, String, DateTime, Text, ForeignKey
-from .database import Base, db
 import uuid
 from datetime import datetime, timezone
+from enum import Enum as PyEnum
+from typing import Any
+
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text
+
+from .database import Base, db
 
 
 class FraudAlertStatus(PyEnum):

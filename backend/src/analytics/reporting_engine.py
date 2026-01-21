@@ -3,9 +3,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List
+
 import pandas as pd
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
+
 from .data_models import CustomerAnalytics, PerformanceMetrics, TransactionAnalytics
 
 

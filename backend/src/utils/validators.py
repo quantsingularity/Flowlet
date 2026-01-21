@@ -1,8 +1,8 @@
 """Input validation utilities"""
 
-from typing import Any, Optional
 import re
 from decimal import Decimal
+from typing import Any, Optional
 
 
 def validate_email(email: str) -> bool:

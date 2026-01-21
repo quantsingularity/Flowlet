@@ -1,6 +1,8 @@
 import os
 from typing import Any
+
 from dotenv import load_dotenv
+
 from .security import SecurityConfig
 
 "\nConfiguration settings for Flowlet Financial Backend\nImplements security best practices and financial industry standards\n"

@@ -1,6 +1,7 @@
-from typing import Any
 import logging
 from datetime import datetime, timezone
+from typing import Any
+
 from flask import Blueprint, jsonify
 
 "\nAPI Gateway Routes for Health Check and Documentation\n"

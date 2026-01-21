@@ -4,6 +4,7 @@ import statistics
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import psutil
 import pytest
 from src.main import create_app

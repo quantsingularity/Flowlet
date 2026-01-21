@@ -6,6 +6,7 @@ import re
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, Dict, List, Union
+
 import phonenumbers
 from email_validator import EmailNotValidError, validate_email
 from phonenumbers import NumberParseException

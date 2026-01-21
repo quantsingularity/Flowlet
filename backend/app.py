@@ -3,8 +3,8 @@ import os
 from datetime import datetime
 from decimal import Decimal
 from typing import Any
-from flask import Flask, jsonify, send_from_directory
 
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address

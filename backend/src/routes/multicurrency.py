@@ -2,9 +2,10 @@ import logging
 from datetime import datetime, timezone
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any, Dict
-from typing import Dict
+
 from flask import Blueprint, g, jsonify, request
 from sqlalchemy import select
+
 from ..models.account import Account
 from ..models.database import db
 from ..models.transaction import Transaction

@@ -2,8 +2,8 @@
 """
 Quick test script to verify backend functionality
 """
-import sys
 import os
+import sys
 
 # Add backend to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -88,8 +88,9 @@ def test_services():
         print("✓ SMS service works")
 
         # Test ACH integration
-        from src.integrations.payments.ach_integration import ACHIntegration
         from decimal import Decimal
+
+        from src.integrations.payments.ach_integration import ACHIntegration
 
         ach = ACHIntegration({"ACH_MOCK_MODE": True})
         result = ach.initiate_debit(

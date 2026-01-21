@@ -4,7 +4,6 @@ KYC (Know Your Customer) routes
 
 from typing import Any
 
-
 from flask import Blueprint, jsonify, request
 
 kyc_bp = Blueprint("kyc", __name__, url_prefix="/kyc")

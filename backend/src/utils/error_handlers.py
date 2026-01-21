@@ -5,10 +5,9 @@ Provides centralized error handling for common HTTP errors and exceptions
 
 from typing import Any
 
-
 from flask import jsonify
-from werkzeug.exceptions import HTTPException
 from pydantic import ValidationError
+from werkzeug.exceptions import HTTPException
 
 
 def register_error_handlers(app):

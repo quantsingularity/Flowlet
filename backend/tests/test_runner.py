@@ -1,5 +1,6 @@
 import os
 import sys
+
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -16,6 +17,7 @@ def test_security_modules() -> Any:
     assert PasswordSecurity.verify_password(password, hashed)
     logger.info("✓ Password security tests passed")
     from decimal import Decimal
+
     from src.security.input_validator import InputValidator, ValidationError
 
     result = InputValidator.validate_string(

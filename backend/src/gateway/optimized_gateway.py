@@ -1,4 +1,3 @@
-from typing import Any
 import hashlib
 import json
 import logging
@@ -9,6 +8,8 @@ import time
 from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor
 from functools import wraps
+from typing import Any
+
 import aiohttp
 import psutil
 import redis

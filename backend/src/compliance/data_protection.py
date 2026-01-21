@@ -4,7 +4,9 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 from sqlalchemy.orm import Session
+
 from .regulatory_framework import Jurisdiction
 
 "\nData Protection Service\n======================\n\nComprehensive data protection and privacy compliance service.\nSupports GDPR, CCPA, PDPA, and other privacy regulations across multiple jurisdictions.\n"

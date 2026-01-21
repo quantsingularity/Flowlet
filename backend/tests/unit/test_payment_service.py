@@ -1,17 +1,18 @@
-import unittest
-from unittest.mock import patch, MagicMock
-from decimal import Decimal
 import os
+import unittest
+from decimal import Decimal
+from unittest.mock import MagicMock, patch
+
 import stripe
 
 os.environ["STRIPE_SECRET_KEY"] = "sk_test_mock_key"
 from src.clients.stripe_client import StripeClient
+from src.schemas import ProcessPaymentRequest
 from src.services.payment_service import process_external_payment
 from src.services.payment_service_errors import (
-    PaymentProcessorError,
     AccountAccessDenied,
+    PaymentProcessorError,
 )
-from src.schemas import ProcessPaymentRequest
 
 
 class MockAccount:

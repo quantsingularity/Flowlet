@@ -4,9 +4,11 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 from typing import Any, Dict, List, Optional
+
 import numpy as np
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
+
 from .data_models import CustomerAnalytics, PerformanceMetrics, TransactionAnalytics
 
 

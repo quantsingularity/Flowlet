@@ -1,24 +1,26 @@
-from typing import Any
 import base64
 import io
 import logging
 from datetime import datetime, timezone
 from functools import wraps
+from typing import Any
+
 import jwt
 import pyotp
 import qrcode
 from flask import Blueprint, current_app, g, jsonify, request
-from ..utils.auth import token_required
 from sqlalchemy.exc import IntegrityError
+
 from ..models.account import Account, AccountStatus, AccountType
 from ..models.audit_log import AuditEventType, AuditSeverity
 from ..models.database import db
 from ..models.user import User
-from ..security.token_manager import TokenManager
-from ..security.rate_limiter import RateLimiter
+from ..security.audit_logger import audit_logger
 from ..security.input_validator import InputValidator
 from ..security.password_security import hash_password
-from ..security.audit_logger import audit_logger
+from ..security.rate_limiter import RateLimiter
+from ..security.token_manager import TokenManager
+from ..utils.auth import token_required
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 logger = logging.getLogger(__name__)

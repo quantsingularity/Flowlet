@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Union
+
 from sqlalchemy.orm import Session
 
 "\nConfiguration Engine\n===================\n\nVisual configuration system for financial applications.\nAllows business users to configure complex settings without coding.\n"

@@ -1,4 +1,5 @@
 from decimal import Decimal
+
 import pytest
 from src.security.encryption_manager import EncryptionManager, TokenizationManager
 from src.security.input_validator import InputValidator, ValidationError
