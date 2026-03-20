@@ -44,14 +44,6 @@ Get started with Flowlet in three simple steps:
 - **AI/ML**: OpenAI GPT, scikit-learn, custom fraud detection models
 - **Integrations**: Stripe, Plaid, Twilio
 
-## Project Status
-
-![CI/CD Status](https://img.shields.io/github/actions/workflow/status/quantsingularity/Flowlet/cicd.yml?branch=main)
-![Test Coverage](https://img.shields.io/badge/coverage-91%25-green)
-![License](https://img.shields.io/badge/license-MIT-blue)
-
-This project is under active development with continuous enhancements to embedded finance capabilities.
-
 ## License
 
 Flowlet is released under the MIT License. See [LICENSE](../LICENSE) for details.
