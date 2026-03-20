@@ -297,24 +297,6 @@ docker compose down -v
 docker compose up -d
 ```
 
-## Infrastructure Costs (AWS)
-
-Estimated monthly costs for different environments:
-
-| Environment | Compute | Database | Storage | Total  |
-| ----------- | ------- | -------- | ------- | ------ |
-| Development | $50     | $30      | $10     | ~$90   |
-| Staging     | $150    | $100     | $30     | ~$280  |
-| Production  | $500    | $400     | $100    | ~$1000 |
-
-_Costs vary based on usage, data transfer, and regional pricing_
-
-## Support & Contributing
-
-- Report issues: https://github.com/quantsingularity/Flowlet/issues
-- Documentation: https://github.com/quantsingularity/Flowlet/tree/main/docs
-- Contributing Guide: https://github.com/quantsingularity/Flowlet/blob/main/CONTRIBUTING.md
-
 ## License
 
 This infrastructure code is part of the Flowlet project and is licensed under the MIT License.
