@@ -17,6 +17,13 @@ from . import (
     RiskLevel,
 )
 
+from .supervised_models import (
+    LightGBMFraudModel,
+    NeuralNetworkFraudModel,
+    RandomForestFraudModel,
+    XGBoostFraudModel,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,7 +33,7 @@ class EnsembleFraudModel(FraudModelBase):
     Uses weighted voting to combine predictions from different models
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.models = {}
         self.model_weights = {}
@@ -36,7 +43,7 @@ class EnsembleFraudModel(FraudModelBase):
         self.supervised_weight = model_config.get("supervised_weight", 0.7)
         self._initialize_models()
 
-    def _initialize_models(self) -> Any:
+    def _initialize_models(self) -> None:
         """Initialize individual models based on configuration"""
         if "isolation_forest" in self.model_configs:
             self.models["isolation_forest"] = IsolationForestModel(
@@ -115,7 +122,7 @@ class EnsembleFraudModel(FraudModelBase):
 
     def _calculate_model_weights(
         self, training_data: pd.DataFrame, labels: pd.Series
-    ) -> Any:
+    ) -> None:
         """
         Calculate model weights based on validation performance
         """
@@ -287,7 +294,7 @@ class RealTimeFraudDetector:
     Provides high-level interface for fraud detection with explanations
     """
 
-    def __init__(self, ensemble_model: EnsembleFraudModel) -> Any:
+    def __init__(self, ensemble_model: EnsembleFraudModel) -> None:
         self.ensemble_model = ensemble_model
         self.logger = logging.getLogger(__name__)
         self.risk_thresholds = {
@@ -407,9 +414,8 @@ class RealTimeFraudDetector:
         self, features: "TransactionFeatures", fraud_score: float
     ) -> bool:
         """Detect velocity-based fraud"""
-        return (
-            fraud_score > 0.4
-            and (features.velocity_1h and features.velocity_1h > 5)
+        return fraud_score > 0.4 and (
+            (features.velocity_1h and features.velocity_1h > 5)
             or (features.velocity_24h and features.velocity_24h > 20)
         )
 

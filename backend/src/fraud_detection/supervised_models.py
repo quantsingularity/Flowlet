@@ -1,3 +1,8 @@
+"""
+Supervised Learning Models for Fraud Detection
+
+"""
+
 import logging
 from typing import Any, Dict
 
@@ -15,7 +20,6 @@ from tensorflow.keras import layers
 
 from . import FraudDetectionError, FraudModelBase, ModelNotTrainedError
 
-"\nSupervised Learning Models for Fraud Detection\nImplements supervised ML models for fraud classification\n"
 logger = logging.getLogger(__name__)
 
 
@@ -25,7 +29,7 @@ class RandomForestFraudModel(FraudModelBase):
     Robust ensemble method with good interpretability
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.n_estimators = model_config.get("n_estimators", 100)
         self.max_depth = model_config.get("max_depth", None)
@@ -108,7 +112,7 @@ class XGBoostFraudModel(FraudModelBase):
     High-performance gradient boosting with excellent results on tabular data
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.n_estimators = model_config.get("n_estimators", 100)
         self.max_depth = model_config.get("max_depth", 6)
@@ -142,7 +146,6 @@ class XGBoostFraudModel(FraudModelBase):
                 scale_pos_weight=self.scale_pos_weight,
                 random_state=self.random_state,
                 eval_metric="auc",
-                use_label_encoder=False,
             )
             X_train, X_val, y_train, y_val = train_test_split(
                 training_data,
@@ -151,11 +154,12 @@ class XGBoostFraudModel(FraudModelBase):
                 random_state=self.random_state,
                 stratify=labels,
             )
+
             self.model.fit(
                 X_train,
                 y_train,
                 eval_set=[(X_val, y_val)],
-                early_stopping_rounds=10,
+                callbacks=[xgb.callback.EarlyStopping(rounds=10)],
                 verbose=False,
             )
             train_predictions = self.model.predict_proba(training_data)[:, 1]
@@ -209,7 +213,7 @@ class LightGBMFraudModel(FraudModelBase):
     Fast gradient boosting with excellent performance and memory efficiency
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.n_estimators = model_config.get("n_estimators", 100)
         self.max_depth = model_config.get("max_depth", -1)
@@ -308,7 +312,7 @@ class NeuralNetworkFraudModel(FraudModelBase):
     Flexible architecture for complex pattern recognition
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.scaler = StandardScaler()
         self.hidden_layers = model_config.get("hidden_layers", [128, 64, 32])
@@ -339,12 +343,17 @@ class NeuralNetworkFraudModel(FraudModelBase):
                 1: total_count / (2 * pos_count),
             }
             self.model = self._build_neural_network(input_dim)
+
             self.model.compile(
                 optimizer=keras.optimizers.Adam(learning_rate=self.learning_rate),
                 loss="binary_crossentropy",
-                metrics=["accuracy", "precision", "recall"],
+                metrics=[
+                    "accuracy",
+                    keras.metrics.Precision(name="precision"),
+                    keras.metrics.Recall(name="recall"),
+                ],
             )
-            history = self.model.fit(
+            self.model.fit(
                 scaled_data,
                 labels,
                 epochs=self.epochs,

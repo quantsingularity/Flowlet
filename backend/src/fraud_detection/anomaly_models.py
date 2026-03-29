@@ -1,3 +1,8 @@
+"""
+Anomaly Detection Models for Fraud Detection
+
+"""
+
 import logging
 from typing import Any, Dict, Optional
 
@@ -12,7 +17,6 @@ from tensorflow.keras import layers
 
 from . import FraudDetectionError, FraudModelBase, ModelNotTrainedError
 
-"\nAnomaly Detection Models for Fraud Detection\nImplements unsupervised learning models for detecting fraudulent transactions\n"
 logger = logging.getLogger(__name__)
 
 
@@ -22,7 +26,7 @@ class IsolationForestModel(FraudModelBase):
     Effective for detecting outliers in high-dimensional data
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.scaler = StandardScaler()
         self.contamination = model_config.get("contamination", 0.1)
@@ -104,7 +108,7 @@ class OneClassSVMModel(FraudModelBase):
     Effective for finding decision boundaries in feature space
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.scaler = StandardScaler()
         self.nu = model_config.get("nu", 0.1)
@@ -179,7 +183,7 @@ class AutoencoderModel(FraudModelBase):
     Learns to reconstruct normal patterns, high reconstruction error indicates anomaly
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         super().__init__(model_config)
         self.scaler = StandardScaler()
         self.encoding_dim = model_config.get("encoding_dim", 32)

@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 class FraudDetectionService:
 
-    def __init__(self, config: Dict[str, Any]) -> Any:
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.ensemble_model = None
         self.real_time_detector = None
@@ -36,9 +36,10 @@ class FraudDetectionService:
             "last_retrain": None,
         }
         self.alerts_storage = []
+        self.feedback_storage: List[Dict[str, Any]] = []
         self._initialize_model()
 
-    def _initialize_model(self) -> Any:
+    def _initialize_model(self) -> None:
         """Initialize the fraud detection model"""
         try:
             if self._model_exists():
@@ -304,13 +305,13 @@ class FraudDetectionService:
             ),
         }
 
-    def save_model(self) -> Any:
+    def save_model(self) -> None:
         """Save the trained model to disk"""
         if self.ensemble_model and self.ensemble_model.is_trained:
             self.ensemble_model.save_model(self.model_path)
             self.logger.info(f"Model saved to {self.model_path}")
 
-    def load_model(self) -> Any:
+    def load_model(self) -> None:
         """Load a trained model from disk"""
         try:
             model_config = self.config.get(
@@ -363,8 +364,6 @@ class FraudDetectionService:
                 "feedback_timestamp": datetime.now(),
                 "features": alert.metadata.get("feature_values", {}),
             }
-            if not hasattr(self, "feedback_storage"):
-                self.feedback_storage = []
             self.feedback_storage.append(feedback_data)
             self.logger.info(
                 f"Feedback recorded for transaction {transaction_id}: fraud={is_fraud}"
@@ -387,7 +386,7 @@ class FraudDetectionService:
             ).days
             if days_since_retrain >= self.retrain_threshold_days:
                 return True
-        if hasattr(self, "feedback_storage") and len(self.feedback_storage) > 100:
+        if len(self.feedback_storage) > 100:
             recent_feedback = self.feedback_storage[-100:]
             false_positives = sum(
                 (
