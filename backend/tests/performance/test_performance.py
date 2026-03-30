@@ -5,6 +5,7 @@ import statistics
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from unittest.mock import Mock, patch
 
 import psutil
 import pytest

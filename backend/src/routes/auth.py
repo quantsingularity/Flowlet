@@ -20,7 +20,7 @@ from ..security.input_validator import InputValidator
 from ..security.password_security import hash_password
 from ..security.rate_limiter import RateLimiter
 from ..security.token_manager import TokenManager
-from ..utils.auth import token_required
+from ..utils.auth import check_password
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 logger = logging.getLogger(__name__)

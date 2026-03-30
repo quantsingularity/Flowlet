@@ -517,7 +517,7 @@ class AIRiskAssessor:
         """Analyze location usage patterns"""
         if not location_history:
             return 0.5
-        unique_countries = len(set((l["country"] for l in location_history)))
+        unique_countries = len(set((loc["country"] for loc in location_history)))
         sorted_locations = sorted(location_history, key=lambda x: x["timestamp"])
         impossible_travel_count = 0
         for i in range(1, len(sorted_locations)):

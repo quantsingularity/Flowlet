@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from sqlalchemy.orm import declarative_base
 
 from sqlalchemy import (
     JSONB,

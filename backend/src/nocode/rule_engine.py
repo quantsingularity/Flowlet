@@ -1,5 +1,6 @@
 import logging
 import re
+import copy
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field

@@ -1,5 +1,6 @@
 import logging
 from typing import Any, Dict, List, Optional
+from ..models.transaction import TransactionFeatures
 
 import numpy as np
 import pandas as pd

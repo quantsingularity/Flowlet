@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 from .data_models import (
     AlertConfiguration,
     CustomerAnalytics,
-    Dashboard,
     PerformanceMetrics,
     ReportingEngine,
     TransactionAnalytics,
