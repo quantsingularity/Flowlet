@@ -438,9 +438,7 @@ class DashboardService:
     async def _get_alerts_data(self, widget: Widget) -> Dict[str, Any]:
         """Get alerts data for widgets."""
         active_alerts = (
-            self.db.query(AlertConfiguration)
-            .filter(AlertConfiguration.is_active == True)
-            .all()
+            self.db.query(AlertConfiguration).filter(AlertConfiguration.is_active).all()
         )
         recent_alerts = [
             alert

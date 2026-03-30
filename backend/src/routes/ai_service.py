@@ -332,7 +332,6 @@ def chatbot_query() -> Any:
         user_query = data["query"]
         system_prompt = "You are Flowlet, an AI assistant for a modern financial technology platform. Your purpose is to answer user questions about their accounts, transactions, and general financial queries. Be helpful, professional, and security-conscious. Do not disclose any sensitive user information. If a query requires an action like a transfer or a change of settings, instruct the user to use the appropriate API endpoint or application feature, as you cannot perform actions directly."
         user_context = f"User ID: {g.current_user.id}\nUser Email: {g.current_user.email}\nAccount Status: {('Active' if g.current_user.is_active else 'Inactive')}\nKYC Status: {g.current_user.kyc_status}\nTime: {datetime.now(timezone.utc).isoformat()}\n"
-        full_query = f"{system_prompt}\n\nUser Context:\n{user_context}\n\nUser Query: {user_query}"
         response = openai_client.chat.completions.create(
             model="gemini-2.5-flash",
             messages=[

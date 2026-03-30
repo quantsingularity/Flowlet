@@ -227,7 +227,7 @@ class ExchangeRateService:
                     .filter(
                         ExchangeRateModel.base_currency == from_currency,
                         ExchangeRateModel.target_currency == to_currency,
-                        ExchangeRateModel.is_active == True,
+                        ExchangeRateModel.is_active,
                     )
                     .order_by(ExchangeRateModel.timestamp.desc())
                     .first()

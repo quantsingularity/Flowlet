@@ -321,7 +321,7 @@ class ReportingEngine:
                 and_(
                     TransactionAnalytics.transaction_date >= params.start_date,
                     TransactionAnalytics.transaction_date <= params.end_date,
-                    TransactionAnalytics.suspicious_activity == True,
+                    TransactionAnalytics.suspicious_activity,
                 )
             )
             .all()
@@ -389,7 +389,7 @@ class ReportingEngine:
                 and_(
                     TransactionAnalytics.transaction_date >= params.start_date,
                     TransactionAnalytics.transaction_date <= params.end_date,
-                    TransactionAnalytics.requires_reporting == True,
+                    TransactionAnalytics.requires_reporting,
                 )
             )
             .all()
@@ -400,7 +400,7 @@ class ReportingEngine:
                 and_(
                     TransactionAnalytics.transaction_date >= params.start_date,
                     TransactionAnalytics.transaction_date <= params.end_date,
-                    TransactionAnalytics.aml_flag == True,
+                    TransactionAnalytics.aml_flag,
                 )
             )
             .all()
@@ -696,7 +696,7 @@ class ReportingEngine:
                 and_(
                     TransactionAnalytics.transaction_date >= params.start_date,
                     TransactionAnalytics.transaction_date <= params.end_date,
-                    TransactionAnalytics.suspicious_activity == True,
+                    TransactionAnalytics.suspicious_activity,
                 )
             )
             .all()

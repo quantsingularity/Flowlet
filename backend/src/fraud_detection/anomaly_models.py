@@ -214,7 +214,7 @@ class AutoencoderModel(FraudModelBase):
                 loss="mse",
                 metrics=["mae"],
             )
-            history = self.model.fit(
+            self.model.fit(
                 scaled_data,
                 scaled_data,
                 epochs=self.epochs,

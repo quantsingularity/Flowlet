@@ -260,7 +260,7 @@ class TestSecurityPerformance:
         auth_times = []
         for _ in range(30):
             start_time = time.time()
-            response = client.get("/api/v1/info", headers=auth_headers)
+            client.get("/api/v1/info", headers=auth_headers)
             end_time = time.time()
             auth_times.append(end_time - start_time)
         avg_auth_time = statistics.mean(auth_times)

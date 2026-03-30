@@ -190,7 +190,7 @@ class ACHPaymentProcessor(PaymentProcessor):
                     "error": "CURRENCY_NOT_SUPPORTED",
                     "message": "ACH only supports USD",
                 }
-            payload = {
+            {
                 "amount": str(amount),
                 "currency": currency,
                 "account_number": payment_details.get("account_number"),

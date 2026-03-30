@@ -20,7 +20,7 @@ def token_required(f: Any) -> Any:
         try:
             if token.startswith("Bearer "):
                 token = token[7:]
-            data = jwt.decode(
+            jwt.decode(
                 token, os.environ.get("JWT_SECRET_KEY", "secret"), algorithms=["HS256"]
             )
         except Exception:

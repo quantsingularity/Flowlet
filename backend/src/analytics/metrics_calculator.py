@@ -267,7 +267,7 @@ class MetricsCalculator:
         elif metric_def.name == "suspicious_activity_ratio":
             total_count = query.count()
             suspicious_count = query.filter(
-                TransactionAnalytics.suspicious_activity == True
+                TransactionAnalytics.suspicious_activity
             ).count()
             return suspicious_count / total_count if total_count > 0 else 0.0
         elif metric_def.name == "revenue_estimate":
