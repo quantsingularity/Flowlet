@@ -1,10 +1,15 @@
 from typing import Any
 import sys
+import logging
 
 import requests
-from core.logging import get_logger
 
-logger = get_logger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 BASE_URL = "http://localhost:5000"
 API_BASE = f"{BASE_URL}/api/v1"
 

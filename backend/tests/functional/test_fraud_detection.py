@@ -4,7 +4,7 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 import pytest
-from src.ml.fraud_detection import (
+from src.fraud_detection import (
     FeatureEngineer,
     FraudAlert,
     FraudDetectionService,
@@ -258,7 +258,7 @@ class TestFraudDetection:
 
     def test_risk_level_calculation(self) -> Any:
         """Test risk level calculation"""
-        from src.ml.fraud_detection import FraudModelBase
+        from src.fraud_detection import FraudModelBase
 
         model = FraudModelBase({})
         assert model.calculate_risk_level(0.1) == RiskLevel.LOW

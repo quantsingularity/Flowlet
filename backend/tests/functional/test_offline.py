@@ -2,11 +2,17 @@ from typing import Any
 import os
 import sys
 
-from core.logging import get_logger
 from src.main import app
 from src.models.database import db
 
-logger = get_logger(__name__)
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 

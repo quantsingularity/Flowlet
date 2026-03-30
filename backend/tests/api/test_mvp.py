@@ -1,12 +1,19 @@
 from typing import Any
 import json
+import logging
 import uuid
 
 import requests
-from core.logging import get_logger
 
-logger = get_logger(__name__)
-"\nSimple test script for MVP functionality\n"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+"""
+Simple test script for MVP functionality
+"""
 BASE_URL = "http://localhost:5001"
 
 
@@ -187,50 +194,40 @@ def test_transfer(from_wallet_id: Any, to_wallet_id: Any, amount: Any) -> Any:
 def main() -> Any:
     """Run all tests"""
     logger.info("=== Flowlet MVP Testing ===")
-    logger.info()
     logger.info("1. Testing Health Check...")
     if not test_health_check():
         logger.info("Health check failed. Is the server running?")
         return
-    logger.info()
     logger.info("2. Testing API Info...")
     test_api_info()
-    logger.info()
     logger.info("3. Creating test users...")
     user1_id = create_test_user()
     user2_id = create_test_user()
     logger.info(f"User 1 ID: {user1_id}")
     logger.info(f"User 2 ID: {user2_id}")
-    logger.info()
     logger.info("4. Testing Wallet Creation...")
     wallet1_id = test_wallet_creation(user1_id)
     wallet2_id = test_wallet_creation(user2_id)
     if not wallet1_id or not wallet2_id:
         logger.info("Wallet creation failed. Cannot continue with tests.")
         return
-    logger.info()
     logger.info("5. Testing Balance Inquiry...")
     test_wallet_balance(wallet1_id)
     test_wallet_balance(wallet2_id)
-    logger.info()
     logger.info("6. Testing Deposit...")
     test_deposit(wallet1_id, 50.0)
     test_wallet_balance(wallet1_id)
-    logger.info()
     logger.info("7. Testing Withdrawal...")
     test_withdrawal(wallet1_id, 25.0)
     test_wallet_balance(wallet1_id)
-    logger.info()
     logger.info("8. Testing Transfer...")
     test_transfer(wallet1_id, wallet2_id, 30.0)
     logger.info("Balances after transfer:")
     test_wallet_balance(wallet1_id)
     test_wallet_balance(wallet2_id)
-    logger.info()
     logger.info("9. Testing Transaction History...")
     test_transaction_history(wallet1_id)
     test_transaction_history(wallet2_id)
-    logger.info()
     logger.info("=== Testing Complete ===")
 
 
