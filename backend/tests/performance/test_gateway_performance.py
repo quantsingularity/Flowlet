@@ -1,3 +1,4 @@
+from typing import Any
 import os
 import statistics
 import sys
@@ -268,7 +269,7 @@ class TestPerformanceBenchmarks:
                 request_count += 1
         actual_duration = time.time() - start_time
         throughput = request_count / actual_duration
-        logger.info(f"\nThroughput Benchmark:")
+        logger.info("\nThroughput Benchmark:")
         logger.info(f"Requests: {request_count}")
         logger.info(f"Duration: {actual_duration:.2f}s")
         logger.info(f"Throughput: {throughput:.2f} requests/second")

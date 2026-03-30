@@ -1,3 +1,4 @@
+from typing import Any
 from decimal import Decimal
 
 import pytest

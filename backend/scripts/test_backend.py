@@ -49,7 +49,7 @@ def test_app_creation():
         from app import create_app
 
         app = create_app()
-        print(f"✓ App created successfully")
+        print("✓ App created successfully")
         print(f"✓ Registered {len(app.blueprints)} blueprints")
         return True
     except Exception as e:

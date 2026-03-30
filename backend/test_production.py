@@ -1,3 +1,4 @@
+from typing import Any
 import sys
 import time
 import uuid
@@ -293,7 +294,7 @@ class FlowletProductionTester:
             credit_tx = transfer.get("credit_transaction", {})
             if debit_tx.get("id") and credit_tx.get("id"):
                 self.test_transactions.extend([debit_tx["id"], credit_tx["id"]])
-                self.log_test("Fund Transfer", True, f"Amount: $300.00")
+                self.log_test("Fund Transfer", True, "Amount: $300.00")
             else:
                 self.log_test("Fund Transfer", False, "Missing transaction IDs", result)
         else:
@@ -475,11 +476,11 @@ class FlowletProductionTester:
             for result in self.test_results:
                 if not result["success"]:
                     logger.info(f"   - {result['test']}: {result['message']}")
-        logger.info(f"\n📈 Test Artifacts Created:")
+        logger.info("\n📈 Test Artifacts Created:")
         logger.info(f"   - User ID: {self.test_user_id}")
         logger.info(f"   - Accounts: {len(self.test_accounts)}")
         logger.info(f"   - Transactions: {len(self.test_transactions)}")
-        logger.info(f"\n🏆 Production Readiness Assessment:")
+        logger.info("\n🏆 Production Readiness Assessment:")
         if passed_tests / total_tests >= 0.95:
             logger.info("   ✅ EXCELLENT - Ready for production deployment")
         elif passed_tests / total_tests >= 0.9:

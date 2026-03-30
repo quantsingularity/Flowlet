@@ -23,7 +23,7 @@ if __name__ == "__main__":
     print("=" * 60)
     print("Flowlet Financial Backend - Development Server")
     print("=" * 60)
-    print(f"✓ App created successfully")
+    print("✓ App created successfully")
     print(f"✓ Registered blueprints: {len(app.blueprints)}")
     print(f"✓ Database: {app.config.get('SQLALCHEMY_DATABASE_URI', 'N/A')[:50]}...")
     print(f"✓ Debug mode: {app.config.get('DEBUG', False)}")

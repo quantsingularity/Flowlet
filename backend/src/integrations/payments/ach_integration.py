@@ -199,7 +199,7 @@ class ACHIntegration:
         """
         try:
             if self.mock_mode:
-                logger.info(f"Mock account verification initiated")
+                logger.info("Mock account verification initiated")
                 return True
             else:
                 # Real verification would go here

@@ -144,7 +144,7 @@ class ExplainableAIFraudDetector:
         )
         y_pred = self.random_forest.predict(X_test_scaled)
         y_pred_proba = self.random_forest.predict_proba(X_test_scaled)[:, 1]
-        logger.info(f"Model training completed:")
+        logger.info("Model training completed:")
         logger.info(f"AUC Score: {roc_auc_score(y_test, y_pred_proba):.4f}")
         logger.info(f"Classification Report:\n{classification_report(y_test, y_pred)}")
         self._save_models()
