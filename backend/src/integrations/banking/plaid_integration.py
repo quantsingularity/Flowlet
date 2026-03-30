@@ -11,7 +11,7 @@ class PlaidIntegration(BankingIntegrationBase):
     Supports Link, Auth, Transactions, and Identity products
     """
 
-    def __init__(self, config: Dict[str, Any]) -> Any:
+    def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
         self.client_id = config.get("client_id")
         self.secret = config.get("secret")

@@ -20,7 +20,7 @@ class TokenManager:
     VERIFICATION_TOKEN_EXPIRY = timedelta(hours=24)
     ACCESS_TOKEN_EXPIRY_SECONDS = int(ACCESS_TOKEN_EXPIRY.total_seconds())
 
-    def __init__(self, app: Any = None) -> Any:
+    def __init__(self, app: Any = None) -> None:
         self.app = app
         self._redis_client = None
 

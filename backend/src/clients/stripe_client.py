@@ -17,7 +17,7 @@ class StripeClient:
     API key is loaded from the STRIPE_SECRET_KEY environment variable.
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.api_key = os.environ.get("STRIPE_SECRET_KEY")
         if not self.api_key:
             logger.error("STRIPE_SECRET_KEY environment variable not set.")

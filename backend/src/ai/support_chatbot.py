@@ -69,7 +69,7 @@ class FlowletAIChatbot:
     Provides intelligent assistance for Flowlet platform integration
     """
 
-    def __init__(self, knowledge_base_path: str = "/data/knowledge_base") -> Any:
+    def __init__(self, knowledge_base_path: str = "/data/knowledge_base") -> None:
         self.knowledge_base_path = knowledge_base_path
         self.vectorizer = TfidfVectorizer(max_features=5000, stop_words="english")
         self.knowledge_vectors = None
@@ -469,7 +469,7 @@ class FlowletAIChatbot:
 class ChatbotAnalytics:
     """Analytics and monitoring for chatbot performance"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.interaction_stats = {
             "total_interactions": 0,
             "by_query_type": {},

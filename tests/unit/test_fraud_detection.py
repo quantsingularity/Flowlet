@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 class FraudDetectionService:
 
-    def __init__(self, ml_model_api: Any) -> Any:
+    def __init__(self, ml_model_api: Any) -> None:
         self.ml_model_api = ml_model_api
 
     def analyze_transaction_for_fraud(self, transaction_data: Any) -> Any:

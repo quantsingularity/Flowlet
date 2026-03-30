@@ -66,7 +66,7 @@ class CurrencyExchangeService:
         ("NZD", "USD"),
     ]
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.api_key = os.environ.get("EXCHANGE_RATE_API_KEY")
         self.backup_api_key = os.environ.get("BACKUP_EXCHANGE_RATE_API_KEY")
         self.cache_ttl = int(os.environ.get("EXCHANGE_RATE_CACHE_TTL", "300"))

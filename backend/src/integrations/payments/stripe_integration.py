@@ -3,7 +3,7 @@ import os
 import uuid
 from abc import ABC, abstractmethod
 from decimal import Decimal
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 import requests
 
@@ -31,7 +31,7 @@ class PaymentProcessor(ABC):
 class StripePaymentProcessor(PaymentProcessor):
     """Stripe payment processor implementation"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.api_key = os.environ.get("STRIPE_SECRET_KEY")
         self.webhook_secret = os.environ.get("STRIPE_WEBHOOK_SECRET")
         self.base_url = "https://api.stripe.com/v1"
@@ -168,7 +168,7 @@ class StripePaymentProcessor(PaymentProcessor):
 class ACHPaymentProcessor(PaymentProcessor):
     """ACH payment processor implementation"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.api_key = os.environ.get("ACH_API_KEY")
         self.api_secret = os.environ.get("ACH_API_SECRET")
         self.base_url = os.environ.get("ACH_BASE_URL", "https://api.achprovider.com/v1")
@@ -248,7 +248,7 @@ class ACHPaymentProcessor(PaymentProcessor):
 class WirePaymentProcessor(PaymentProcessor):
     """Wire transfer payment processor implementation"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.api_key = os.environ.get("WIRE_API_KEY")
         self.base_url = os.environ.get(
             "WIRE_BASE_URL", "https://api.wireprovider.com/v1"
@@ -327,7 +327,7 @@ class WirePaymentProcessor(PaymentProcessor):
 class SEPAPaymentProcessor(PaymentProcessor):
     """SEPA payment processor implementation"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.api_key = os.environ.get("SEPA_API_KEY")
         self.base_url = os.environ.get(
             "SEPA_BASE_URL", "https://api.sepaprovider.com/v1"

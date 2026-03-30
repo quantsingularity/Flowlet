@@ -77,7 +77,7 @@ class DataWarehouse:
 
     def __init__(
         self, db_session: Session, warehouse_config: Dict[str, Any] = None
-    ) -> Any:
+    ) -> None:
         self.db = db_session
         self.config = warehouse_config or {}
         self.logger = logging.getLogger(__name__)

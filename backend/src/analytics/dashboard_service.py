@@ -91,7 +91,7 @@ class DashboardService:
     - Export capabilities
     """
 
-    def __init__(self, db_session: Session) -> Any:
+    def __init__(self, db_session: Session) -> None:
         self.db = db_session
         self.reporting_engine = ReportingEngine(db_session)
         self.logger = logging.getLogger(__name__)

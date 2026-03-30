@@ -117,7 +117,7 @@ class FraudModelBase(ABC):
     Abstract base class for fraud detection models
     """
 
-    def __init__(self, model_config: Dict[str, Any]) -> Any:
+    def __init__(self, model_config: Dict[str, Any]) -> None:
         self.config = model_config
         self.model = None
         self.is_trained = False
@@ -229,7 +229,7 @@ class FeatureEngineer:
     Feature engineering for fraud detection
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
     def extract_transaction_features(
@@ -370,7 +370,7 @@ class FraudExplainer:
     Provides explanations for fraud detection decisions
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.logger = logging.getLogger(__name__)
 
     def explain_prediction(
@@ -475,7 +475,7 @@ class EnsembleFraudModel(FraudModelBase):
 class RealTimeFraudDetector:
     """Real-time fraud detector"""
 
-    def __init__(self, config: Dict[str, Any] = None) -> Any:
+    def __init__(self, config: Dict[str, Any] = None) -> None:
         self.config = config or {}
 
     def check_transaction(

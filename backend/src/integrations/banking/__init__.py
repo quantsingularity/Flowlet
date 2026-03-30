@@ -107,7 +107,7 @@ class BankingIntegrationBase(ABC):
     Defines the interface that all banking integrations must implement
     """
 
-    def __init__(self, config: Dict[str, Any]) -> Any:
+    def __init__(self, config: Dict[str, Any]) -> None:
         self.config = config
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self._authenticated = False

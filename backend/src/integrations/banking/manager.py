@@ -31,7 +31,7 @@ class BankingIntegrationManager:
     Provides a unified interface for different banking APIs
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.integrations: Dict[str, BankingIntegrationBase] = {}
         self.integration_classes: Dict[
             IntegrationType, Type[BankingIntegrationBase]

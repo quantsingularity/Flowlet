@@ -19,7 +19,7 @@ class MockAccount:
 
     def __init__(
         self, id: Any, user_id: Any, balance: Any, status: Any, currency: Any
-    ) -> Any:
+    ) -> None:
         self.id = id
         self.user_id = user_id
         self.balance = Decimal(str(balance))
@@ -35,14 +35,14 @@ class MockAccount:
 
 class MockTransaction:
 
-    def __init__(self, **kwargs) -> Any:
+    def __init__(self, **kwargs) -> None:
         self.__dict__.update(kwargs)
         self.id = "mock_txn_id"
 
 
 class MockDBSession:
 
-    def __init__(self, accounts: Any = None) -> Any:
+    def __init__(self, accounts: Any = None) -> None:
         self.accounts = accounts or {}
         self.committed = False
         self.rolledback = False
@@ -68,7 +68,7 @@ class MockModels:
 
         def __init__(
             self, id: Any, user_id: Any, balance: Any, status: Any, currency: Any
-        ) -> Any:
+        ) -> None:
             self.id = id
             self.user_id = user_id
             self.balance = Decimal(str(balance))
@@ -83,7 +83,7 @@ class MockModels:
 
     class Transaction:
 
-        def __init__(self, **kwargs) -> Any:
+        def __init__(self, **kwargs) -> None:
             self.__dict__.update(kwargs)
             self.id = "mock_txn_id"
 

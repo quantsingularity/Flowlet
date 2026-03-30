@@ -13,7 +13,7 @@ API_BASE = f"{BASE_URL}/api/v1"
 
 class FlowletProductionTester:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.test_results = []
         self.access_token = None
         self.test_user_id = None

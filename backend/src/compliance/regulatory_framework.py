@@ -100,7 +100,7 @@ class RegulatoryFramework:
     - Cross-jurisdiction harmonization
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self._rules = {}
         self._jurisdiction_profiles = {}
         self._initialize_framework()

@@ -4,7 +4,7 @@ from datetime import datetime
 
 class LedgerService:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.entries = []
         self.balances = {}
 

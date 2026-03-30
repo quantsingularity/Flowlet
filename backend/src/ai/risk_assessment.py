@@ -79,7 +79,7 @@ class PredictiveInsight:
 class AIRiskAssessor:
     """AI-powered risk assessment system"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.risk_weights = {
             RiskCategory.CREDIT_RISK: {
                 "payment_history": 0.35,

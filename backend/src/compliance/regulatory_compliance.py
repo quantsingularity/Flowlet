@@ -127,7 +127,7 @@ class GDPRComplianceManager:
     GDPR compliance management system
     """
 
-    def __init__(self, encryption_key: Optional[str] = None) -> Any:
+    def __init__(self, encryption_key: Optional[str] = None) -> None:
         self.encryption_key = encryption_key or Fernet.generate_key()
         self.fernet = Fernet(self.encryption_key)
         self.redis_client = redis.Redis(host="localhost", port=6379, db=5)
@@ -310,7 +310,7 @@ class PSD2ComplianceManager:
     PSD2 compliance management system
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.redis_client = redis.Redis(host="localhost", port=6379, db=6)
         self.sca_exemptions = {
             "low_value": 30.0,
@@ -488,7 +488,7 @@ class FinCENComplianceManager:
     FinCEN compliance management system
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.redis_client = redis.Redis(host="localhost", port=6379, db=7)
         self.suspicious_activity_threshold = 10000.0
         self.currency_transaction_threshold = 10000.0
@@ -633,7 +633,7 @@ class ComplianceReportingEngine:
     Automated compliance reporting engine
     """
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.redis_client = redis.Redis(host="localhost", port=6379, db=8)
         self.gdpr_manager = GDPRComplianceManager()
         self.psd2_manager = PSD2ComplianceManager()

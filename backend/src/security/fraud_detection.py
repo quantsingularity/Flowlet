@@ -110,7 +110,7 @@ class FraudAssessment:
 class BehavioralProfile:
     """User behavioral profile for anomaly detection."""
 
-    def __init__(self, user_id: str) -> Any:
+    def __init__(self, user_id: str) -> None:
         self.user_id = user_id
         self.transaction_patterns = defaultdict(list)
         self.login_patterns = defaultdict(list)
@@ -196,7 +196,7 @@ class FraudDetectionEngine:
     - Identity verification
     """
 
-    def __init__(self, db_session: Session, config: Dict[str, Any] = None) -> Any:
+    def __init__(self, db_session: Session, config: Dict[str, Any] = None) -> None:
         self.db = db_session
         self.config = config or {}
         self.logger = logging.getLogger(__name__)

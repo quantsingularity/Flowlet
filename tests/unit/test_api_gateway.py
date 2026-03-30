@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 class APIGateway:
 
-    def __init__(self, auth_service: Any, rate_limiter: Any, router: Any) -> Any:
+    def __init__(self, auth_service: Any, rate_limiter: Any, router: Any) -> None:
         self.auth_service = auth_service
         self.rate_limiter = rate_limiter
         self.router = router
@@ -40,7 +40,7 @@ class AuthService:
 
 class RateLimiter:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.requests = {}
 
     def allow_request(self, client_ip: Any) -> Any:

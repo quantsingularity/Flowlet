@@ -12,7 +12,7 @@ from flask import current_app, jsonify, request
 class RateLimiter:
     """Advanced rate limiting with multiple strategies"""
 
-    def __init__(self, redis_client: Any = None) -> Any:
+    def __init__(self, redis_client: Any = None) -> None:
         self.redis_client = redis_client
         self.memory_store = {}
 

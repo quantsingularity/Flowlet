@@ -97,7 +97,7 @@ class EncryptionService:
     - Cryptographic hashing
     """
 
-    def __init__(self, config: Dict[str, Any] = None) -> Any:
+    def __init__(self, config: Dict[str, Any] = None) -> None:
         self.config = config or {}
         self.logger = logging.getLogger(__name__)
         self._keys = {}

@@ -88,7 +88,7 @@ class ExplainableAIFraudDetector:
     Meets financial industry standards for transparency and auditability
     """
 
-    def __init__(self, redis_client: Optional[redis.Redis] = None) -> Any:
+    def __init__(self, redis_client: Optional[redis.Redis] = None) -> None:
         self.redis_client = redis_client or redis.Redis(
             host="localhost", port=6379, db=0
         )
@@ -373,7 +373,7 @@ class ExplainableAIFraudDetector:
 class VelocityCalculator:
     """Calculate transaction velocity metrics"""
 
-    def __init__(self, redis_client: redis.Redis) -> Any:
+    def __init__(self, redis_client: redis.Redis) -> None:
         self.redis_client = redis_client
 
     async def calculate_velocity(self, user_id: str, current_amount: float) -> float:
@@ -405,7 +405,7 @@ class VelocityCalculator:
 class DeviceProfiler:
     """Profile device behavior for fraud detection"""
 
-    def __init__(self, redis_client: redis.Redis) -> Any:
+    def __init__(self, redis_client: redis.Redis) -> None:
         self.redis_client = redis_client
 
     async def calculate_risk(self, device_fingerprint: str, user_id: str) -> float:
@@ -431,7 +431,7 @@ class DeviceProfiler:
 class LocationAnalyzer:
     """Analyze transaction location for fraud detection"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.high_risk_countries = {"XX", "YY", "ZZ"}
 
     async def calculate_risk(self, country: str, city: str) -> float:
@@ -449,7 +449,7 @@ class LocationAnalyzer:
 class ModelMonitor:
     """Monitor model performance and trigger retraining when needed"""
 
-    def __init__(self, fraud_detector: ExplainableAIFraudDetector) -> Any:
+    def __init__(self, fraud_detector: ExplainableAIFraudDetector) -> None:
         self.fraud_detector = fraud_detector
         self.performance_threshold = 0.85
 

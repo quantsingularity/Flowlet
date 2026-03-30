@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class AuditLogger:
     """Service class for logging audit events."""
 
-    def __init__(self, app: Any = None) -> Any:
+    def __init__(self, app: Any = None) -> None:
         self.app = app
 
     def _log_to_db(self, audit_log_instance: AuditLog) -> Any:

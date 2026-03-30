@@ -67,7 +67,7 @@ class ReportingEngine:
     - Performance optimization
     """
 
-    def __init__(self, db_session: Session) -> Any:
+    def __init__(self, db_session: Session) -> None:
         self.db = db_session
         self.logger = logging.getLogger(__name__)
 

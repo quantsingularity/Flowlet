@@ -80,7 +80,7 @@ class AdvancedAuthenticationService:
     - Adaptive authentication
     """
 
-    def __init__(self, db_session: Session, config: Dict[str, Any] = None) -> Any:
+    def __init__(self, db_session: Session, config: Dict[str, Any] = None) -> None:
         self.db = db_session
         self.config = config or {}
         self.logger = logging.getLogger(__name__)

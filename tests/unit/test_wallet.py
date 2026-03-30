@@ -11,7 +11,7 @@ class Wallet:
         currency: Any,
         status: Any,
         balance: Any,
-    ) -> Any:
+    ) -> None:
         self.id = id
         self.owner_id = owner_id
         self.type = type
@@ -22,7 +22,7 @@ class Wallet:
 
 class WalletService:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.wallets = {}
 
     def create_wallet(self, owner_id: Any, type: Any, currency: Any) -> Any:

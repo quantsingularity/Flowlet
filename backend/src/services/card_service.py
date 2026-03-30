@@ -23,7 +23,7 @@ input_validator = InputValidator()
 class CardServiceError(Exception):
     """Custom exception for CardService errors."""
 
-    def __init__(self, message: str, code: str) -> Any:
+    def __init__(self, message: str, code: str) -> None:
         super().__init__(message)
         self.code = code
 

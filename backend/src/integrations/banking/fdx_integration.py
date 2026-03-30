@@ -15,7 +15,7 @@ class FDXIntegration(BankingIntegrationBase):
     Implements FDX API standards for secure financial data sharing
     """
 
-    def __init__(self, config: Dict[str, Any]) -> Any:
+    def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
         self.client_id = config.get("client_id")
         self.client_secret = config.get("client_secret")

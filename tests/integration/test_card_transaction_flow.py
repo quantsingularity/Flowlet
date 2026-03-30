@@ -3,7 +3,7 @@ import unittest
 
 class MockCardService:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.frozen_cards = set()
 
     def process_transaction(self, card_id: Any, amount: Any, merchant_id: Any) -> Any:

@@ -19,7 +19,7 @@ from flask import g, jsonify, request
 class PerformanceOptimizedGateway:
     """High-performance API Gateway with advanced optimization features"""
 
-    def __init__(self, app: Any) -> Any:
+    def __init__(self, app: Any) -> None:
         self.app = app
         self.redis_client = None
         self.connection_pool = None
@@ -134,7 +134,7 @@ class PerformanceOptimizedGateway:
 class CacheManager:
     """Advanced caching manager with intelligent invalidation"""
 
-    def __init__(self, redis_client: Any, config: Any) -> Any:
+    def __init__(self, redis_client: Any, config: Any) -> None:
         self.redis_client = redis_client
         self.config = config
         self.local_cache = {}
@@ -206,7 +206,7 @@ class CacheManager:
 class CircuitBreaker:
     """Circuit breaker implementation for external service calls"""
 
-    def __init__(self, service_name: Any, config: Any) -> Any:
+    def __init__(self, service_name: Any, config: Any) -> None:
         self.service_name = service_name
         self.config = config
         self.state = "closed"
@@ -257,7 +257,7 @@ class CircuitBreaker:
 class RequestBatcher:
     """Batch similar requests for improved performance"""
 
-    def __init__(self, config: Any) -> Any:
+    def __init__(self, config: Any) -> None:
         self.config = config
         self.pending_batches = defaultdict(list)
         self.batch_timers = {}
@@ -322,7 +322,7 @@ class RequestBatcher:
 class PerformanceMonitor:
     """Real-time performance monitoring and alerting"""
 
-    def __init__(self, config: Any) -> Any:
+    def __init__(self, config: Any) -> None:
         self.config = config
         self.metrics = defaultdict(deque)
         self.alerts = []

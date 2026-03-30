@@ -1,6 +1,5 @@
 import logging
 from decimal import Decimal
-from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -26,7 +25,7 @@ logger = logging.getLogger(__name__)
 class WalletServiceError(Exception):
     """Base exception for wallet service errors."""
 
-    def __init__(self, message: str, error_code: str, status_code: int = 400) -> Any:
+    def __init__(self, message: str, error_code: str, status_code: int = 400) -> None:
         super().__init__(message)
         self.error_code = error_code
         self.status_code = status_code
@@ -34,7 +33,7 @@ class WalletServiceError(Exception):
 
 class AccountNotFound(WalletServiceError):
 
-    def __init__(self, account_id: str) -> Any:
+    def __init__(self, account_id: str) -> None:
         super().__init__(
             f"Account with ID {account_id} not found", "ACCOUNT_NOT_FOUND", 404
         )
@@ -42,19 +41,19 @@ class AccountNotFound(WalletServiceError):
 
 class UserNotFound(WalletServiceError):
 
-    def __init__(self, user_id: str) -> Any:
+    def __init__(self, user_id: str) -> None:
         super().__init__(f"User with ID {user_id} not found", "USER_NOT_FOUND", 404)
 
 
 class AccountInactive(WalletServiceError):
 
-    def __init__(self, account_id: str) -> Any:
+    def __init__(self, account_id: str) -> None:
         super().__init__(f"Account {account_id} is not active", "ACCOUNT_INACTIVE", 400)
 
 
 class InsufficientFunds(WalletServiceError):
 
-    def __init__(self, account_id: str) -> Any:
+    def __init__(self, account_id: str) -> None:
         super().__init__(
             f"Insufficient funds in account {account_id}", "INSUFFICIENT_FUNDS", 400
         )
@@ -62,7 +61,7 @@ class InsufficientFunds(WalletServiceError):
 
 class CurrencyMismatch(WalletServiceError):
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         super().__init__(
             "Currency mismatch for internal transfer", "CURRENCY_MISMATCH", 400
         )
@@ -70,7 +69,7 @@ class CurrencyMismatch(WalletServiceError):
 
 class InvalidAccountType(WalletServiceError):
 
-    def __init__(self, account_type: str) -> Any:
+    def __init__(self, account_type: str) -> None:
         super().__init__(
             f"Invalid account type: {account_type}", "INVALID_ACCOUNT_TYPE", 400
         )
@@ -78,7 +77,7 @@ class InvalidAccountType(WalletServiceError):
 
 class UnsupportedCurrency(WalletServiceError):
 
-    def __init__(self, currency: str) -> Any:
+    def __init__(self, currency: str) -> None:
         super().__init__(
             f"Unsupported currency: {currency}", "UNSUPPORTED_CURRENCY", 400
         )

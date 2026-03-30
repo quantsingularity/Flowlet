@@ -3,7 +3,7 @@ import unittest
 
 class MockUI:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.users = {}
         self.logged_in_user = None
 

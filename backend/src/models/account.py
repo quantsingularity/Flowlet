@@ -111,7 +111,7 @@ class Account(Base):
         Index("idx_account_status", "status"),
     )
 
-    def __init__(self, **kwargs) -> Any:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         if not self.account_number:
             self.account_number = self.generate_account_number()

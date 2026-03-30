@@ -85,7 +85,7 @@ class SpendingAnalysis:
 class AITransactionCategorizer:
     """AI-powered transaction categorization system"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.merchant_patterns = {
             TransactionCategory.GROCERIES: [
                 "walmart|target|kroger|safeway|whole foods|trader joe|costco|sam\\'s club",

@@ -129,7 +129,7 @@ class Card(Base):
         Index("idx_card_last_four", "last_four_digits"),
     )
 
-    def __init__(self, **kwargs) -> Any:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         if not self.card_token:
             self.card_token = self.generate_card_token()

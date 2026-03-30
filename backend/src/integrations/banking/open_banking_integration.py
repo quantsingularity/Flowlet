@@ -17,7 +17,7 @@ class OpenBankingIntegration(
     Supports Account Information Services (AIS) and Payment Initiation Services (PIS)
     """
 
-    def __init__(self, config: Dict[str, Any]) -> Any:
+    def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
         self.client_id = config.get("client_id")
         self.client_secret = config.get("client_secret")

@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 class CardService:
 
-    def __init__(self, issuer_api: Any) -> Any:
+    def __init__(self, issuer_api: Any) -> None:
         self.issuer_api = issuer_api
 
     def issue_card(

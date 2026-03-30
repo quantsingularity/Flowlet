@@ -19,7 +19,7 @@ class MockPaymentService:
 
 class MockAPIGateway:
 
-    def __init__(self, user_service: Any, payment_service: Any) -> Any:
+    def __init__(self, user_service: Any, payment_service: Any) -> None:
         self.user_service = user_service
         self.payment_service = payment_service
 

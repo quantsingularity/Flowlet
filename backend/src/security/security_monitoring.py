@@ -171,7 +171,7 @@ class SecurityMonitoringService:
     - Incident response workflow management
     """
 
-    def __init__(self, db_client: Any, config: Dict[str, Any] = None) -> Any:
+    def __init__(self, db_client: Any, config: Dict[str, Any] = None) -> None:
         self.db = db_client
         self.config = config or {}
         self.logger = logging.getLogger(__name__)

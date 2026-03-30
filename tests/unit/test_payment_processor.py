@@ -3,7 +3,7 @@ import unittest
 
 class PaymentProcessor:
 
-    def __init__(self, api_key: Any) -> Any:
+    def __init__(self, api_key: Any) -> None:
         self.api_key = api_key
 
     def process_payment(

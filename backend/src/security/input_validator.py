@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class ValidationError(Exception):
     """Custom validation error"""
 
-    def __init__(self, message: str, field: str = None, code: str = None) -> Any:
+    def __init__(self, message: str, field: str = None, code: str = None) -> None:
         self.message = message
         self.field = field
         self.code = code
@@ -28,7 +28,7 @@ class ValidationError(Exception):
 class InputValidator:
     """Comprehensive input validation and sanitization"""
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.patterns = {
             "alphanumeric": re.compile("^[a-zA-Z0-9]+$"),
             "alpha": re.compile("^[a-zA-Z]+$"),

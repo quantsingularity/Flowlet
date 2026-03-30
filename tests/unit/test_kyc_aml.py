@@ -11,7 +11,7 @@ class UserProfile:
         address: Any,
         id_document: Any = None,
         status: Any = "pending",
-    ) -> Any:
+    ) -> None:
         self.user_id = user_id
         self.name = name
         self.dob = dob
@@ -22,7 +22,7 @@ class UserProfile:
 
 class KYCService:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.user_profiles = {}
 
     def submit_for_verification(
@@ -75,7 +75,7 @@ class KYCService:
 
 class AMLService:
 
-    def __init__(self) -> Any:
+    def __init__(self) -> None:
         self.flagged_users = set()
 
     def screen_transaction(self, user_id: Any, amount: Any, recipient_id: Any) -> Any:

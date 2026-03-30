@@ -663,7 +663,7 @@ class FXRiskManager:
     Foreign exchange risk management system
     """
 
-    def __init__(self, exchange_rate_service: ExchangeRateService) -> Any:
+    def __init__(self, exchange_rate_service: ExchangeRateService) -> None:
         self.exchange_rate_service = exchange_rate_service
         self.var_confidence_level = 0.95
         self.max_position_limit = Decimal("1000000")

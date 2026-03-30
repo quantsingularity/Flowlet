@@ -134,7 +134,7 @@ class Transaction(Base):
         Index("idx_transaction_risk", "risk_score"),
     )
 
-    def __init__(self, **kwargs) -> Any:
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         if not self.transaction_id:
             self.transaction_id = self.generate_transaction_id()

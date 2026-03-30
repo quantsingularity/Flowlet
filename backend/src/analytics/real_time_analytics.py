@@ -110,7 +110,7 @@ class RealTimeAnalytics:
     - Live dashboard updates
     """
 
-    def __init__(self, db_session: Session) -> Any:
+    def __init__(self, db_session: Session) -> None:
         self.db = db_session
         self.logger = logging.getLogger(__name__)
         self._event_queue = asyncio.Queue()
