@@ -1,19 +1,19 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertTriangle, CheckCircle, Eye, EyeOff, Shield } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import {
+  Fragment as _Fragment,
   jsx as _jsx,
   jsxs as _jsxs,
-  Fragment as _Fragment,
 } from "react/jsx-runtime";
-import { useState, useCallback, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ValidationService } from "../../lib/security/validation";
-import { CSRFService } from "../../lib/security/headers";
+import { Controller, useForm } from "react-hook-form";
 import { EncryptionService } from "../../lib/security/encryption";
+import { CSRFService } from "../../lib/security/headers";
+import { ValidationService } from "../../lib/security/validation";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Shield, Eye, EyeOff, AlertTriangle, CheckCircle } from "lucide-react";
 export function SecureForm({
   fields,
   onSubmit,
@@ -145,7 +145,7 @@ export function SecureForm({
           }
         }
         // Encrypt sensitive data
-        let encryptedData = {};
+        const encryptedData = {};
         if (enableEncryption) {
           for (const field of fields) {
             if (field.encrypted || field.sensitive) {

@@ -1,7 +1,7 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import type React from "react";
 import { Button } from "@/components/ui/button";
-import { Wallet, TrendingUp, TrendingDown } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Transaction {
   id: string;

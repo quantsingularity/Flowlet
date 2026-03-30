@@ -1,13 +1,14 @@
-import { describe, it, expect, vi } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
+import { describe, expect, it, vi } from "vitest";
+import { authApi } from "@/lib/api";
 import authReducer, {
+  clearError,
   loginUser,
   logoutUser,
-  validateToken,
-  clearError,
   updateUser,
+  validateToken,
 } from "@/store/authSlice";
-import { authApi } from "@/lib/api";
+
 // Mock the API
 vi.mock("@/lib/api", () => ({
   authApi: {

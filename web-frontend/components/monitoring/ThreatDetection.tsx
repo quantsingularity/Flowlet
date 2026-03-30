@@ -1,12 +1,38 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  Brain,
+  CheckCircle,
+  Clock,
+  Database,
+  Download,
+  Edit,
+  Eye,
+  Flag,
+  Mail,
+  Network,
+  Play,
+  Plus,
+  Radar,
+  Search,
+  Settings,
+  Shield,
+  Stop,
+  Target,
+  Trash2,
+  Users,
+  Zap,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Progress } from "../ui/progress";
 import {
   Select,
   SelectContent,
@@ -14,58 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Progress } from "../ui/progress";
-import { Checkbox } from "../ui/checkbox";
-import {
-  Shield,
-  AlertTriangle,
-  Target,
-  Zap,
-  Eye,
-  EyeOff,
-  Search,
-  Filter,
-  Download,
-  Upload,
-  Play,
-  Pause,
-  Stop,
-  Settings,
-  CheckCircle,
-  XCircle,
-  Clock,
-  TrendingUp,
-  TrendingDown,
-  BarChart3,
-  Activity,
-  Globe,
-  Database,
-  Network,
-  Cpu,
-  HardDrive,
-  Lock,
-  Unlock,
-  Key,
-  FileText,
-  Mail,
-  Phone,
-  Users,
-  MapPin,
-  Calendar,
-  Hash,
-  Flag,
-  Bell,
-  Archive,
-  Trash2,
-  Edit,
-  Plus,
-  RefreshCw,
-  Brain,
-  Radar,
-  Crosshair,
-  Layers,
-  GitBranch,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 interface ThreatSignature {
   id: string;
@@ -515,7 +490,7 @@ export function ThreatDetection({
   ]);
 
   // Handle signature creation
-  const handleSignatureCreate = useCallback(async () => {
+  const _handleSignatureCreate = useCallback(async () => {
     if (!state.newSignature.name || !state.newSignature.description) {
       setState((prev) => ({
         ...prev,
@@ -556,7 +531,7 @@ export function ThreatDetection({
           },
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({
         ...prev,
         error: "Failed to create threat signature",
@@ -579,7 +554,7 @@ export function ThreatDetection({
             success: "Investigation initiated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: "Failed to initiate investigation",
@@ -614,7 +589,7 @@ export function ThreatDetection({
             responseActions: [],
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: "Failed to initiate threat response",
@@ -627,7 +602,7 @@ export function ThreatDetection({
   );
 
   // Handle hunt creation
-  const handleHuntCreate = useCallback(async () => {
+  const _handleHuntCreate = useCallback(async () => {
     if (
       !state.newHunt.name ||
       !state.newHunt.description ||
@@ -653,7 +628,7 @@ export function ThreatDetection({
           showHuntEditor: false,
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to create threat hunt" }));
     } finally {
       setState((prev) => ({ ...prev, isCreating: false }));
@@ -690,7 +665,7 @@ export function ThreatDetection({
             success: "Report exported successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to export report" }));
       } finally {
         setState((prev) => ({ ...prev, isExporting: false }));
@@ -1681,7 +1656,7 @@ export function ThreatDetection({
               <div className="flex space-x-2">
                 <Button
                   onClick={() =>
-                    handleThreatResponse(state.selectedDetection!.id)
+                    handleThreatResponse(state.selectedDetection?.id)
                   }
                   disabled={
                     state.isResponding || state.responseActions.length === 0

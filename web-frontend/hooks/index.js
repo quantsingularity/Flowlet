@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useResponsive } from "./use-responsive";
-import { useAppDispatch } from "./redux";
+import { useEffect, useState } from "react";
 import { setOnlineStatus } from "@/store/uiSlice";
+import { useAppDispatch } from "./redux";
+import { useResponsive } from "./use-responsive";
 export const useOnlineStatus = () => {
   const dispatch = useAppDispatch();
   const [isOnline, setIsOnline] = useState(navigator.onLine);

@@ -1,39 +1,40 @@
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  jsx as _jsx,
-  jsxs as _jsxs,
-  Fragment as _Fragment,
-} from "react/jsx-runtime";
-import { useState, useCallback, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Plus,
-  Save,
-  Play,
-  Pause,
-  RotateCcw,
-  Trash2,
-  Zap,
-  Shield,
-  CreditCard,
-  DollarSign,
   AlertTriangle,
+  BarChart3,
+  Calculator,
   CheckCircle,
   Clock,
-  Users,
+  CreditCard,
   Database,
+  DollarSign,
+  FileText,
+  Filter,
+  GitBranch,
+  Globe,
   Mail,
   MessageSquare,
-  FileText,
-  BarChart3,
-  GitBranch,
-  Filter,
-  Calculator,
-  Globe,
+  Pause,
+  Play,
+  Plus,
+  RotateCcw,
+  Save,
+  Shield,
+  Trash2,
+  Users,
+  Zap,
 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment as _Fragment,
+  jsx as _jsx,
+  jsxs as _jsxs,
+} from "react/jsx-runtime";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -41,11 +42,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import "./workflow.css";
 // Node types for FinTech workflows
 const NODE_TYPES = {
@@ -197,11 +197,11 @@ const WorkflowDesigner = ({ workflowId }) => {
   const [selectedNode, setSelectedNode] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [draggedNodeType, setDraggedNodeType] = useState(null);
-  const [showNodeConfig, setShowNodeConfig] = useState(false);
-  const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
+  const [_showNodeConfig, _setShowNodeConfig] = useState(false);
+  const [canvasOffset, _setCanvasOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const canvasRef = useRef(null);
-  const [connectionStart, setConnectionStart] = useState(null);
+  const [_connectionStart, _setConnectionStart] = useState(null);
   // Create new workflow
   const createNewWorkflow = useCallback(() => {
     const newWorkflow = {

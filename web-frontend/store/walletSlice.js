@@ -1,6 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { walletService } from "@/lib/walletService";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ApiError } from "@/lib/api";
+import { walletService } from "@/lib/walletService";
+
 // Initial state
 const initialState = {
   accounts: [],
@@ -219,7 +220,7 @@ const walletSlice = createSlice({
     setCurrentCard: (state, action) => {
       state.currentCard = action.payload;
     },
-    clearWalletState: (state) => {
+    clearWalletState: (_state) => {
       return initialState;
     },
   },

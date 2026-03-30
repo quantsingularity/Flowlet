@@ -1,9 +1,7 @@
-import React from "react";
-import { Menu, Bell, User, LogOut, Moon, Sun, Monitor } from "lucide-react";
-import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { useAuth } from "@/hooks/useAuth";
-import { logoutUser } from "@/store/authSlice";
-import { setTheme } from "@/store/uiSlice";
+import { Bell, LogOut, Menu, Monitor, Moon, Sun, User } from "lucide-react";
+import type React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,13 +9,15 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useAuth } from "@/hooks/useAuth";
+import { logoutUser } from "@/store/authSlice";
+import { setTheme } from "@/store/uiSlice";
 
 interface HeaderProps {
   onMenuClick: () => void;

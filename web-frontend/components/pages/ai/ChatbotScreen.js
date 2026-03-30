@@ -1,9 +1,9 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Bot, Send, User } from "lucide-react";
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Send, Bot, User } from "lucide-react";
 export default function ChatbotScreen() {
   const [messages, setMessages] = useState([
     {

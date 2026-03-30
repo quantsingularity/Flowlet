@@ -1,22 +1,20 @@
-import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
   Activity,
-  Clock,
-  AlertTriangle,
+  BarChart3,
   CheckCircle2,
+  Clock,
   DollarSign,
-  Users,
-  Calendar,
-  Filter,
   Download,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type React from "react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -25,8 +23,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 
 // Mock data for analytics
 const ANALYTICS_DATA = {
@@ -91,7 +87,7 @@ const ANALYTICS_DATA = {
 
 const WorkflowAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState("7d");
-  const [selectedMetric, setSelectedMetric] = useState("executions");
+  const [_selectedMetric, _setSelectedMetric] = useState("executions");
 
   const { overview, topWorkflows, executionHistory, errorAnalysis } =
     ANALYTICS_DATA;
@@ -265,7 +261,7 @@ const WorkflowAnalytics: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {topWorkflows.map((workflow, index) => (
+                  {topWorkflows.map((workflow, _index) => (
                     <div
                       key={workflow.name}
                       className="flex items-center justify-between p-3 border rounded-lg"
@@ -301,7 +297,7 @@ const WorkflowAnalytics: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {executionHistory.map((day, index) => (
+                  {executionHistory.map((day, _index) => (
                     <div key={day.date} className="flex items-center gap-3">
                       <div className="text-xs text-muted-foreground w-16">
                         {new Date(day.date).toLocaleDateString("en-US", {
@@ -351,7 +347,7 @@ const WorkflowAnalytics: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {errorAnalysis.map((error, index) => (
+                {errorAnalysis.map((error, _index) => (
                   <div key={error.type} className="flex items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">

@@ -1,30 +1,26 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { Label } from "../ui/label";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Progress } from "../ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
-  Clock,
-  Shield,
-  Monitor,
-  Smartphone,
-  Globe,
+  Activity,
   AlertTriangle,
   CheckCircle,
-  XCircle,
-  LogOut,
-  RefreshCw,
+  Clock,
   Eye,
-  EyeOff,
-  Lock,
-  Unlock,
-  Activity,
+  LogOut,
   MapPin,
+  Monitor,
+  RefreshCw,
+  Shield,
+  Smartphone,
   Wifi,
+  XCircle,
 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Label } from "../ui/label";
+import { Progress } from "../ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 interface Session {
   id: string;
@@ -263,7 +259,7 @@ export function SessionManager({
           description: "Session manually extended",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to extend session" }));
     } finally {
       setState((prev) => ({ ...prev, isExtending: false }));
@@ -290,7 +286,7 @@ export function SessionManager({
             description: `Session ${sessionId} terminated`,
           });
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to terminate session" }));
       } finally {
         setState((prev) => ({ ...prev, isTerminating: false }));
@@ -320,7 +316,7 @@ export function SessionManager({
           description: "All sessions terminated by user",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to terminate sessions" }));
     } finally {
       setState((prev) => ({ ...prev, isTerminating: false }));

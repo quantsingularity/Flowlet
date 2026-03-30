@@ -1,7 +1,8 @@
-import { jsx as _jsx } from "react/jsx-runtime";
-import * as React from "react";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
+import * as React from "react";
+import { jsx as _jsx } from "react/jsx-runtime";
 import { cn } from "../../lib/utils";
+
 const Tabs = TabsPrimitive.Root;
 const TabsList = React.forwardRef(({ className, ...props }, ref) =>
   _jsx(TabsPrimitive.List, {
@@ -36,4 +37,5 @@ const TabsContent = React.forwardRef(({ className, ...props }, ref) =>
   }),
 );
 TabsContent.displayName = TabsPrimitive.Content.displayName;
-export { Tabs, TabsList, TabsTrigger, TabsContent };
+
+export { Tabs, TabsContent, TabsList, TabsTrigger };

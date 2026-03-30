@@ -1,24 +1,25 @@
 import {
-  jsx as _jsx,
-  jsxs as _jsxs,
-  Fragment as _Fragment,
-} from "react/jsx-runtime";
-import { Link, useLocation } from "react-router-dom";
-import {
-  Home,
-  Wallet,
-  CreditCard,
-  BarChart3,
-  MessageSquare,
-  Shield,
-  Settings,
-  PiggyBank,
   AlertTriangle,
+  BarChart3,
+  CreditCard,
+  Home,
+  MessageSquare,
+  PiggyBank,
+  Settings,
+  Shield,
+  Wallet,
   X,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {
+  Fragment as _Fragment,
+  jsx as _jsx,
+  jsxs as _jsxs,
+} from "react/jsx-runtime";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+
 const navigationItems = [
   { icon: Home, label: "Dashboard", path: "/dashboard" },
   { icon: Wallet, label: "Wallet", path: "/wallet" },

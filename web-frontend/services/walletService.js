@@ -1,4 +1,5 @@
-import { ArrowUpRight, ArrowDownRight, TrendingUp, Wallet } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, TrendingUp, Wallet } from "lucide-react";
+
 // Mock data based on the original Dashboard.tsx content
 const mockQuickStats = [
   {

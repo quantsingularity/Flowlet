@@ -59,7 +59,10 @@ export class SecurityHeadersService {
   static generateHeaders(
     config: Partial<SecurityHeadersConfig> = {},
   ): Record<string, string> {
-    const mergedConfig = { ...this.DEFAULT_CONFIG, ...config };
+    const mergedConfig = {
+      ...SecurityHeadersService.DEFAULT_CONFIG,
+      ...config,
+    };
     const headers: Record<string, string> = {};
 
     // Content Security Policy
@@ -132,7 +135,7 @@ export class SecurityHeadersService {
     headers: Record<string, string> = {},
     config: Partial<SecurityHeadersConfig> = {},
   ): Record<string, string> {
-    const securityHeaders = this.generateHeaders(config);
+    const securityHeaders = SecurityHeadersService.generateHeaders(config);
     return { ...headers, ...securityHeaders };
   }
 
@@ -193,7 +196,7 @@ export class SecurityHeadersService {
     const hsts = response.headers.get("Strict-Transport-Security");
     if (hsts) {
       const maxAge = hsts.match(/max-age=(\d+)/);
-      if (maxAge && parseInt(maxAge[1]) < 31536000) {
+      if (maxAge && parseInt(maxAge[1], 10) < 31536000) {
         warnings.push(
           "HSTS max-age should be at least 1 year (31536000 seconds)",
         );
@@ -217,7 +220,7 @@ export class SecurityHeadersService {
       url: string,
       options: RequestInit = {},
     ): Promise<Response> => {
-      const secureHeaders = this.applyToRequest(
+      const secureHeaders = SecurityHeadersService.applyToRequest(
         options.headers as Record<string, string>,
         config,
       );
@@ -243,7 +246,7 @@ export class SecurityHeadersService {
         const response = await fetch(url, secureOptions);
 
         // Validate response security headers
-        const validation = this.validateResponse(response);
+        const validation = SecurityHeadersService.validateResponse(response);
         if (!validation.isSecure) {
           console.warn(
             "Response missing security headers:",
@@ -280,7 +283,7 @@ export class SecurityHeadersService {
   }> {
     try {
       const response = await fetch(url, { method: "HEAD" });
-      const compliance = this.validateResponse(response);
+      const compliance = SecurityHeadersService.validateResponse(response);
 
       const headers: Record<string, string> = {};
       response.headers.forEach((value, key) => {
@@ -317,7 +320,8 @@ export class SecurityHeadersService {
     const results = await Promise.all(
       urls.map(async (url) => {
         try {
-          const monitoring = await this.monitorCompliance(url);
+          const monitoring =
+            await SecurityHeadersService.monitorCompliance(url);
           return {
             url,
             isSecure: monitoring.compliance.isSecure,
@@ -395,7 +399,7 @@ export class CSRFService {
    * @param token - CSRF token
    */
   static setToken(token: string): void {
-    sessionStorage.setItem(this.TOKEN_STORAGE_KEY, token);
+    sessionStorage.setItem(CSRFService.TOKEN_STORAGE_KEY, token);
   }
 
   /**
@@ -403,7 +407,7 @@ export class CSRFService {
    * @returns CSRF token or null
    */
   static getToken(): string | null {
-    return sessionStorage.getItem(this.TOKEN_STORAGE_KEY);
+    return sessionStorage.getItem(CSRFService.TOKEN_STORAGE_KEY);
   }
 
   /**
@@ -414,9 +418,9 @@ export class CSRFService {
   static addTokenToHeaders(
     headers: Record<string, string> = {},
   ): Record<string, string> {
-    const token = this.getToken();
+    const token = CSRFService.getToken();
     if (token) {
-      headers[this.TOKEN_HEADER] = token;
+      headers[CSRFService.TOKEN_HEADER] = token;
     }
     return headers;
   }
@@ -427,7 +431,7 @@ export class CSRFService {
    * @returns True if valid
    */
   static validateToken(token: string): boolean {
-    const storedToken = this.getToken();
+    const storedToken = CSRFService.getToken();
     return storedToken !== null && storedToken === token;
   }
 
@@ -435,7 +439,7 @@ export class CSRFService {
    * Clear CSRF token
    */
   static clearToken(): void {
-    sessionStorage.removeItem(this.TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(CSRFService.TOKEN_STORAGE_KEY);
   }
 }
 

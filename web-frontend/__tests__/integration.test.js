@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { mockUser, mockWallet, mockTransaction } from "@/test/utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { mockTransaction, mockUser, mockWallet } from "@/test/utils";
+
 // Mock API calls
 const mockApiCall = vi.fn();
 describe("User Authentication Flow", () => {

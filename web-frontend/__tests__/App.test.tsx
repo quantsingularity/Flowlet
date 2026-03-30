@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@/test/utils";
 import { BrowserRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "@/App";
+import { render, screen } from "@/test/utils";
 
 // Mock all the components to avoid complex setup
 vi.mock("@/components/LoadingScreen", () => ({
@@ -144,7 +144,7 @@ describe("App Integration Tests", () => {
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-    const ThrowError = () => {
+    const _ThrowError = () => {
       throw new Error("Test error");
     };
 

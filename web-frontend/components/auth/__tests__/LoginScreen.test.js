@@ -1,12 +1,13 @@
-import { jsx as _jsx } from "react/jsx-runtime";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { configureStore } from "@reduxjs/toolkit";
 import { render, screen } from "@testing-library/react";
+import { jsx as _jsx } from "react/jsx-runtime";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import { configureStore } from "@reduxjs/toolkit";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import LoginScreen from "@/components/auth/LoginScreen";
 import authReducer from "@/store/authSlice";
 import uiReducer from "@/store/uiSlice";
-import LoginScreen from "@/components/auth/LoginScreen";
+
 // Mock the auth hooks and store
 vi.mock("@/hooks/redux", () => ({
   useAppDispatch: () => vi.fn(),

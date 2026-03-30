@@ -1,9 +1,10 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Outlet } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { toggleSidebar, setMobileMenuOpen } from "@/store/uiSlice";
-import Sidebar from "./Sidebar";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { setMobileMenuOpen, toggleSidebar } from "@/store/uiSlice";
 import Header from "./Header";
+import Sidebar from "./Sidebar";
+
 const Layout = ({ isMobile }) => {
   const dispatch = useAppDispatch();
   const { sidebarOpen, mobileMenuOpen } = useAppSelector((state) => state.ui);

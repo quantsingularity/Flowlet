@@ -1,15 +1,42 @@
 import {
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Cpu,
+  Database,
+  Download,
+  Eye,
+  Gauge,
+  Globe,
+  HardDrive,
+  Laptop,
+  MemoryStick,
+  Monitor,
+  Network,
+  RefreshCw,
+  Server,
+  Smartphone,
+  Tablet,
+  Timer,
+  TrendingDown,
+  TrendingUp,
+  Wifi,
+  WifiOff,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Fragment as _Fragment,
   jsx as _jsx,
   jsxs as _jsxs,
-  Fragment as _Fragment,
 } from "react/jsx-runtime";
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { Input } from "../ui/input";
 import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Progress } from "../ui/progress";
 import {
   Select,
   SelectContent,
@@ -17,34 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Progress } from "../ui/progress";
-import {
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  Cpu,
-  MemoryStick,
-  HardDrive,
-  Network,
-  Globe,
-  Database,
-  Server,
-  Monitor,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  Download,
-  Eye,
-  Gauge,
-  Timer,
-  Wifi,
-  WifiOff,
-  Smartphone,
-  Laptop,
-  Tablet,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 export function PerformanceMonitor({
   metrics = [],
   resources = [],
@@ -259,7 +259,7 @@ export function PerformanceMonitor({
           success: "Metrics refreshed successfully",
           lastRefresh: new Date().toISOString(),
         }));
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to refresh metrics" }));
       } finally {
         setState((prev) => ({ ...prev, isRefreshing: false }));
@@ -275,7 +275,7 @@ export function PerformanceMonitor({
           await onAlertAcknowledge(alertId);
           setState((prev) => ({ ...prev, success: "Alert acknowledged" }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to acknowledge alert" }));
       }
     },
@@ -293,7 +293,7 @@ export function PerformanceMonitor({
             success: "Resource restart initiated",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to restart resource" }));
       } finally {
         setState((prev) => ({ ...prev, isRefreshing: false }));
@@ -328,7 +328,7 @@ export function PerformanceMonitor({
             success: "Report exported successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to export report" }));
       } finally {
         setState((prev) => ({ ...prev, isExporting: false }));
@@ -415,7 +415,7 @@ export function PerformanceMonitor({
         return _jsx(WifiOff, { className: "w-4 h-4" });
     }
   };
-  const getTrendIcon = (trend, percentage) => {
+  const _getTrendIcon = (trend, percentage) => {
     if (trend === "up") {
       return _jsx(TrendingUp, {
         className: `w-4 h-4 ${percentage > 0 ? "text-red-500" : "text-green-500"}`,
@@ -432,7 +432,7 @@ export function PerformanceMonitor({
     const k = 1024;
     const sizes = ["B", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
   };
   const formatDuration = (ms) => {
     if (ms < 1000) return `${ms.toFixed(0)}ms`;

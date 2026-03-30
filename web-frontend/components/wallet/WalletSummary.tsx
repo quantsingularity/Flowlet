@@ -1,6 +1,6 @@
-import React from "react";
+import type React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { WalletSummaryProps } from "@/types/wallet";
+import type { WalletSummaryProps } from "@/types/wallet";
 
 /**
  * Renders a single quick statistic card.

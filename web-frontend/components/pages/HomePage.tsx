@@ -1,3 +1,13 @@
+import {
+  ArrowRight,
+  CheckCircle,
+  CreditCard,
+  Globe,
+  Shield,
+  TrendingUp,
+  Wallet,
+  Zap,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,16 +17,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  CreditCard,
-  Wallet,
-  Shield,
-  Zap,
-  Globe,
-  TrendingUp,
-  CheckCircle,
-  ArrowRight,
-} from "lucide-react";
 
 export default function HomePage() {
   const features = [

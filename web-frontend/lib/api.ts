@@ -1,5 +1,9 @@
 // Improved API Client Configuration for Flowlet web-frontend
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosResponse,
+} from "axios";
 
 // Utility function for safe base64 decoding (JWT payload)
 const safeB64Decode = (str: string): string => {
@@ -37,18 +41,9 @@ class TokenManager {
   private static readonly USER_KEY = "flowlet_user";
   private static readonly TOKEN_EXPIRY_BUFFER = 5 * 60 * 1000; // 5 minutes buffer
 
-  // Check if secure storage is available (for sensitive tokens)
-  private static isSecureStorageAvailable(): boolean {
-    return (
-      typeof window !== "undefined" &&
-      "crypto" in window &&
-      "subtle" in window.crypto
-    );
-  }
-
   static getAccessToken(): string | null {
     try {
-      return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+      return localStorage.getItem(TokenManager.ACCESS_TOKEN_KEY);
     } catch (error) {
       console.error("Failed to retrieve access token:", error);
       return null;
@@ -57,7 +52,7 @@ class TokenManager {
 
   static setAccessToken(token: string): void {
     try {
-      localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+      localStorage.setItem(TokenManager.ACCESS_TOKEN_KEY, token);
     } catch (error) {
       console.error("Failed to store access token:", error);
     }
@@ -65,7 +60,7 @@ class TokenManager {
 
   static getRefreshToken(): string | null {
     try {
-      return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+      return localStorage.getItem(TokenManager.REFRESH_TOKEN_KEY);
     } catch (error) {
       console.error("Failed to retrieve refresh token:", error);
       return null;
@@ -74,7 +69,7 @@ class TokenManager {
 
   static setRefreshToken(token: string): void {
     try {
-      localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
+      localStorage.setItem(TokenManager.REFRESH_TOKEN_KEY, token);
     } catch (error) {
       console.error("Failed to store refresh token:", error);
     }
@@ -82,7 +77,7 @@ class TokenManager {
 
   static getUser(): any {
     try {
-      const user = localStorage.getItem(this.USER_KEY);
+      const user = localStorage.getItem(TokenManager.USER_KEY);
       return user ? JSON.parse(user) : null;
     } catch (error) {
       console.error("Failed to retrieve user data:", error);
@@ -101,7 +96,10 @@ class TokenManager {
         permissions: user.permissions,
         // Exclude sensitive information
       };
-      localStorage.setItem(this.USER_KEY, JSON.stringify(sanitizedUser));
+      localStorage.setItem(
+        TokenManager.USER_KEY,
+        JSON.stringify(sanitizedUser),
+      );
     } catch (error) {
       console.error("Failed to store user data:", error);
     }
@@ -109,9 +107,9 @@ class TokenManager {
 
   static clearTokens(): void {
     try {
-      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-      localStorage.removeItem(this.USER_KEY);
+      localStorage.removeItem(TokenManager.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(TokenManager.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(TokenManager.USER_KEY);
     } catch (error) {
       console.error("Failed to clear tokens:", error);
     }
@@ -123,7 +121,7 @@ class TokenManager {
 
       const payload = JSON.parse(safeB64Decode(token.split(".")[1]));
       const currentTime = Date.now();
-      const expiryTime = payload.exp * 1000 - this.TOKEN_EXPIRY_BUFFER;
+      const expiryTime = payload.exp * 1000 - TokenManager.TOKEN_EXPIRY_BUFFER;
 
       return currentTime >= expiryTime;
     } catch (error) {
@@ -231,7 +229,7 @@ apiClient.interceptors.response.use(
       const retryAfter = error.response.headers["retry-after"];
       if (retryAfter && !originalRequest._retryCount) {
         originalRequest._retryCount = 1;
-        const delay = parseInt(retryAfter) * 1000;
+        const delay = parseInt(retryAfter, 10) * 1000;
 
         return new Promise((resolve) => {
           setTimeout(() => resolve(apiClient(originalRequest)), delay);

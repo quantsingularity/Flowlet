@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 const MOBILE_BREAKPOINT = 768; // Standard tablet breakpoint
 /**
  * Custom hook to track responsive state (mobile, tablet, desktop).

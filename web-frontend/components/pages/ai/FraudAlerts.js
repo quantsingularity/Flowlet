@@ -1,8 +1,11 @@
+import { AlertTriangle, CheckCircle, Eye, XCircle } from "lucide-react";
 import {
+  Fragment as _Fragment,
   jsx as _jsx,
   jsxs as _jsxs,
-  Fragment as _Fragment,
 } from "react/jsx-runtime";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,9 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, CheckCircle, XCircle, Eye } from "lucide-react";
 export default function FraudAlerts() {
   const alerts = [
     {

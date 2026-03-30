@@ -1,3 +1,4 @@
+import { Book, Code, Terminal, Wallet, Zap } from "lucide-react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Code, Book, Zap, Terminal, Wallet } from "lucide-react";
 export default function DeveloperPortalPage() {
   const devResources = [
     {

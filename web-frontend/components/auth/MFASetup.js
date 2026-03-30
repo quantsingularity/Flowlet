@@ -1,30 +1,30 @@
 import {
-  jsx as _jsx,
-  jsxs as _jsxs,
-  Fragment as _Fragment,
-} from "react/jsx-runtime";
-import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Badge } from "../ui/badge";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Progress } from "../ui/progress";
-import {
-  Shield,
-  Smartphone,
-  Key,
-  QrCode,
-  CheckCircle,
   AlertTriangle,
+  CheckCircle,
   Copy,
-  RefreshCw,
   Download,
   Fingerprint,
+  Key,
   Mail,
+  QrCode,
+  RefreshCw,
+  Shield,
+  Smartphone,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Fragment as _Fragment,
+  jsx as _jsx,
+  jsxs as _jsxs,
+} from "react/jsx-runtime";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Progress } from "../ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 export function MFASetup({
   currentMethods = [],
   onMethodEnable,
@@ -54,7 +54,7 @@ export function MFASetup({
     const checkBiometricSupport = async () => {
       if ("credentials" in navigator && "create" in navigator.credentials) {
         try {
-          const available = await navigator.credentials.get({
+          const _available = await navigator.credentials.get({
             publicKey: {
               challenge: new Uint8Array(32),
               rp: { name: "Test" },
@@ -68,7 +68,7 @@ export function MFASetup({
             },
           });
           setState((prev) => ({ ...prev, biometricSupported: true }));
-        } catch (error) {
+        } catch (_error) {
           // Biometric not available or user cancelled
           setState((prev) => ({ ...prev, biometricSupported: false }));
         }
@@ -106,7 +106,7 @@ export function MFASetup({
             }));
           }
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: `Failed to ${method.enabled ? "disable" : "enable"} ${method.name}`,
@@ -146,7 +146,7 @@ export function MFASetup({
             }));
           }
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Verification failed" }));
       } finally {
         setState((prev) => ({ ...prev, isLoading: false }));
@@ -165,7 +165,7 @@ export function MFASetup({
           success: "Backup codes generated successfully",
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({
         ...prev,
         error: "Failed to generate backup codes",
@@ -183,7 +183,7 @@ export function MFASetup({
     try {
       await navigator.clipboard.writeText(text);
       setState((prev) => ({ ...prev, success: "Copied to clipboard" }));
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to copy to clipboard" }));
     }
   }, []);

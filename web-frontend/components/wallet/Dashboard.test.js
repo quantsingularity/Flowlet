@@ -1,10 +1,11 @@
-import { jsx as _jsx } from "react/jsx-runtime";
 import { render, screen, waitFor } from "@testing-library/react";
+import { jsx as _jsx } from "react/jsx-runtime";
 import "@testing-library/jest-dom";
-import Dashboard from "./Dashboard";
-import { fetchWalletData } from "@/services/walletService";
-import { useAuth } from "@/hooks/useAuth";
 import { Wallet } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { fetchWalletData } from "@/services/walletService";
+import Dashboard from "./Dashboard";
+
 // Mock the dependencies
 jest.mock("@/services/walletService", () =>
   require("../../__mocks__/walletService"),

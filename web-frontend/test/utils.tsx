@@ -1,12 +1,12 @@
+import { configureStore } from "@reduxjs/toolkit";
+import { type RenderOptions, render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
-import { configureStore } from "@reduxjs/toolkit";
-import { render, RenderOptions } from "@testing-library/react";
+import { api } from "@/store/api";
 import authReducer from "@/store/authSlice";
-import walletReducer from "@/store/walletSlice";
 import transactionReducer from "@/store/transactionSlice";
 import uiReducer from "@/store/uiSlice";
-import { api } from "@/store/api";
+import walletReducer from "@/store/walletSlice";
 
 // Create a custom render function that includes providers
 const createTestStore = (preloadedState?: any) => {

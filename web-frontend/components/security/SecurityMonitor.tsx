@@ -1,25 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Progress } from "../ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
-  Shield,
+  Activity,
   AlertTriangle,
   CheckCircle,
-  XCircle,
-  Activity,
-  Eye,
-  Lock,
-  Wifi,
-  Globe,
   Clock,
-  TrendingUp,
-  RefreshCw,
   Download,
+  Eye,
+  Globe,
+  Lock,
+  RefreshCw,
+  Shield,
+  TrendingUp,
+  Wifi,
+  XCircle,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Progress } from "../ui/progress";
 
 interface SecurityEvent {
   id: string;
@@ -97,7 +95,7 @@ export function SecurityMonitor({
 
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, refreshInterval, onRefresh]);
+  }, [autoRefresh, refreshInterval, onRefresh, handleRefresh]);
 
   const handleRefresh = useCallback(async () => {
     if (!onRefresh) return;

@@ -1,13 +1,14 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, Download, Settings, Share2 } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Settings, Share2, Download } from "lucide-react";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WorkflowList from "./WorkflowList";
-import WorkflowDesigner from "./WorkflowDesigner";
 import WorkflowAnalytics from "./WorkflowAnalytics";
+import WorkflowDesigner from "./WorkflowDesigner";
+import WorkflowList from "./WorkflowList";
 import WorkflowTemplates from "./WorkflowTemplates";
+
 const WorkflowMain = () => {
   const [currentView, setCurrentView] = useState("list");
   const [selectedWorkflowId, setSelectedWorkflowId] = useState(null);

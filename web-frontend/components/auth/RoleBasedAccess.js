@@ -1,13 +1,28 @@
+import {
+  AlertTriangle,
+  Building,
+  CheckCircle,
+  Clock,
+  Edit,
+  Globe,
+  Key,
+  Lock,
+  Plus,
+  Search,
+  Shield,
+  Trash2,
+  Users,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Checkbox } from "../ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -15,22 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import {
-  Shield,
-  Users,
-  Key,
-  Lock,
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
-  Plus,
-  Edit,
-  Trash2,
-  Search,
-  Clock,
-  Globe,
-  Building,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 export function RoleBasedAccess({
   currentUser,
   permissions = [],
@@ -102,10 +102,7 @@ export function RoleBasedAccess({
       (user) =>
         user.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
-        (user.department &&
-          user.department
-            .toLowerCase()
-            .includes(state.searchTerm.toLowerCase())),
+        user.department?.toLowerCase().includes(state.searchTerm.toLowerCase()),
     );
   }, [users, state.searchTerm]);
   // Get permission by ID
@@ -145,7 +142,7 @@ export function RoleBasedAccess({
     [getRole, getPermission],
   );
   // Check if user has permission
-  const hasPermission = useCallback(
+  const _hasPermission = useCallback(
     async (userId, permissionId, resource) => {
       if (onPermissionCheck) {
         return await onPermissionCheck(userId, permissionId, resource);
@@ -155,7 +152,7 @@ export function RoleBasedAccess({
       if (!user) return false;
       for (const roleId of user.roles) {
         const role = getRole(roleId);
-        if (role && role.isActive) {
+        if (role?.isActive) {
           const effectivePermissions = getEffectivePermissions(role);
           if (effectivePermissions.some((p) => p.id === permissionId)) {
             return true;
@@ -199,14 +196,14 @@ export function RoleBasedAccess({
           },
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to create role" }));
     } finally {
       setState((prev) => ({ ...prev, isCreatingRole: false }));
     }
   }, [state.newRole, onRoleCreate]);
   // Handle role update
-  const handleUpdateRole = useCallback(
+  const _handleUpdateRole = useCallback(
     async (roleId, updates) => {
       setState((prev) => ({ ...prev, error: null }));
       try {
@@ -217,7 +214,7 @@ export function RoleBasedAccess({
             success: "Role updated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to update role" }));
       }
     },
@@ -236,14 +233,14 @@ export function RoleBasedAccess({
             success: "Role deleted successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to delete role" }));
       }
     },
     [onRoleDelete],
   );
   // Handle user role update
-  const handleUserRoleUpdate = useCallback(
+  const _handleUserRoleUpdate = useCallback(
     async (userId, newRoles) => {
       setState((prev) => ({ ...prev, error: null }));
       try {
@@ -254,7 +251,7 @@ export function RoleBasedAccess({
             success: "User roles updated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to update user roles" }));
       }
     },
@@ -272,7 +269,7 @@ export function RoleBasedAccess({
             success: `Access request ${status} successfully`,
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: "Failed to review access request",

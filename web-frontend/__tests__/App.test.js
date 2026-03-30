@@ -1,8 +1,9 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@/test/utils";
 import { BrowserRouter } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "@/App";
+import { render, screen } from "@/test/utils";
+
 // Mock all the components to avoid complex setup
 vi.mock("@/components/LoadingScreen", () => ({
   default: () => _jsx("div", { children: "Loading..." }),
@@ -30,7 +31,9 @@ vi.mock("@/hooks", () => ({
   useOnlineStatus: vi.fn(() => true),
   useResponsive: vi.fn(() => ({ isMobile: false })),
 }));
+
 import { useAuth } from "@/hooks/useAuth";
+
 describe("App Integration Tests", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -111,7 +114,7 @@ describe("App Integration Tests", () => {
   it("handles error boundary", () => {
     // Mock console.error to avoid noise in test output
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const ThrowError = () => {
+    const _ThrowError = () => {
       throw new Error("Test error");
     };
     vi.mocked(useAuth).mockImplementation(() => {

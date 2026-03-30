@@ -1,29 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Progress } from "../ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
-  Shield,
-  CreditCard,
-  Lock,
-  Eye,
   AlertTriangle,
   CheckCircle,
-  XCircle,
-  FileText,
-  Network,
+  CreditCard,
   Database,
+  Download,
+  Eye,
+  FileText,
   Key,
   Monitor,
-  Clock,
-  Users,
+  Network,
   Settings,
-  Download,
-  Upload,
+  Shield,
+  XCircle,
 } from "lucide-react";
+import React, { useCallback, useState } from "react";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Progress } from "../ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 interface PCIRequirement {
   id: string;
@@ -219,7 +215,7 @@ export function PCIDSSCompliance({
             success: "Requirement updated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: "Failed to update requirement",
@@ -244,7 +240,7 @@ export function PCIDSSCompliance({
             success: "Control test initiated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to test control" }));
       } finally {
         setState((prev) => ({ ...prev, isTesting: false }));
@@ -266,7 +262,7 @@ export function PCIDSSCompliance({
             success: "Vulnerability updated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: "Failed to update vulnerability",
@@ -291,7 +287,7 @@ export function PCIDSSCompliance({
             success: "Report generation initiated",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to generate report" }));
       } finally {
         setState((prev) => ({ ...prev, isGenerating: false }));

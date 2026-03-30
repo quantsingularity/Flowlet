@@ -1,6 +1,15 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { walletService, Account, Transaction, Card } from "@/lib/walletService";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { ApiError } from "@/lib/api";
+import {
+  type Account,
+  type Card,
+  type Transaction,
+  walletService,
+} from "@/lib/walletService";
 
 // State interface
 interface WalletState {
@@ -306,7 +315,7 @@ const walletSlice = createSlice({
     setCurrentCard: (state, action: PayloadAction<Card | null>) => {
       state.currentCard = action.payload;
     },
-    clearWalletState: (state) => {
+    clearWalletState: (_state) => {
       return initialState;
     },
   },

@@ -1,7 +1,7 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
 import { useState } from "react";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+
 const OnboardingFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();

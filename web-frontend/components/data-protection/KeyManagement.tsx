@@ -1,12 +1,30 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Database,
+  Edit,
+  Eye,
+  FileText,
+  Globe,
+  Key,
+  Lock,
+  Plus,
+  RefreshCw,
+  RotateCcw,
+  Settings,
+  Shield,
+  Upload,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Progress } from "../ui/progress";
 import {
   Select,
   SelectContent,
@@ -14,33 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Progress } from "../ui/progress";
-import {
-  Key,
-  Shield,
-  Lock,
-  Unlock,
-  RefreshCw,
-  Download,
-  Upload,
-  Eye,
-  EyeOff,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Database,
-  Globe,
-  Users,
-  Settings,
-  FileText,
-  Copy,
-  Trash2,
-  Plus,
-  Edit,
-  Archive,
-  RotateCcw,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Textarea } from "../ui/textarea";
 
 interface EncryptionKey {
   id: string;
@@ -404,7 +397,7 @@ export function KeyManagement({
           },
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to generate key" }));
     } finally {
       setState((prev) => ({ ...prev, isGenerating: false }));
@@ -424,7 +417,7 @@ export function KeyManagement({
             success: "Key rotation initiated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to rotate key" }));
       } finally {
         setState((prev) => ({ ...prev, isRotating: false }));
@@ -456,7 +449,7 @@ export function KeyManagement({
             revocationReason: "",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to revoke key" }));
       } finally {
         setState((prev) => ({ ...prev, isRotating: false }));
@@ -466,7 +459,7 @@ export function KeyManagement({
   );
 
   // Handle key export
-  const handleKeyExport = useCallback(
+  const _handleKeyExport = useCallback(
     async (keyId: string, format: "pem" | "der" | "jwk") => {
       setState((prev) => ({ ...prev, isExporting: true, error: null }));
 
@@ -487,7 +480,7 @@ export function KeyManagement({
             success: "Key exported successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to export key" }));
       } finally {
         setState((prev) => ({ ...prev, isExporting: false }));
@@ -497,7 +490,7 @@ export function KeyManagement({
   );
 
   // Handle key import
-  const handleKeyImport = useCallback(async () => {
+  const _handleKeyImport = useCallback(async () => {
     if (!state.importData.keyData || !state.importData.name) {
       setState((prev) => ({
         ...prev,
@@ -526,7 +519,7 @@ export function KeyManagement({
           },
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to import key" }));
     } finally {
       setState((prev) => ({ ...prev, isImporting: false }));
@@ -534,7 +527,7 @@ export function KeyManagement({
   }, [onKeyImport, state.importData]);
 
   // Handle policy creation
-  const handlePolicyCreate = useCallback(async () => {
+  const _handlePolicyCreate = useCallback(async () => {
     if (!state.newPolicy.name || !state.newPolicy.description) {
       setState((prev) => ({
         ...prev,
@@ -556,7 +549,7 @@ export function KeyManagement({
           showPolicyEditor: false,
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to create policy" }));
     } finally {
       setState((prev) => ({ ...prev, isGenerating: false }));

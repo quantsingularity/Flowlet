@@ -1,23 +1,24 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import uiReducer, {
-  setTheme,
-  toggleSidebar,
-  setSidebarOpen,
-  toggleMobileMenu,
-  setMobileMenuOpen,
   addNotification,
-  markNotificationAsRead,
-  markAllNotificationsAsRead,
-  removeNotification,
-  setOnlineStatus,
-  setGlobalLoading,
-  setComponentLoading,
-  openModal,
-  closeModal,
   addToast,
-  removeToast,
   clearToasts,
+  closeModal,
+  markAllNotificationsAsRead,
+  markNotificationAsRead,
+  openModal,
+  removeNotification,
+  removeToast,
+  setComponentLoading,
+  setGlobalLoading,
+  setMobileMenuOpen,
+  setOnlineStatus,
+  setSidebarOpen,
+  setTheme,
+  toggleMobileMenu,
+  toggleSidebar,
 } from "@/store/uiSlice";
+
 describe("uiSlice", () => {
   const initialState = {
     theme: "system",

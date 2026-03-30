@@ -1,5 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 /**
  * Renders a single quick statistic card.
  */

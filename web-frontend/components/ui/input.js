@@ -1,6 +1,7 @@
-import { jsx as _jsx } from "react/jsx-runtime";
 import * as React from "react";
+import { jsx as _jsx } from "react/jsx-runtime";
 import { cn } from "@/lib/utils";
+
 const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   return _jsx("input", {
     type: type,
@@ -13,4 +14,5 @@ const Input = React.forwardRef(({ className, type, ...props }, ref) => {
   });
 });
 Input.displayName = "Input";
+
 export { Input };

@@ -1,26 +1,26 @@
 import {
-  jsx as _jsx,
-  jsxs as _jsxs,
-  Fragment as _Fragment,
-} from "react/jsx-runtime";
-import { useState, useCallback, useEffect } from "react";
-import { EncryptionService } from "../../lib/security/encryption";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Alert, AlertDescription } from "../ui/alert";
-import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Copy,
   Eye,
   EyeOff,
-  Shield,
-  Lock,
-  Unlock,
-  Copy,
-  CheckCircle,
-  AlertTriangle,
-  Clock,
   Key,
+  Lock,
+  Shield,
+  Unlock,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Fragment as _Fragment,
+  jsx as _jsx,
+  jsxs as _jsxs,
+} from "react/jsx-runtime";
+import { EncryptionService } from "../../lib/security/encryption";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 export function EncryptedDisplay({
   data,
   label,
@@ -77,7 +77,7 @@ export function EncryptedDisplay({
       if (onDecrypt) {
         onDecrypt(decrypted);
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({
         ...prev,
         error: "Failed to decrypt data",
@@ -117,7 +117,7 @@ export function EncryptedDisplay({
     (decryptedData) => {
       if (!decryptedData) return "";
       switch (type) {
-        case "email":
+        case "email": {
           const [localPart, domain] = decryptedData.split("@");
           if (localPart && domain) {
             const maskedLocal =
@@ -129,18 +129,22 @@ export function EncryptedDisplay({
             return `${maskedLocal}@${domain}`;
           }
           return decryptedData;
-        case "phone":
+        }
+        case "phone": {
           const digits = decryptedData.replace(/\D/g, "");
           if (digits.length === 10) {
             return `(***) ***-${digits.slice(-4)}`;
           }
           return `***-***-${digits.slice(-4)}`;
-        case "ssn":
+        }
+        case "ssn": {
           const ssnDigits = decryptedData.replace(/\D/g, "");
           return `***-**-${ssnDigits.slice(-4)}`;
-        case "card":
+        }
+        case "card": {
           const cardDigits = decryptedData.replace(/\D/g, "");
           return `**** **** **** ${cardDigits.slice(-4)}`;
+        }
         case "custom":
           if (maskPattern) {
             return maskPattern.replace(/\*/g, () => "*");

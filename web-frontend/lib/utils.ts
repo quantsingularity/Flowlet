@@ -184,7 +184,7 @@ export function detectAnomalies(
 ): number[] {
   const mean = data.reduce((sum, val) => sum + val, 0) / data.length;
   const variance =
-    data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length;
+    data.reduce((sum, val) => sum + (val - mean) ** 2, 0) / data.length;
   const stdDev = Math.sqrt(variance);
 
   return data
@@ -199,7 +199,7 @@ export function formatFileSize(bytes: number): string {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
   if (bytes === 0) return "0 Bytes";
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + " " + sizes[i];
+  return `${Math.round((bytes / 1024 ** i) * 100) / 100} ${sizes[i]}`;
 }
 
 export function parseJWT(token: string): any {
@@ -210,18 +210,18 @@ export function parseJWT(token: string): any {
       atob(base64)
         .split("")
         .map((c) => {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+          return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
         })
         .join(""),
     );
     return JSON.parse(jsonPayload);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
 
 export function isTokenExpired(token: string): boolean {
   const payload = parseJWT(token);
-  if (!payload || !payload.exp) return true;
+  if (!payload?.exp) return true;
   return Date.now() >= payload.exp * 1000;
 }

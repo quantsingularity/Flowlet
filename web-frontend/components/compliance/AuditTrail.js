@@ -1,16 +1,38 @@
 import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Database,
+  Download,
+  Edit,
+  Eye,
+  FileText,
+  Filter,
+  Globe,
+  Key,
+  Monitor,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  Shield,
+  Smartphone,
+  User,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import {
+  Fragment as _Fragment,
   jsx as _jsx,
   jsxs as _jsxs,
-  Fragment as _Fragment,
 } from "react/jsx-runtime";
-import { useState, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { DatePicker } from "../ui/date-picker";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   Select,
   SelectContent,
@@ -18,29 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { DatePicker } from "../ui/date-picker";
-import {
-  FileText,
-  Search,
-  Filter,
-  Download,
-  Eye,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  User,
-  Shield,
-  Database,
-  Key,
-  Monitor,
-  Globe,
-  Smartphone,
-  Edit,
-  Plus,
-  RefreshCw,
-  Settings,
-  XCircle,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 export function AuditTrail({
   events = [],
   reports = [],
@@ -202,7 +202,7 @@ export function AuditTrail({
           success: `Found ${results.length} events`,
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to search events" }));
     } finally {
       setState((prev) => ({ ...prev, isSearching: false }));
@@ -228,7 +228,7 @@ export function AuditTrail({
             success: "Export completed successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to export events" }));
       } finally {
         setState((prev) => ({ ...prev, isExporting: false }));
@@ -262,7 +262,7 @@ export function AuditTrail({
           newReportDescription: "",
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to generate report" }));
     } finally {
       setState((prev) => ({ ...prev, isGenerating: false }));
@@ -294,7 +294,7 @@ export function AuditTrail({
             }));
           }
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: "Failed to load event details",

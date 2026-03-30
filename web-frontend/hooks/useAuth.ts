@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "./redux";
-import { validateToken, refreshToken } from "@/store/authSlice";
+import { useEffect, useState } from "react";
 import { authService } from "@/lib/authService";
+import { refreshToken, validateToken } from "@/store/authSlice";
+import { useAppDispatch, useAppSelector } from "./redux";
 
 export const useAuth = () => {
   const dispatch = useAppDispatch();

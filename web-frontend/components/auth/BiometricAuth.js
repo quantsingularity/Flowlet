@@ -1,27 +1,27 @@
 import {
-  jsx as _jsx,
-  jsxs as _jsxs,
-  Fragment as _Fragment,
-} from "react/jsx-runtime";
-import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Progress } from "../ui/progress";
-import {
-  Fingerprint,
-  Eye,
-  Mic,
-  Shield,
-  CheckCircle,
   AlertTriangle,
-  XCircle,
+  CheckCircle,
+  Eye,
+  Fingerprint,
   Lock,
-  Unlock,
+  Mic,
   RefreshCw,
   Settings,
+  Shield,
+  Unlock,
+  XCircle,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Fragment as _Fragment,
+  jsx as _jsx,
+  jsxs as _jsxs,
+} from "react/jsx-runtime";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Progress } from "../ui/progress";
 export function BiometricAuth({
   onAuthenticate,
   onEnroll,
@@ -84,7 +84,7 @@ export function BiometricAuth({
       if ("credentials" in navigator && "create" in navigator.credentials) {
         try {
           // Check for platform authenticator (built-in biometrics)
-          const available = await navigator.credentials.get({
+          const _available = await navigator.credentials.get({
             publicKey: {
               challenge: new Uint8Array(32),
               timeout: 60000,
@@ -102,7 +102,7 @@ export function BiometricAuth({
             isSupported: true,
             capabilities,
           }));
-        } catch (error) {
+        } catch (_error) {
           // Check for specific biometric APIs
           await checkSpecificBiometrics(capabilities);
         }
@@ -235,6 +235,10 @@ export function BiometricAuth({
       state.maxAttempts,
       state.lockoutEndTime,
       onAuthenticate,
+      authenticateWithFace,
+      authenticateWithFingerprint,
+      authenticateWithIris,
+      authenticateWithVoice,
     ],
   );
   const authenticateWithFingerprint = async () => {
@@ -257,7 +261,7 @@ export function BiometricAuth({
           credential,
           timestamp: new Date().toISOString(),
         };
-      } catch (error) {
+      } catch (_error) {
         return {
           success: false,
           type: "fingerprint",
@@ -333,7 +337,7 @@ export function BiometricAuth({
         setTimeout(() => {
           setState((prev) => ({ ...prev, enrollmentProgress: 0 }));
         }, 1000);
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: `Failed to enroll ${type}`,
@@ -357,7 +361,7 @@ export function BiometricAuth({
             cap.type === type ? { ...cap, enrolled: false } : cap,
           ),
         }));
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: `Failed to unenroll ${type}` }));
       }
     },

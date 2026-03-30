@@ -1,3 +1,12 @@
+import {
+  ArrowRight,
+  CreditCard,
+  DollarSign,
+  Globe,
+  Shield,
+  Wallet,
+  Zap,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,15 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  ArrowRight,
-  Zap,
-  Globe,
-  Shield,
-  DollarSign,
-  CreditCard,
-  Wallet,
-} from "lucide-react";
 
 export default function PaymentsPage() {
   const paymentFeatures = [

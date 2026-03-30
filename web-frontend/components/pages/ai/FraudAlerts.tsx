@@ -1,3 +1,6 @@
+import { AlertTriangle, CheckCircle, Eye, XCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -5,9 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, CheckCircle, XCircle, Eye } from "lucide-react";
 
 export default function FraudAlerts() {
   const alerts = [

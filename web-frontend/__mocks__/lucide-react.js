@@ -4,7 +4,7 @@ const React = require("react");
 const lucideReact = new Proxy(
   {},
   {
-    get: (target, prop) => {
+    get: (_target, prop) => {
       if (prop === "__esModule") {
         return true;
       }

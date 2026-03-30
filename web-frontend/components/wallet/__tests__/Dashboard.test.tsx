@@ -1,7 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@/test/utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Dashboard from "@/components/wallet/Dashboard";
-import { mockUser } from "@/test/utils";
+import { mockUser, render, screen } from "@/test/utils";
 
 // Mock the auth hook
 vi.mock("@/hooks/useAuth", () => ({

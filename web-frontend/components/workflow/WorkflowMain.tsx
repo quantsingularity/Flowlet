@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Settings, Share2, Download, Upload } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowLeft, Download, Settings, Share2 } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import WorkflowList from "./WorkflowList";
-import WorkflowDesigner from "./WorkflowDesigner";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WorkflowAnalytics from "./WorkflowAnalytics";
+import WorkflowDesigner from "./WorkflowDesigner";
+import WorkflowList from "./WorkflowList";
 import WorkflowTemplates from "./WorkflowTemplates";
 
 type ViewMode = "list" | "designer" | "analytics" | "templates";

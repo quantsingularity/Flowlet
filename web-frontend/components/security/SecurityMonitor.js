@@ -1,24 +1,24 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Progress } from "../ui/progress";
 import {
-  Shield,
+  Activity,
   AlertTriangle,
   CheckCircle,
-  XCircle,
-  Activity,
-  Eye,
-  Lock,
-  Wifi,
-  Globe,
   Clock,
-  TrendingUp,
-  RefreshCw,
   Download,
+  Eye,
+  Globe,
+  Lock,
+  RefreshCw,
+  Shield,
+  TrendingUp,
+  Wifi,
+  XCircle,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Progress } from "../ui/progress";
 export function SecurityMonitor({
   events = [],
   metrics,
@@ -40,7 +40,7 @@ export function SecurityMonitor({
       }, refreshInterval);
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, refreshInterval, onRefresh]);
+  }, [autoRefresh, refreshInterval, onRefresh, handleRefresh]);
   const handleRefresh = useCallback(async () => {
     if (!onRefresh) return;
     setIsRefreshing(true);

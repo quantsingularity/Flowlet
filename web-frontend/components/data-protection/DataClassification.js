@@ -1,12 +1,33 @@
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Database,
+  Download,
+  Edit,
+  Eye,
+  FileText,
+  Globe,
+  Key,
+  Lock,
+  Plus,
+  Search,
+  Shield,
+  Tag,
+  Trash2,
+  Unlock,
+  Users,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
   Select,
   SelectContent,
@@ -14,28 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Checkbox } from "../ui/checkbox";
-import {
-  Shield,
-  Database,
-  Tag,
-  Lock,
-  Eye,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  FileText,
-  Key,
-  Globe,
-  Users,
-  Clock,
-  Search,
-  Download,
-  Edit,
-  Trash2,
-  Plus,
-  Unlock,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 export function DataClassification({
   classificationLevels = [],
   dataAssets = [],
@@ -173,7 +173,7 @@ export function DataClassification({
             success: "Asset classified successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to classify asset" }));
       } finally {
         setState((prev) => ({ ...prev, isClassifying: false }));
@@ -201,14 +201,14 @@ export function DataClassification({
           showBulkActions: false,
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to classify assets" }));
     } finally {
       setState((prev) => ({ ...prev, isClassifying: false }));
     }
   }, [onBulkClassify, state.selectedAssets, state.bulkClassification]);
   // Handle rule creation
-  const handleRuleCreate = useCallback(async () => {
+  const _handleRuleCreate = useCallback(async () => {
     if (!state.newRule.name || !state.newRule.description) {
       setState((prev) => ({
         ...prev,
@@ -239,7 +239,7 @@ export function DataClassification({
           },
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to create rule" }));
     } finally {
       setState((prev) => ({ ...prev, isClassifying: false }));
@@ -257,7 +257,7 @@ export function DataClassification({
             success: "Asset scan initiated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to scan asset" }));
       } finally {
         setState((prev) => ({ ...prev, isScanning: false }));
@@ -290,7 +290,7 @@ export function DataClassification({
           success: "Report exported successfully",
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to export report" }));
     } finally {
       setState((prev) => ({ ...prev, isExporting: false }));
@@ -353,7 +353,7 @@ export function DataClassification({
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
   };
   return _jsxs("div", {
     className: `space-y-6 ${className}`,

@@ -1,9 +1,9 @@
-import React from "react";
+import type React from "react";
 import { Outlet } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "@/hooks/redux";
-import { toggleSidebar, setMobileMenuOpen } from "@/store/uiSlice";
-import Sidebar from "./Sidebar";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { setMobileMenuOpen, toggleSidebar } from "@/store/uiSlice";
 import Header from "./Header";
+import Sidebar from "./Sidebar";
 
 interface LayoutProps {
   isMobile: boolean;

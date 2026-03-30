@@ -1,6 +1,7 @@
-import { jsx as _jsx } from "react/jsx-runtime";
 import * as React from "react";
+import { jsx as _jsx } from "react/jsx-runtime";
 import { cn } from "@/lib/utils";
+
 const Textarea = React.forwardRef(({ className, ...props }, ref) => {
   return _jsx("textarea", {
     className: cn(
@@ -12,4 +13,5 @@ const Textarea = React.forwardRef(({ className, ...props }, ref) => {
   });
 });
 Textarea.displayName = "Textarea";
+
 export { Textarea };

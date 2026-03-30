@@ -1,6 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { authService } from "@/lib/authService";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ApiError } from "@/lib/api";
+import { authService } from "@/lib/authService";
+
 const initialState = {
   user: null,
   token: null,

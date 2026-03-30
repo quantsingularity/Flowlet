@@ -1,7 +1,8 @@
-import { jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
+import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import LoadingScreen from "@/components/LoadingScreen";
+import { useAuth } from "@/hooks/useAuth";
+
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) {

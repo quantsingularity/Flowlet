@@ -1,5 +1,5 @@
-import React from "react";
 import { WifiOff } from "lucide-react";
+import type React from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const OfflineIndicator: React.FC = () => {

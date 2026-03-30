@@ -1,5 +1,6 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Loader2 } from "lucide-react";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+
 const LoadingScreen = ({ message = "Loading..." }) => {
   return _jsx("div", {
     className: "min-h-screen flex items-center justify-center bg-background",

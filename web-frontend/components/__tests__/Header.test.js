@@ -1,8 +1,8 @@
 import { jsx as _jsx } from "react/jsx-runtime";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@/test/utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Header from "@/components/Header";
-import { mockUser } from "@/test/utils";
+import { fireEvent, mockUser, render, screen } from "@/test/utils";
+
 // Mock the hooks
 vi.mock("@/hooks/redux", () => ({
   useAppDispatch: () => vi.fn(),

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import type React from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,

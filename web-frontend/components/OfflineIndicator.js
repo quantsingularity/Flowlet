@@ -1,6 +1,7 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { WifiOff } from "lucide-react";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
 const OfflineIndicator = () => {
   return _jsxs(Alert, {
     className:

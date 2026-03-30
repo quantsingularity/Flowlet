@@ -1,5 +1,5 @@
-import validator from "validator";
 import DOMPurify from "dompurify";
+import validator from "validator";
 import { z } from "zod";
 
 /**
@@ -119,7 +119,7 @@ export class ValidationService {
       score += 1;
     }
 
-    if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+    if (!/[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/.test(password)) {
       errors.push("Password must contain special characters");
       suggestions.push("Add special characters (!@#$%^&*)");
     } else {
@@ -170,7 +170,7 @@ export class ValidationService {
     errors: string[];
   } {
     const errors: string[] = [];
-    let sanitized = phone.replace(/[^\d+\-\(\)\s]/g, "");
+    const sanitized = phone.replace(/[^\d+\-()\s]/g, "");
 
     const isValid = validator.isMobilePhone(sanitized, locale as any, {
       strictMode: true,
@@ -266,7 +266,7 @@ export class ValidationService {
 
     // HTML sanitization
     if (!options.allowHTML) {
-      sanitized = this.sanitizeHTML(sanitized, {
+      sanitized = ValidationService.sanitizeHTML(sanitized, {
         ALLOWED_TAGS: [],
         ALLOWED_ATTR: [],
       });
@@ -378,11 +378,11 @@ export const ValidationSchemas = {
     .regex(/[A-Z]/, "Password must contain uppercase letters")
     .regex(/[0-9]/, "Password must contain numbers")
     .regex(
-      /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/,
+      /[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/,
       "Password must contain special characters",
     ),
 
-  phone: z.string().regex(/^\+?[\d\s\-\(\)]+$/, "Invalid phone number format"),
+  phone: z.string().regex(/^\+?[\d\s\-()]+$/, "Invalid phone number format"),
 
   amount: z
     .number()
@@ -397,7 +397,7 @@ export const ValidationSchemas = {
     .string()
     .min(1, "Name is required")
     .max(100, "Name too long")
-    .regex(/^[a-zA-Z\s\-'\.]+$/, "Name contains invalid characters"),
+    .regex(/^[a-zA-Z\s\-'.]+$/, "Name contains invalid characters"),
 
   address: z.string().min(5, "Address too short").max(200, "Address too long"),
 

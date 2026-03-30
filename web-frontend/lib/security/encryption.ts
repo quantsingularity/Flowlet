@@ -5,23 +5,25 @@ import CryptoJS from "crypto-js";
  * Implements AES-256-GCM encryption for sensitive data
  */
 export class EncryptionService {
-  private static readonly ALGORITHM = "AES";
   private static readonly KEY_SIZE = 256;
   private static readonly IV_SIZE = 96; // 12 bytes for GCM
-  private static readonly TAG_SIZE = 128; // 16 bytes for GCM
 
   /**
    * Generate a cryptographically secure random key
    */
   static generateKey(): string {
-    return CryptoJS.lib.WordArray.random(this.KEY_SIZE / 8).toString();
+    return CryptoJS.lib.WordArray.random(
+      EncryptionService.KEY_SIZE / 8,
+    ).toString();
   }
 
   /**
    * Generate a cryptographically secure random IV
    */
   static generateIV(): string {
-    return CryptoJS.lib.WordArray.random(this.IV_SIZE / 8).toString();
+    return CryptoJS.lib.WordArray.random(
+      EncryptionService.IV_SIZE / 8,
+    ).toString();
   }
 
   /**
@@ -40,8 +42,8 @@ export class EncryptionService {
     tag: string;
   } {
     try {
-      const encryptionKey = key || this.generateKey();
-      const iv = this.generateIV();
+      const encryptionKey = key || EncryptionService.generateKey();
+      const iv = EncryptionService.generateIV();
 
       const encrypted = CryptoJS.AES.encrypt(data, encryptionKey, {
         iv: CryptoJS.enc.Hex.parse(iv),
@@ -124,7 +126,7 @@ export class EncryptionService {
    * @returns True if signature is valid
    */
   static verifyHMAC(data: string, signature: string, key: string): boolean {
-    const expectedSignature = this.generateHMAC(data, key);
+    const expectedSignature = EncryptionService.generateHMAC(data, key);
     return signature === expectedSignature;
   }
 
@@ -172,7 +174,7 @@ export class EncryptionService {
     const derivedSalt =
       salt || CryptoJS.lib.WordArray.random(128 / 8).toString();
     const key = CryptoJS.PBKDF2(password, derivedSalt, {
-      keySize: this.KEY_SIZE / 32,
+      keySize: EncryptionService.KEY_SIZE / 32,
       iterations,
     }).toString();
 
@@ -200,7 +202,7 @@ export class SecureStorage {
         encryptionKey,
       );
       localStorage.setItem(
-        this.STORAGE_PREFIX + key,
+        SecureStorage.STORAGE_PREFIX + key,
         JSON.stringify(encrypted),
       );
     } catch (error) {
@@ -217,7 +219,9 @@ export class SecureStorage {
    */
   static getItem(key: string): any {
     try {
-      const encryptedData = localStorage.getItem(this.STORAGE_PREFIX + key);
+      const encryptedData = localStorage.getItem(
+        SecureStorage.STORAGE_PREFIX + key,
+      );
       if (!encryptedData) return null;
 
       const encrypted = JSON.parse(encryptedData);
@@ -234,7 +238,7 @@ export class SecureStorage {
    * @param key - Storage key
    */
   static removeItem(key: string): void {
-    localStorage.removeItem(this.STORAGE_PREFIX + key);
+    localStorage.removeItem(SecureStorage.STORAGE_PREFIX + key);
   }
 
   /**
@@ -243,7 +247,7 @@ export class SecureStorage {
   static clear(): void {
     const keys = Object.keys(localStorage);
     keys.forEach((key) => {
-      if (key.startsWith(this.STORAGE_PREFIX)) {
+      if (key.startsWith(SecureStorage.STORAGE_PREFIX)) {
         localStorage.removeItem(key);
       }
     });

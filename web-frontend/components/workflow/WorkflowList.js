@@ -1,32 +1,32 @@
-import {
-  jsx as _jsx,
-  jsxs as _jsxs,
-  Fragment as _Fragment,
-} from "react/jsx-runtime";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
+  Activity,
+  AlertCircle,
+  Archive,
+  CheckCircle2,
+  Clock,
+  Copy,
+  Edit,
+  Eye,
+  MoreVertical,
+  Pause,
+  Play,
   Plus,
   Search,
-  MoreVertical,
-  Play,
-  Pause,
-  Edit,
-  Copy,
   Trash2,
-  Archive,
-  Eye,
-  Clock,
-  Activity,
   TrendingUp,
-  AlertCircle,
-  CheckCircle2,
   Zap,
 } from "lucide-react";
+import { useState } from "react";
+import {
+  Fragment as _Fragment,
+  jsx as _jsx,
+  jsxs as _jsxs,
+} from "react/jsx-runtime";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +34,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -41,8 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
 const SAMPLE_WORKFLOWS = [
   {
     id: "1",

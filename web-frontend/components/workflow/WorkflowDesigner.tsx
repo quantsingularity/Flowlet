@@ -1,40 +1,36 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Plus,
-  Save,
-  Play,
-  Pause,
-  RotateCcw,
-  Settings,
-  Trash2,
-  Copy,
-  Download,
-  Upload,
-  Zap,
-  Shield,
-  CreditCard,
-  DollarSign,
   AlertTriangle,
+  BarChart3,
+  Calculator,
   CheckCircle,
   Clock,
-  Users,
+  CreditCard,
   Database,
+  DollarSign,
+  FileText,
+  Filter,
+  GitBranch,
+  Globe,
   Mail,
   MessageSquare,
-  FileText,
-  BarChart3,
-  GitBranch,
-  Filter,
-  Calculator,
-  Globe,
+  Pause,
+  Play,
+  Plus,
+  RotateCcw,
+  Save,
+  Shield,
+  Trash2,
+  Users,
+  Zap,
 } from "lucide-react";
-
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -42,21 +38,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 import "./workflow.css";
 
@@ -249,11 +234,11 @@ const WorkflowDesigner: React.FC<WorkflowDesignerProps> = ({ workflowId }) => {
   const [selectedNode, setSelectedNode] = useState<WorkflowNode | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [draggedNodeType, setDraggedNodeType] = useState<string | null>(null);
-  const [showNodeConfig, setShowNodeConfig] = useState(false);
-  const [canvasOffset, setCanvasOffset] = useState({ x: 0, y: 0 });
+  const [_showNodeConfig, _setShowNodeConfig] = useState(false);
+  const [canvasOffset, _setCanvasOffset] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const [connectionStart, setConnectionStart] = useState<{
+  const [_connectionStart, _setConnectionStart] = useState<{
     nodeId: string;
     handle: string;
   } | null>(null);

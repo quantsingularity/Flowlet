@@ -1,13 +1,40 @@
+import {
+  Activity,
+  AlertTriangle,
+  Bell,
+  CheckCircle,
+  CreditCard,
+  Database,
+  Download,
+  Edit,
+  Eye,
+  FileText,
+  Flag,
+  Globe,
+  Lock,
+  Mail,
+  Play,
+  Plus,
+  Search,
+  Settings,
+  Shield,
+  Target,
+  Trash2,
+  TrendingDown,
+  Upload,
+  User,
+  Zap,
+} from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Progress } from "../ui/progress";
 import {
   Select,
   SelectContent,
@@ -15,35 +42,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Progress } from "../ui/progress";
-import { Checkbox } from "../ui/checkbox";
-import {
-  Shield,
-  AlertTriangle,
-  Eye,
-  Lock,
-  FileText,
-  Database,
-  Globe,
-  Mail,
-  CreditCard,
-  User,
-  Search,
-  Download,
-  Upload,
-  Play,
-  Settings,
-  CheckCircle,
-  TrendingDown,
-  Activity,
-  Zap,
-  Target,
-  Flag,
-  Bell,
-  Trash2,
-  Edit,
-  Plus,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Textarea } from "../ui/textarea";
 export function DataLossPrevention({
   rules = [],
   incidents = [],
@@ -207,7 +207,7 @@ export function DataLossPrevention({
     state.filterCategory,
   ]);
   // Handle rule creation
-  const handleRuleCreate = useCallback(async () => {
+  const _handleRuleCreate = useCallback(async () => {
     if (!state.newRule.name || !state.newRule.description) {
       setState((prev) => ({
         ...prev,
@@ -247,7 +247,7 @@ export function DataLossPrevention({
           },
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to create DLP rule" }));
     } finally {
       setState((prev) => ({ ...prev, isCreating: false }));
@@ -270,7 +270,7 @@ export function DataLossPrevention({
             success: "Rule test completed",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to test rule" }));
       } finally {
         setState((prev) => ({ ...prev, isTesting: false }));
@@ -297,7 +297,7 @@ export function DataLossPrevention({
           showScanConfig: false,
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to start scan" }));
     } finally {
       setState((prev) => ({ ...prev, isScanning: false }));
@@ -315,7 +315,7 @@ export function DataLossPrevention({
             success: "Incident updated successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to update incident" }));
       } finally {
         setState((prev) => ({ ...prev, isCreating: false }));
@@ -349,7 +349,7 @@ export function DataLossPrevention({
           success: "Report exported successfully",
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to export report" }));
     } finally {
       setState((prev) => ({ ...prev, isExporting: false }));

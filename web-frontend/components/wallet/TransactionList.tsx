@@ -1,4 +1,5 @@
-import React from "react";
+import type React from "react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,8 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { TransactionListProps } from "@/types/wallet";
+import type { TransactionListProps } from "@/types/wallet";
 
 /**
  * Renders a single transaction item.

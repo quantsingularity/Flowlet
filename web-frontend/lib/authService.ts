@@ -1,5 +1,5 @@
 // Authentication Service for Flowlet web-frontend
-import { api, TokenManager, ApiError } from "./api";
+import { ApiError, api, TokenManager } from "./api";
 
 // Types
 export interface User {
@@ -154,11 +154,7 @@ class AuthService {
    * Update user profile
    */
   async updateProfile(userData: Partial<User>): Promise<User> {
-    try {
-      return await api.put<User>("/api/v1/auth/profile", userData);
-    } catch (error) {
-      throw error;
-    }
+    return await api.put<User>("/api/v1/auth/profile", userData);
   }
 
   /**
@@ -168,61 +164,41 @@ class AuthService {
     currentPassword: string,
     newPassword: string,
   ): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/change-password", {
-        current_password: currentPassword,
-        new_password: newPassword,
-      });
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/change-password", {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
   }
 
   /**
    * Request password reset
    */
   async requestPasswordReset(email: string): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/forgot-password", { email });
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/forgot-password", { email });
   }
 
   /**
    * Reset password with token
    */
   async resetPassword(token: string, password: string): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/reset-password", {
-        token,
-        password,
-      });
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/reset-password", {
+      token,
+      password,
+    });
   }
 
   /**
    * Verify email address
    */
   async verifyEmail(token: string): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/verify-email", { token });
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/verify-email", { token });
   }
 
   /**
    * Resend email verification
    */
   async resendEmailVerification(): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/resend-verification");
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/resend-verification");
   }
 
   /**
@@ -246,66 +222,42 @@ class AuthService {
    * Enable two-factor authentication
    */
   async enableTwoFactor(): Promise<{ qr_code: string; secret: string }> {
-    try {
-      return await api.post("/api/v1/auth/2fa/enable");
-    } catch (error) {
-      throw error;
-    }
+    return await api.post("/api/v1/auth/2fa/enable");
   }
 
   /**
    * Verify two-factor authentication setup
    */
   async verifyTwoFactor(code: string): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/2fa/verify", { code });
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/2fa/verify", { code });
   }
 
   /**
    * Disable two-factor authentication
    */
   async disableTwoFactor(password: string): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/2fa/disable", { password });
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/2fa/disable", { password });
   }
 
   /**
    * Get user sessions
    */
   async getSessions(): Promise<any[]> {
-    try {
-      return await api.get("/api/v1/auth/sessions");
-    } catch (error) {
-      throw error;
-    }
+    return await api.get("/api/v1/auth/sessions");
   }
 
   /**
    * Revoke a specific session
    */
   async revokeSession(sessionId: string): Promise<void> {
-    try {
-      await api.delete(`/api/v1/auth/sessions/${sessionId}`);
-    } catch (error) {
-      throw error;
-    }
+    await api.delete(`/api/v1/auth/sessions/${sessionId}`);
   }
 
   /**
    * Revoke all other sessions
    */
   async revokeAllOtherSessions(): Promise<void> {
-    try {
-      await api.post("/api/v1/auth/sessions/revoke-all");
-    } catch (error) {
-      throw error;
-    }
+    await api.post("/api/v1/auth/sessions/revoke-all");
   }
 }
 

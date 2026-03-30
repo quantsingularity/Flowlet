@@ -1,10 +1,11 @@
-import { jsx as _jsx } from "react/jsx-runtime";
-import { describe, it, expect, vi } from "vitest";
-import { renderHook } from "@testing-library/react";
-import { useAuth } from "@/hooks/useAuth";
-import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
+import { renderHook } from "@testing-library/react";
+import { jsx as _jsx } from "react/jsx-runtime";
+import { Provider } from "react-redux";
+import { describe, expect, it, vi } from "vitest";
+import { useAuth } from "@/hooks/useAuth";
 import authReducer from "@/store/authSlice";
+
 // Mock the API
 vi.mock("@/lib/api", () => ({
   authApi: {

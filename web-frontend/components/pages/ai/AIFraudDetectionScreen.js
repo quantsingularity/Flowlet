@@ -1,4 +1,6 @@
+import { Activity, AlertTriangle, Shield, TrendingUp } from "lucide-react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -7,8 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Shield, TrendingUp, AlertTriangle, Activity } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 export default function AIFraudDetectionScreen() {
   const metrics = [
     { title: "Risk Score", value: "Low", color: "success", icon: Shield },

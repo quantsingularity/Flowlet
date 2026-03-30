@@ -1,5 +1,14 @@
-import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
-import { useState, useEffect } from "react";
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  CreditCard,
+  Loader2,
+  Plus,
+  Send,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,19 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  Send,
-  CreditCard,
-  ArrowDownRight,
-  Loader2,
-  AlertTriangle,
-} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth"; // Will be mocked for testing
 import { fetchWalletData } from "@/services/walletService"; // Will be mocked for testing
-import WalletSummary from "./WalletSummary";
 import TransactionList from "./TransactionList";
+import WalletSummary from "./WalletSummary";
+
 // --- Helper Components ---
 /**
  * Displays the welcome message and quick action buttons.

@@ -87,7 +87,7 @@ export class CSPService {
    * @returns Development CSP header string
    */
   static generateDevelopmentCSP() {
-    return this.generateStrictCSP({
+    return CSPService.generateStrictCSP({
       "script-src": [
         "'self'",
         "'unsafe-eval'", // Required for development
@@ -237,7 +237,7 @@ export class SecurityHeadersService {
    * @returns Headers with security headers applied
    */
   static applyToFetch(headers = {}) {
-    const securityHeaders = this.getSecurityHeaders();
+    const securityHeaders = SecurityHeadersService.getSecurityHeaders();
     return {
       ...headers,
       ...securityHeaders,

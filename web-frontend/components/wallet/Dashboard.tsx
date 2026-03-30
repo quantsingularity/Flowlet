@@ -1,4 +1,14 @@
-import React, { useState, useEffect } from "react";
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  CreditCard,
+  Loader2,
+  Plus,
+  Send,
+} from "lucide-react";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,20 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  Send,
-  CreditCard,
-  ArrowDownRight,
-  Loader2,
-  AlertTriangle,
-} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth"; // Will be mocked for testing
-import { DashboardState } from "@/types/wallet";
 import { fetchWalletData } from "@/services/walletService"; // Will be mocked for testing
-import WalletSummary from "./WalletSummary";
+import type { DashboardState } from "@/types/wallet";
 import TransactionList from "./TransactionList";
+import WalletSummary from "./WalletSummary";
 
 // --- Helper Components ---
 

@@ -1,6 +1,7 @@
-import { jsx as _jsx } from "react/jsx-runtime";
 import * as React from "react";
+import { jsx as _jsx } from "react/jsx-runtime";
 import { cn } from "../../lib/utils";
+
 const Card = React.forwardRef(({ className, ...props }, ref) =>
   _jsx("div", {
     ref: ref,
@@ -51,11 +52,12 @@ const CardFooter = React.forwardRef(({ className, ...props }, ref) =>
   }),
 );
 CardFooter.displayName = "CardFooter";
+
 export {
   Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
   CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 };

@@ -1,40 +1,24 @@
-import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Search,
-  Filter,
-  Star,
-  Download,
-  Eye,
-  Play,
-  DollarSign,
-  Shield,
-  CreditCard,
-  Users,
-  BarChart3,
   AlertTriangle,
+  BarChart3,
   CheckCircle2,
-  Clock,
-  Zap,
-  FileText,
-  Mail,
-  Database,
+  CreditCard,
+  DollarSign,
+  Eye,
   Globe,
+  Play,
+  Search,
+  Shield,
+  Star,
+  Users,
+  Zap,
 } from "lucide-react";
-
+import type React from "react";
+import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -42,6 +26,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface WorkflowTemplate {
   id: string;
@@ -306,7 +298,7 @@ const WorkflowTemplates: React.FC<WorkflowTemplatesProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [difficultyFilter, setDifficultyFilter] = useState("all");
-  const [selectedTemplate, setSelectedTemplate] =
+  const [_selectedTemplate, _setSelectedTemplate] =
     useState<WorkflowTemplate | null>(null);
 
   const filteredTemplates = WORKFLOW_TEMPLATES.filter((template) => {
@@ -645,7 +637,7 @@ const TemplatePreview: React.FC<{
   template: WorkflowTemplate;
   onUse: () => void;
 }> = ({ template, onUse }) => {
-  const Icon = template.icon;
+  const _Icon = template.icon;
 
   return (
     <div className="space-y-6">

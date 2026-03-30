@@ -1,16 +1,16 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { RootState } from "./index";
-import {
-  User,
-  Wallet,
-  Transaction,
-  Card,
+import type {
   AnalyticsData,
   ApiResponse,
-  PaginatedResponse,
+  Card,
   LoginCredentials,
+  PaginatedResponse,
   RegisterData,
+  Transaction,
+  User,
+  Wallet,
 } from "@/types";
+import type { RootState } from "./index";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_BASE_URL || "/api",
@@ -107,7 +107,7 @@ export const api = createApi({
 
     getWallet: builder.query<ApiResponse<Wallet>, string>({
       query: (id) => `/wallets/${id}`,
-      providesTags: (result, error, id) => [{ type: "Wallet", id }],
+      providesTags: (_result, _error, id) => [{ type: "Wallet", id }],
     }),
 
     createWallet: builder.mutation<ApiResponse<Wallet>, Partial<Wallet>>({
@@ -128,7 +128,7 @@ export const api = createApi({
         method: "PUT",
         body: updates,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Wallet", id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Wallet", id }],
     }),
 
     // Transaction endpoints
@@ -152,7 +152,7 @@ export const api = createApi({
 
     getTransaction: builder.query<ApiResponse<Transaction>, string>({
       query: (id) => `/transactions/${id}`,
-      providesTags: (result, error, id) => [{ type: "Transaction", id }],
+      providesTags: (_result, _error, id) => [{ type: "Transaction", id }],
     }),
 
     createTransaction: builder.mutation<
@@ -176,7 +176,7 @@ export const api = createApi({
         method: "PUT",
         body: updates,
       }),
-      invalidatesTags: (result, error, { id }) => [
+      invalidatesTags: (_result, _error, { id }) => [
         { type: "Transaction", id },
         "Analytics",
       ],
@@ -190,7 +190,7 @@ export const api = createApi({
 
     getCard: builder.query<ApiResponse<Card>, string>({
       query: (id) => `/cards/${id}`,
-      providesTags: (result, error, id) => [{ type: "Card", id }],
+      providesTags: (_result, _error, id) => [{ type: "Card", id }],
     }),
 
     createCard: builder.mutation<ApiResponse<Card>, Partial<Card>>({
@@ -211,7 +211,7 @@ export const api = createApi({
         method: "PUT",
         body: updates,
       }),
-      invalidatesTags: (result, error, { id }) => [{ type: "Card", id }],
+      invalidatesTags: (_result, _error, { id }) => [{ type: "Card", id }],
     }),
 
     blockCard: builder.mutation<ApiResponse<Card>, string>({
@@ -219,7 +219,7 @@ export const api = createApi({
         url: `/cards/${id}/block`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Card", id }],
+      invalidatesTags: (_result, _error, id) => [{ type: "Card", id }],
     }),
 
     unblockCard: builder.mutation<ApiResponse<Card>, string>({
@@ -227,7 +227,7 @@ export const api = createApi({
         url: `/cards/${id}/unblock`,
         method: "POST",
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Card", id }],
+      invalidatesTags: (_result, _error, id) => [{ type: "Card", id }],
     }),
 
     // Analytics endpoints

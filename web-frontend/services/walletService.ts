@@ -1,5 +1,5 @@
-import { WalletData, QuickStat, Transaction } from "@/types/wallet";
-import { ArrowUpRight, ArrowDownRight, TrendingUp, Wallet } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, TrendingUp, Wallet } from "lucide-react";
+import type { QuickStat, Transaction, WalletData } from "@/types/wallet";
 
 // Mock data based on the original Dashboard.tsx content
 const mockQuickStats: QuickStat[] = [

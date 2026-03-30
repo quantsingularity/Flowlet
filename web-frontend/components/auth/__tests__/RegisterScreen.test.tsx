@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@/test/utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import RegisterScreen from "@/components/auth/RegisterScreen";
+import { fireEvent, render, screen, waitFor } from "@/test/utils";
 
 // Mock the auth hooks and store
 vi.mock("@/hooks/redux", () => ({

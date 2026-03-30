@@ -1,18 +1,20 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
   Activity,
-  Clock,
+  BarChart3,
   CheckCircle2,
+  Clock,
   DollarSign,
   Download,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -21,8 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+
 // Mock data for analytics
 const ANALYTICS_DATA = {
   overview: {
@@ -85,7 +86,7 @@ const ANALYTICS_DATA = {
 };
 const WorkflowAnalytics = () => {
   const [timeRange, setTimeRange] = useState("7d");
-  const [selectedMetric, setSelectedMetric] = useState("executions");
+  const [_selectedMetric, _setSelectedMetric] = useState("executions");
   const { overview, topWorkflows, executionHistory, errorAnalysis } =
     ANALYTICS_DATA;
   return _jsxs("div", {
@@ -387,7 +388,7 @@ const WorkflowAnalytics = () => {
                     _jsx(CardContent, {
                       children: _jsx("div", {
                         className: "space-y-4",
-                        children: topWorkflows.map((workflow, index) =>
+                        children: topWorkflows.map((workflow, _index) =>
                           _jsxs(
                             "div",
                             {
@@ -443,7 +444,7 @@ const WorkflowAnalytics = () => {
                     _jsx(CardContent, {
                       children: _jsx("div", {
                         className: "space-y-3",
-                        children: executionHistory.map((day, index) =>
+                        children: executionHistory.map((day, _index) =>
                           _jsxs(
                             "div",
                             {
@@ -530,7 +531,7 @@ const WorkflowAnalytics = () => {
                 _jsx(CardContent, {
                   children: _jsx("div", {
                     className: "space-y-4",
-                    children: errorAnalysis.map((error, index) =>
+                    children: errorAnalysis.map((error, _index) =>
                       _jsx(
                         "div",
                         {

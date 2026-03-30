@@ -1,5 +1,6 @@
 // Improved API Client Configuration for Flowlet web-frontend
 import axios from "axios";
+
 // Utility function for safe base64 decoding (JWT payload)
 const safeB64Decode = (str) => {
   try {
@@ -38,7 +39,7 @@ class TokenManager {
   }
   static getAccessToken() {
     try {
-      return localStorage.getItem(this.ACCESS_TOKEN_KEY);
+      return localStorage.getItem(TokenManager.ACCESS_TOKEN_KEY);
     } catch (error) {
       console.error("Failed to retrieve access token:", error);
       return null;
@@ -46,14 +47,14 @@ class TokenManager {
   }
   static setAccessToken(token) {
     try {
-      localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+      localStorage.setItem(TokenManager.ACCESS_TOKEN_KEY, token);
     } catch (error) {
       console.error("Failed to store access token:", error);
     }
   }
   static getRefreshToken() {
     try {
-      return localStorage.getItem(this.REFRESH_TOKEN_KEY);
+      return localStorage.getItem(TokenManager.REFRESH_TOKEN_KEY);
     } catch (error) {
       console.error("Failed to retrieve refresh token:", error);
       return null;
@@ -61,14 +62,14 @@ class TokenManager {
   }
   static setRefreshToken(token) {
     try {
-      localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
+      localStorage.setItem(TokenManager.REFRESH_TOKEN_KEY, token);
     } catch (error) {
       console.error("Failed to store refresh token:", error);
     }
   }
   static getUser() {
     try {
-      const user = localStorage.getItem(this.USER_KEY);
+      const user = localStorage.getItem(TokenManager.USER_KEY);
       return user ? JSON.parse(user) : null;
     } catch (error) {
       console.error("Failed to retrieve user data:", error);
@@ -86,16 +87,19 @@ class TokenManager {
         permissions: user.permissions,
         // Exclude sensitive information
       };
-      localStorage.setItem(this.USER_KEY, JSON.stringify(sanitizedUser));
+      localStorage.setItem(
+        TokenManager.USER_KEY,
+        JSON.stringify(sanitizedUser),
+      );
     } catch (error) {
       console.error("Failed to store user data:", error);
     }
   }
   static clearTokens() {
     try {
-      localStorage.removeItem(this.ACCESS_TOKEN_KEY);
-      localStorage.removeItem(this.REFRESH_TOKEN_KEY);
-      localStorage.removeItem(this.USER_KEY);
+      localStorage.removeItem(TokenManager.ACCESS_TOKEN_KEY);
+      localStorage.removeItem(TokenManager.REFRESH_TOKEN_KEY);
+      localStorage.removeItem(TokenManager.USER_KEY);
     } catch (error) {
       console.error("Failed to clear tokens:", error);
     }
@@ -105,7 +109,7 @@ class TokenManager {
       if (!token) return true;
       const payload = JSON.parse(safeB64Decode(token.split(".")[1]));
       const currentTime = Date.now();
-      const expiryTime = payload.exp * 1000 - this.TOKEN_EXPIRY_BUFFER;
+      const expiryTime = payload.exp * 1000 - TokenManager.TOKEN_EXPIRY_BUFFER;
       return currentTime >= expiryTime;
     } catch (error) {
       console.error("Failed to parse token:", error);
@@ -222,7 +226,7 @@ apiClient.interceptors.response.use(
       const retryAfter = error.response.headers["retry-after"];
       if (retryAfter && !originalRequest._retryCount) {
         originalRequest._retryCount = 1;
-        const delay = parseInt(retryAfter) * 1000;
+        const delay = parseInt(retryAfter, 10) * 1000;
         return new Promise((resolve) => {
           setTimeout(() => resolve(apiClient(originalRequest)), delay);
         });

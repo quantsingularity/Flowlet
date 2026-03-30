@@ -1,5 +1,17 @@
+import {
+  ArrowLeft,
+  CreditCard,
+  Eye,
+  EyeOff,
+  Lock,
+  Trash2,
+  Unlock,
+} from "lucide-react";
+import { useState } from "react";
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
-import { useParams, Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,18 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  CreditCard,
-  Lock,
-  Unlock,
-  Trash2,
-  ArrowLeft,
-  Eye,
-  EyeOff,
-} from "lucide-react";
-import { useState } from "react";
 export default function CardDetails() {
   const { cardId } = useParams();
   const [showNumber, setShowNumber] = useState(false);

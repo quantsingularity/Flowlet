@@ -1,54 +1,54 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Provider } from "react-redux";
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
 } from "react-router-dom";
-import { Provider } from "react-redux";
 import { Toaster } from "sonner";
-import { store } from "@/store";
+// Auth Components
+import LoginScreen from "@/components/auth/LoginScreen";
+import OnboardingFlow from "@/components/auth/OnboardingFlow";
+// Route Guards
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import PublicRoute from "@/components/auth/PublicRoute";
+import RegisterScreen from "@/components/auth/RegisterScreen";
+import ErrorBoundary from "@/components/ErrorBoundary";
 // Layout Components
 import Layout from "@/components/Layout";
 import LoadingScreen from "@/components/LoadingScreen";
 import OfflineIndicator from "@/components/OfflineIndicator";
-import ErrorBoundary from "@/components/ErrorBoundary";
-// Auth Components
-import LoginScreen from "@/components/auth/LoginScreen";
-import RegisterScreen from "@/components/auth/RegisterScreen";
-import OnboardingFlow from "@/components/auth/OnboardingFlow";
-// Page Components - Dashboard & Wallet
-import Dashboard from "@/components/wallet/Dashboard";
-import WalletScreen from "@/components/pages/wallet/WalletScreen";
-import TransactionHistory from "@/components/pages/transactions/TransactionHistory";
-import SendMoney from "@/components/pages/transactions/SendMoney";
-import ReceiveMoney from "@/components/pages/transactions/ReceiveMoney";
-// Card Components
-import CardsScreen from "@/components/pages/cards/CardsScreen";
-import CardDetails from "@/components/pages/cards/CardDetails";
-import IssueCard from "@/components/pages/cards/IssueCard";
-// Analytics & AI
-import AnalyticsScreen from "@/components/pages/analytics/AnalyticsScreen";
+import AIFraudDetectionScreen from "@/components/pages/ai/AIFraudDetectionScreen";
 import ChatbotScreen from "@/components/pages/ai/ChatbotScreen";
 import FraudAlerts from "@/components/pages/ai/FraudAlerts";
-import AIFraudDetectionScreen from "@/components/pages/ai/AIFraudDetectionScreen";
-// Security & Settings
-import SecurityScreen from "@/components/pages/security/SecurityScreen";
-import EnhancedSecurityScreen from "@/components/pages/security/EnhancedSecurityScreen";
-import SettingsScreen from "@/components/pages/settings/SettingsScreen";
+// Analytics & AI
+import AnalyticsScreen from "@/components/pages/analytics/AnalyticsScreen";
 // Budgeting
 import AdvancedBudgetingScreen from "@/components/pages/budgeting/AdvancedBudgetingScreen";
+import CompliancePage from "@/components/pages/CompliancePage";
+import CardDetails from "@/components/pages/cards/CardDetails";
+// Card Components
+import CardsScreen from "@/components/pages/cards/CardsScreen";
+import IssueCard from "@/components/pages/cards/IssueCard";
+import DeveloperPortalPage from "@/components/pages/DeveloperPortalPage";
 // Public Pages
 import HomePage from "@/components/pages/HomePage";
 import PaymentsPage from "@/components/pages/PaymentsPage";
-import CompliancePage from "@/components/pages/CompliancePage";
-import DeveloperPortalPage from "@/components/pages/DeveloperPortalPage";
-// Route Guards
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import PublicRoute from "@/components/auth/PublicRoute";
+import EnhancedSecurityScreen from "@/components/pages/security/EnhancedSecurityScreen";
+// Security & Settings
+import SecurityScreen from "@/components/pages/security/SecurityScreen";
+import SettingsScreen from "@/components/pages/settings/SettingsScreen";
+import ReceiveMoney from "@/components/pages/transactions/ReceiveMoney";
+import SendMoney from "@/components/pages/transactions/SendMoney";
+import TransactionHistory from "@/components/pages/transactions/TransactionHistory";
+import WalletScreen from "@/components/pages/wallet/WalletScreen";
+// Page Components - Dashboard & Wallet
+import Dashboard from "@/components/wallet/Dashboard";
+import { useOnlineStatus, useResponsive } from "@/hooks";
 // Hooks
 import { useAuth } from "@/hooks/useAuth";
-import { useOnlineStatus, useResponsive } from "@/hooks";
+import { store } from "@/store";
 import "./App.css";
 function App() {
   const { isAuthenticated, isLoading } = useAuth();

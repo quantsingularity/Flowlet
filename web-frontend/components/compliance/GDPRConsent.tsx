@@ -1,31 +1,29 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Checkbox } from "../ui/checkbox";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
 import {
-  Shield,
-  CheckCircle,
   AlertTriangle,
-  XCircle,
-  Eye,
-  Download,
-  Trash2,
-  Edit,
+  CheckCircle,
   Clock,
-  Globe,
   Cookie,
   Database,
-  Share,
-  Lock,
+  Download,
+  Edit,
+  Eye,
   FileText,
+  Lock,
   Settings,
+  Shield,
+  Trash2,
+  XCircle,
 } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Alert, AlertDescription } from "../ui/alert";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Textarea } from "../ui/textarea";
 
 interface ConsentCategory {
   id: string;
@@ -166,7 +164,7 @@ export function GDPRConsent({
             success: `Consent ${granted ? "granted" : "withdrawn"} successfully`,
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to update consent" }));
       } finally {
         setState((prev) => ({ ...prev, isUpdating: false }));
@@ -190,7 +188,7 @@ export function GDPRConsent({
             withdrawalReason: "",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to withdraw consent" }));
       } finally {
         setState((prev) => ({ ...prev, isUpdating: false }));
@@ -224,7 +222,7 @@ export function GDPRConsent({
           newRequestDescription: "",
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to submit request" }));
     } finally {
       setState((prev) => ({ ...prev, isUpdating: false }));
@@ -252,7 +250,7 @@ export function GDPRConsent({
           success: "Data export completed successfully",
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({ ...prev, error: "Failed to export data" }));
     } finally {
       setState((prev) => ({ ...prev, isExporting: false }));
@@ -279,7 +277,7 @@ export function GDPRConsent({
           success: "Data deletion request submitted successfully",
         }));
       }
-    } catch (error) {
+    } catch (_error) {
       setState((prev) => ({
         ...prev,
         error: "Failed to submit deletion request",

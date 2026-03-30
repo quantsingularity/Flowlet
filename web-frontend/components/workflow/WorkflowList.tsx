@@ -1,31 +1,28 @@
-import React, { useState } from "react";
 import { motion } from "framer-motion";
 import {
+  Activity,
+  AlertCircle,
+  Archive,
+  CheckCircle2,
+  Clock,
+  Copy,
+  Edit,
+  Eye,
+  MoreVertical,
+  Pause,
+  Play,
   Plus,
   Search,
-  Filter,
-  MoreVertical,
-  Play,
-  Pause,
-  Edit,
-  Copy,
   Trash2,
-  Archive,
-  Eye,
-  Calendar,
-  Clock,
-  Users,
-  Activity,
   TrendingUp,
-  AlertCircle,
-  CheckCircle2,
   Zap,
 } from "lucide-react";
-
+import type React from "react";
+import { useState } from "react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +30,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Progress } from "@/components/ui/progress";
 import {
   Select,
   SelectContent,
@@ -40,9 +39,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface WorkflowSummary {
   id: string;

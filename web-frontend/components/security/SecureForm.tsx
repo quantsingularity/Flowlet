@@ -1,21 +1,20 @@
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  useForm,
-  Controller,
-  FieldValues,
-  Path,
-  PathValue,
-} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { ValidationService } from "../../lib/security/validation";
-import { CSRFService } from "../../lib/security/headers";
+import { AlertTriangle, CheckCircle, Eye, EyeOff, Shield } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Controller,
+  type FieldValues,
+  type Path,
+  useForm,
+} from "react-hook-form";
+import type { z } from "zod";
 import { EncryptionService } from "../../lib/security/encryption";
+import { CSRFService } from "../../lib/security/headers";
+import { ValidationService } from "../../lib/security/validation";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Shield, Eye, EyeOff, AlertTriangle, CheckCircle } from "lucide-react";
 
 interface SecureFormField {
   name: string;
@@ -202,7 +201,7 @@ export function SecureForm<T extends FieldValues>({
         }
 
         // Encrypt sensitive data
-        let encryptedData: Record<string, any> = {};
+        const encryptedData: Record<string, any> = {};
         if (enableEncryption) {
           for (const field of fields) {
             if (field.encrypted || field.sensitive) {

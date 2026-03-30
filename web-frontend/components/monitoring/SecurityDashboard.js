@@ -1,16 +1,40 @@
 import {
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Database,
+  Download,
+  Eye,
+  FileText,
+  Flag,
+  Globe,
+  HardDrive,
+  Key,
+  MapPin,
+  Monitor,
+  Network,
+  RefreshCw,
+  Search,
+  Server,
+  Shield,
+  TrendingDown,
+  TrendingUp,
+  XCircle,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Fragment as _Fragment,
   jsx as _jsx,
   jsxs as _jsxs,
-  Fragment as _Fragment,
 } from "react/jsx-runtime";
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Progress } from "../ui/progress";
 import {
   Select,
   SelectContent,
@@ -18,31 +42,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Progress } from "../ui/progress";
-import {
-  Shield,
-  AlertTriangle,
-  Activity,
-  Eye,
-  TrendingUp,
-  TrendingDown,
-  Monitor,
-  Globe,
-  Database,
-  Key,
-  FileText,
-  Clock,
-  Flag,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  Download,
-  Search,
-  MapPin,
-  Server,
-  HardDrive,
-  Network,
-} from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 export function SecurityDashboard({
   metrics = [],
   events = [],
@@ -172,10 +172,7 @@ export function SecurityDashboard({
       const matchesSearch =
         event.type.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
         event.source.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
-        (event.userName &&
-          event.userName
-            .toLowerCase()
-            .includes(state.searchTerm.toLowerCase()));
+        event.userName?.toLowerCase().includes(state.searchTerm.toLowerCase());
       const matchesSeverity =
         state.filterSeverity === "all" ||
         event.severity === state.filterSeverity;
@@ -204,7 +201,7 @@ export function SecurityDashboard({
             success: "Event investigation initiated",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({
           ...prev,
           error: "Failed to initiate investigation",
@@ -227,7 +224,7 @@ export function SecurityDashboard({
             success: "Threat mitigation initiated",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to mitigate threat" }));
       } finally {
         setState((prev) => ({ ...prev, isRefreshing: false }));
@@ -248,7 +245,7 @@ export function SecurityDashboard({
           success: "Metrics refreshed successfully",
           lastRefresh: new Date().toISOString(),
         }));
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to refresh metrics" }));
       } finally {
         setState((prev) => ({ ...prev, isRefreshing: false }));
@@ -283,7 +280,7 @@ export function SecurityDashboard({
             success: "Report exported successfully",
           }));
         }
-      } catch (error) {
+      } catch (_error) {
         setState((prev) => ({ ...prev, error: "Failed to export report" }));
       } finally {
         setState((prev) => ({ ...prev, isExporting: false }));

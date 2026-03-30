@@ -1,4 +1,11 @@
 import {
+  Activity,
+  BarChart3,
+  CreditCard,
+  DollarSign,
+  TrendingUp,
+} from "lucide-react";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -6,13 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  TrendingUp,
-  DollarSign,
-  CreditCard,
-  Activity,
-  BarChart3,
-} from "lucide-react";
 
 export default function AnalyticsScreen() {
   const stats = [

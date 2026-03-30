@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@/test/utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Sidebar from "@/components/Sidebar";
+import { fireEvent, render, screen } from "@/test/utils";
 
 // Mock react-router-dom
 vi.mock("react-router-dom", () => ({
