@@ -1,11 +1,11 @@
-from typing import Any
+import logging
 import sys
 import time
 import uuid
 from datetime import datetime
+from typing import Any
 
 import requests
-import logging
 
 logging.basicConfig(
     level=logging.INFO,

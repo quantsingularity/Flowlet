@@ -1,10 +1,10 @@
-from typing import Any
 import json
 import os
 import statistics
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any
 from unittest.mock import Mock, patch
 
 import psutil

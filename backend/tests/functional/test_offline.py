@@ -1,11 +1,10 @@
-from typing import Any
+import logging
 import os
 import sys
+from typing import Any
 
 from src.main import app
 from src.models.database import db
-
-import logging
 
 logging.basicConfig(
     level=logging.INFO,

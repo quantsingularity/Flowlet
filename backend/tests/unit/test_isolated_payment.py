@@ -1,7 +1,7 @@
-from typing import Any
 import os
 import unittest
 from decimal import Decimal
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import stripe

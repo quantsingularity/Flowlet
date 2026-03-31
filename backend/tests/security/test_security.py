@@ -1,5 +1,5 @@
-from typing import Any
 from decimal import Decimal
+from typing import Any
 
 import pytest
 from src.security.encryption_manager import EncryptionManager, TokenizationManager

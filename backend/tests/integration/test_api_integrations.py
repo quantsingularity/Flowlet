@@ -1,13 +1,13 @@
-from typing import Any
 import os
 import sys
+from typing import Any
 from unittest.mock import Mock, patch
 
 import pytest
+from src.fraud_detection.service import FraudDetectionService
 from src.integrations.banking.fdx_integration import FDXIntegration
 from src.integrations.banking.open_banking_integration import OpenBankingIntegration
 from src.integrations.banking.plaid_integration import PlaidIntegration
-from src.fraud_detection.service import FraudDetectionService
 from src.services.compliance.sanctions_screening import SanctionsScreeningService
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))

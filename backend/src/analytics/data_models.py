@@ -1,6 +1,5 @@
 import uuid
 from datetime import datetime
-from sqlalchemy.orm import declarative_base
 
 from sqlalchemy import (
     JSONB,
@@ -15,6 +14,7 @@ from sqlalchemy import (
     String,
     Text,
 )
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 

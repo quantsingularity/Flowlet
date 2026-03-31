@@ -1,15 +1,14 @@
-from typing import Any
+import logging
 import os
 import statistics
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any
 
 import pytest
 from src.gateway.optimized_gateway import CacheManager, CircuitBreaker, RequestBatcher
 from src.main_optimized import create_app
-
-import logging
 
 logging.basicConfig(
     level=logging.INFO,

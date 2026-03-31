@@ -1,4 +1,5 @@
 from typing import Any
+
 from locust import HttpUser, between, task
 
 

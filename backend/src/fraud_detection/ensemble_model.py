@@ -1,11 +1,11 @@
 import logging
 from typing import Any, Dict, List, Optional
-from ..models.transaction import TransactionFeatures
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
 
+from ..models.transaction import TransactionFeatures
 from . import (
     AutoencoderModel,
     FraudAlert,
@@ -17,7 +17,6 @@ from . import (
     OneClassSVMModel,
     RiskLevel,
 )
-
 from .supervised_models import (
     LightGBMFraudModel,
     NeuralNetworkFraudModel,

@@ -1,8 +1,7 @@
-from typing import Any
+import logging
 import os
 import sys
-
-import logging
+from typing import Any
 
 logging.basicConfig(
     level=logging.INFO,

@@ -1,6 +1,6 @@
-from typing import Any
-import sys
 import logging
+import sys
+from typing import Any
 
 import requests
 

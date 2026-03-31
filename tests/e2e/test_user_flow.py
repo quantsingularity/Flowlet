@@ -1,5 +1,5 @@
-from typing import Any
 import unittest
+from typing import Any
 
 
 class MockUI:
