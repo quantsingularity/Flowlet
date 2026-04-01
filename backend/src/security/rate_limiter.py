@@ -17,12 +17,54 @@ class RateLimiter:
         self.memory_store = {}
 
     def limit(self, rate_limit_string: str) -> Any:
-        """Decorator for rate limiting"""
+        """Decorator for rate limiting using string format like '5 per minute'"""
 
         def decorator(f: Any) -> Any:
             @wraps(f)
             def decorated_function(*args: Any, **kwargs: Any) -> Any:
-                # Simple pass-through for now - full implementation would check limits
+                try:
+                    parts = rate_limit_string.lower().split()
+                    count = int(parts[0])
+                    period = parts[2] if len(parts) > 2 else parts[1]
+                    if period in ("minute", "minutes"):
+                        window_seconds = 60
+                        window_type = "minute"
+                    elif period in ("hour", "hours"):
+                        window_seconds = 3600
+                        window_type = "hour"
+                    elif period in ("day", "days"):
+                        window_seconds = 86400
+                        window_type = "day"
+                    else:
+                        window_seconds = 60
+                        window_type = "minute"
+
+                    client_id = self._get_client_id()
+                    key = self._get_key(client_id, window_type)
+
+                    if self.redis_client:
+                        allowed, current, _ = self._check_redis_limit(
+                            key, count, window_seconds
+                        )
+                    else:
+                        allowed, current, _ = self._check_memory_limit(
+                            key, count, window_seconds
+                        )
+
+                    if not allowed:
+                        response = jsonify(
+                            {
+                                "error": "Rate Limit Exceeded",
+                                "message": "Too many requests. Please try again later.",
+                                "code": "RATE_LIMIT_EXCEEDED",
+                                "retry_after": window_seconds,
+                            }
+                        )
+                        response.status_code = 429
+                        response.headers["Retry-After"] = str(window_seconds)
+                        return response
+                except Exception:
+                    pass  # Fail open on rate limiter errors
                 return f(*args, **kwargs)
 
             return decorated_function

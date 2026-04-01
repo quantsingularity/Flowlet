@@ -122,6 +122,8 @@ class Transaction(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
     )
+    related_account_id = Column(String(36), ForeignKey("accounts.id"), nullable=True)
+    external_reference = Column(String(200), nullable=True)
     parent_transaction_id = Column(String(36), ForeignKey("transactions.id"))
     related_transactions = relationship(
         "Transaction", backref=db.backref("parent_transaction", remote_side=[id])

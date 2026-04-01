@@ -3,12 +3,18 @@ import logging
 from datetime import datetime
 from typing import Any
 
-import pandas as pd
+try:
+    import pandas as pd
+
+    PANDAS_AVAILABLE = True
+except ImportError:
+    pd = None
+    PANDAS_AVAILABLE = False
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 
-from ..ml.fraud_detection import FraudDetectionError, RiskLevel
-from ..ml.fraud_detection.service import get_fraud_service
+from ..fraud_detection import FraudDetectionError, RiskLevel
+from ..fraud_detection.service import get_fraud_service
 
 "\nFlask Routes for Fraud Detection\nProvides REST API endpoints for fraud detection functionality\n"
 logger = logging.getLogger(__name__)

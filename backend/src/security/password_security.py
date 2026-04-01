@@ -115,7 +115,11 @@ def is_password_expired(last_changed: datetime, max_age_days: int = 90) -> bool:
         return True
 
     expiry_date = last_changed + timedelta(days=max_age_days)
-    return datetime.utcnow() > expiry_date
+    return (
+        datetime.now(timezone.utc) > expiry_date.replace(tzinfo=timezone.utc)
+        if expiry_date.tzinfo is None
+        else datetime.now(timezone.utc) > expiry_date
+    )
 
 
 def calculate_password_entropy(password: str) -> float:

@@ -6,8 +6,15 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-import numpy as np
-import pandas as pd
+try:
+    import numpy as np
+    import pandas as pd
+
+    ML_AVAILABLE = True
+except ImportError:
+    np = None
+    pd = None
+    ML_AVAILABLE = False
 
 "\nFraud Detection ML Models Base Classes\nProvides abstract base classes and common utilities for fraud detection\n"
 logger = logging.getLogger(__name__)

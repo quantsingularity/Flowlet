@@ -20,41 +20,44 @@ from .database import Base, db
 
 
 class AuditEventType(PyEnum):
-    """Types of audit events - Merged from both"""
+    """Types of audit events"""
 
     USER_LOGIN = "user_login"
     USER_LOGOUT = "user_logout"
     USER_REGISTRATION = "user_registration"
+    USER_MODIFICATION = "user_modification"
+    USER_DELETION = "user_deletion"
     PASSWORD_CHANGE = "password_change"
     ACCOUNT_CREATION = "account_creation"
     ACCOUNT_MODIFICATION = "account_modification"
+    ACCOUNT_DELETION = "account_deletion"
     TRANSACTION_CREATED = "transaction_created"
     TRANSACTION_MODIFIED = "transaction_modified"
+    TRANSACTION_COMPLETED = "transaction_completed"
+    FINANCIAL_TRANSACTION = "financial_transaction"
     CARD_CREATED = "card_created"
     CARD_BLOCKED = "card_blocked"
     CARD_UNBLOCKED = "card_unblocked"
     PERMISSION_CHANGE = "permission_change"
     DATA_ACCESS = "data_access"
     DATA_EXPORT = "data_export"
+    DATA_UPLOAD = "data_upload"
     SECURITY_ALERT = "security_alert"
+    SECURITY_EVENT = "security_event"
     COMPLIANCE_CHECK = "compliance_check"
+    COMPLIANCE_EVENT = "compliance_event"
+    COMPLIANCE_REPORT = "compliance_report"
     SYSTEM_ERROR = "system_error"
+    SYSTEM_EVENT = "system_event"
     API_REQUEST = "api_request"
     ADMIN_ACTION = "admin_action"
-    CREATE_USER = "user_registration"
-    UPDATE_USER = "user_modification"
-    DELETE_USER = "user_deletion"
-    CREATE_ACCOUNT = "account_creation"
-    UPDATE_ACCOUNT = "account_modification"
-    DELETE_ACCOUNT = "account_deletion"
-    TRANSACTION = "transaction_created"
     MFA_CHANGE = "mfa_change"
     SYSTEM_CONFIG_CHANGE = "system_config_change"
     KYC_UPDATE = "kyc_update"
 
 
 class AuditSeverity(PyEnum):
-    """Severity levels for audit events - From src/"""
+    """Severity levels for audit events"""
 
     LOW = "low"
     MEDIUM = "medium"
@@ -94,9 +97,20 @@ class AuditLog(Base):
     country_code = Column(String(2))
     region = Column(String(100))
     city = Column(String(100))
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+    )
+    timestamp = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+    )
     user = relationship("User", backref="audit_logs")
     __table_args__ = (
         Index("idx_audit_event_type", "event_type"),
@@ -142,7 +156,7 @@ class AuditLog(Base):
             "status_code": self.status_code,
             "success": self.success,
             "error_message": self.error_message,
-            "created_at": self.created_at.isoformat(),
+            "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
     def __repr__(self) -> Any:

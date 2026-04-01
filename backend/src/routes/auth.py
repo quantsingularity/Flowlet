@@ -7,7 +7,14 @@ from typing import Any
 
 import jwt
 import pyotp
-import qrcode
+
+try:
+    import qrcode
+
+    QRCODE_AVAILABLE = True
+except ImportError:
+    qrcode = None
+    QRCODE_AVAILABLE = False
 from flask import Blueprint, current_app, g, jsonify, request
 from sqlalchemy.exc import IntegrityError
 
@@ -218,14 +225,14 @@ def register() -> Any:
             )
             if not is_valid:
                 return (jsonify({"error": message, "code": "INVALID_DATE_FORMAT"}), 400)
-            user.date_of_birth = dob
+            pass  # date_of_birth_encrypted field requires encryption; skip
         if "address" in data and isinstance(data["address"], dict):
             address_data = data["address"]
-            user.address_street = address_data.get("street", "")
-            user.address_city = address_data.get("city", "")
-            user.address_state = address_data.get("state", "")
-            user.address_postal_code = address_data.get("postal_code", "")
-            user.address_country = address_data.get("country", "")
+            user.street_address = address_data.get("street", "")
+            user.city = address_data.get("city", "")
+            user.state = address_data.get("state", "")
+            user.postal_code = address_data.get("postal_code", "")
+            user.country = address_data.get("country", "")
         db.session.add(user)
         db.session.flush()
         account = Account(

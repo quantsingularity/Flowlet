@@ -5,11 +5,14 @@ from functools import wraps
 from typing import Any
 
 import jwt
-from flask import jsonify, request
+from flask import g, jsonify, request
+
+from ..models.database import db
+from ..models.user import User
 
 
 def token_required(f: Any) -> Any:
-    """Decorator to require valid JWT token"""
+    """Decorator to require valid JWT token and populate g.current_user"""
 
     @wraps(f)
     def decorated(*args: Any, **kwargs: Any) -> Any:
@@ -20,9 +23,18 @@ def token_required(f: Any) -> Any:
         try:
             if token.startswith("Bearer "):
                 token = token[7:]
-            jwt.decode(
-                token, os.environ.get("JWT_SECRET_KEY", "secret"), algorithms=["HS256"]
-            )
+            secret = os.environ.get("JWT_SECRET_KEY", "secret")
+            payload = jwt.decode(token, secret, algorithms=["HS256"])
+            current_user = db.session.get(User, payload.get("user_id"))
+            if not current_user:
+                return jsonify({"message": "User not found"}), 401
+            if not current_user.is_active:
+                return jsonify({"message": "User account is inactive"}), 401
+            g.current_user = current_user
+        except jwt.ExpiredSignatureError:
+            return jsonify({"message": "Token has expired"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"message": "Token is invalid"}), 401
         except Exception:
             return jsonify({"message": "Token is invalid"}), 401
 
@@ -43,12 +55,20 @@ def admin_required(f: Any) -> Any:
         try:
             if token.startswith("Bearer "):
                 token = token[7:]
-            data = jwt.decode(
-                token, os.environ.get("JWT_SECRET_KEY", "secret"), algorithms=["HS256"]
-            )
-            # Check if user has admin role
-            if data.get("role") != "admin":
+            secret = os.environ.get("JWT_SECRET_KEY", "secret")
+            payload = jwt.decode(token, secret, algorithms=["HS256"])
+            current_user = db.session.get(User, payload.get("user_id"))
+            if not current_user:
+                return jsonify({"message": "User not found"}), 401
+            if not current_user.is_active:
+                return jsonify({"message": "User account is inactive"}), 401
+            if not current_user.is_admin:
                 return jsonify({"message": "Admin access required"}), 403
+            g.current_user = current_user
+        except jwt.ExpiredSignatureError:
+            return jsonify({"message": "Token has expired"}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({"message": "Token is invalid"}), 401
         except Exception:
             return jsonify({"message": "Token is invalid"}), 401
 

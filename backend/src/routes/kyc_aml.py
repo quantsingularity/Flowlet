@@ -17,7 +17,8 @@ from sqlalchemy import select
 
 from ..models.audit_log import AuditEventType, AuditSeverity
 from ..models.database import db
-from ..models.user import User
+from ..models.kyc_record import KYCRecord, KYCVerificationStatus
+from ..models.user import KYCStatus, User
 from ..security.audit_logger import audit_logger
 from ..utils.auth import admin_required, token_required
 
@@ -117,20 +118,26 @@ def start_kyc_verification() -> Any:
             )
         kyc_record = KYCRecord(
             user_id=user_id,
-            verification_level=verification_level,
-            status=KYCStatus.PENDING,
-            purpose=data.get("purpose", "account_opening"),
-            initiated_by=g.current_user.id,
-            verification_provider="Flowlet_Internal",
-            required_documents=json.dumps(get_required_documents(verification_level)),
-            verification_steps=json.dumps(get_verification_steps(verification_level)),
+            verification_level=(
+                verification_level.value
+                if hasattr(verification_level, "value")
+                else str(verification_level)
+            ),
+            status=KYCVerificationStatus.PENDING,
+            verification_notes=json.dumps(
+                {
+                    "purpose": data.get("purpose", "account_opening"),
+                    "required_documents": get_required_documents(verification_level),
+                    "verification_steps": get_verification_steps(verification_level),
+                }
+            ),
         )
         db.session.add(kyc_record)
         db.session.flush()
         sanctions_result = simulate_sanctions_screening(user)
         if sanctions_result["status"] == "match_found":
-            kyc_record.status = KYCStatus.MANUAL_REVIEW
-            kyc_record.review_reason = "Sanctions screening match detected"
+            kyc_record.status = KYCVerificationStatus.IN_REVIEW
+            kyc_record.rejection_reason = "Sanctions screening match detected"
         db.session.commit()
         audit_logger.log_event(
             event_type=AuditEventType.COMPLIANCE_EVENT,
@@ -147,7 +154,9 @@ def start_kyc_verification() -> Any:
                     "kyc_record_id": str(kyc_record.id),
                     "verification_level": verification_level.value,
                     "status": kyc_record.status.value,
-                    "required_documents": json.loads(kyc_record.required_documents),
+                    "required_documents": json.loads(
+                        kyc_record.verification_notes or "{}"
+                    ).get("required_documents", []),
                     "sanctions_screening_status": sanctions_result["status"],
                 }
             ),
@@ -189,8 +198,8 @@ def submit_kyc_document(kyc_record_id: Any) -> Any:
                 403,
             )
         if (
-            kyc_record.status != KYCStatus.PENDING
-            and kyc_record.status != KYCStatus.MANUAL_REVIEW
+            kyc_record.status != KYCVerificationStatus.PENDING
+            and kyc_record.status != KYCVerificationStatus.IN_REVIEW
         ):
             return (
                 jsonify(
@@ -205,8 +214,8 @@ def submit_kyc_document(kyc_record_id: Any) -> Any:
         data["document_data"]
         is_valid = True
         if is_valid:
-            kyc_record.status = KYCStatus.IN_PROGRESS
-            kyc_record.notes = (
+            kyc_record.status = KYCVerificationStatus.IN_REVIEW
+            kyc_record.verification_notes = (
                 f"Document {document_type} submitted and passed initial check."
             )
             audit_logger.log_event(
@@ -259,7 +268,7 @@ def approve_kyc_record(kyc_record_id: Any) -> Any:
                 jsonify({"error": "KYC record not found", "code": "RECORD_NOT_FOUND"}),
                 404,
             )
-        if kyc_record.status == KYCStatus.APPROVED:
+        if kyc_record.status == KYCVerificationStatus.APPROVED:
             return (
                 jsonify(
                     {
@@ -269,12 +278,12 @@ def approve_kyc_record(kyc_record_id: Any) -> Any:
                 ),
                 200,
             )
-        kyc_record.status = KYCStatus.APPROVED
-        kyc_record.approval_date = datetime.now(timezone.utc)
-        kyc_record.approved_by = g.current_user.id
+        kyc_record.status = KYCVerificationStatus.APPROVED
+        kyc_record.reviewed_at = datetime.now(timezone.utc)
+        kyc_record.reviewer_id = g.current_user.id
         user = db.session.get(User, kyc_record.user_id)
         if user:
-            user.kyc_status = kyc_record.verification_level.value
+            user.kyc_status = KYCStatus.COMPLETED
         db.session.commit()
         audit_logger.log_event(
             event_type=AuditEventType.COMPLIANCE_EVENT,

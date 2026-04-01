@@ -1,4 +1,5 @@
 import logging
+import os
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Tuple
@@ -26,23 +27,43 @@ class TokenManager:
 
     @property
     def redis_client(self) -> Any:
-        """Lazy load and configure Redis client within app context"""
-        if self._redis_client is None and self.app:
-            with self.app.app_context():
-                redis_url = current_app.config.get(
-                    "REDIS_URL", "redis://localhost:6379/0"
-                )
-                self._redis_client = redis.Redis.from_url(
-                    redis_url, decode_responses=True
-                )
+        """Lazy load and configure Redis client"""
+        if self._redis_client is None:
+            try:
+                from flask import has_app_context
+
+                if has_app_context():
+                    redis_url = current_app.config.get(
+                        "REDIS_URL", "redis://localhost:6379/0"
+                    )
+                elif self.app:
+                    with self.app.app_context():
+                        redis_url = current_app.config.get(
+                            "REDIS_URL", "redis://localhost:6379/0"
+                        )
+                else:
+                    redis_url = "redis://localhost:6379/0"
+                client = redis.Redis.from_url(redis_url, decode_responses=True)
+                client.ping()
+                self._redis_client = client
+            except Exception as e:
+                logger.warning(f"Redis not available, token blacklisting disabled: {e}")
+                self._redis_client = None
         return self._redis_client
 
     def _get_config(self, key: Any, default: Any = None) -> Any:
         """Helper to get config values safely"""
-        if self.app:
-            with self.app.app_context():
+        try:
+            from flask import has_app_context
+
+            if has_app_context():
                 return current_app.config.get(key, default)
-        return default
+            elif self.app:
+                with self.app.app_context():
+                    return current_app.config.get(key, default)
+        except Exception:
+            pass
+        return os.environ.get(key, default)
 
     def init_app(self, app: Any) -> Any:
         """Initialize the TokenManager with the Flask application"""

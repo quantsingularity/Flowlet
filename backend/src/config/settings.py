@@ -5,8 +5,21 @@ from dotenv import load_dotenv
 
 from .security import SecurityConfig
 
-"\nConfiguration settings for Flowlet Financial Backend\nImplements security best practices and financial industry standards\n"
 load_dotenv()
+
+
+def _get_engine_options():
+    """Return SQLAlchemy engine options compatible with the configured database."""
+    db_url = os.environ.get("DATABASE_URL", "sqlite")
+    if "sqlite" in db_url:
+        return {"pool_pre_ping": True}
+    return {
+        "pool_size": 20,
+        "max_overflow": 30,
+        "pool_timeout": 30,
+        "pool_pre_ping": True,
+        "pool_recycle": 3600,
+    }
 
 
 class Config:
@@ -19,13 +32,7 @@ class Config:
         os.environ.get("DATABASE_URL") or f"sqlite:///{DEFAULT_DB_PATH}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        "pool_size": 20,
-        "max_overflow": 30,
-        "pool_timeout": 30,
-        "pool_pre_ping": True,
-        "pool_recycle": 3600,
-    }
+    SQLALCHEMY_ENGINE_OPTIONS = _get_engine_options()
     REDIS_URL = os.environ.get("REDIS_URL") or "redis://localhost:6379/0"
     JWT_SECRET_KEY = SecurityConfig.JWT_SECRET_KEY
     JWT_ACCESS_TOKEN_EXPIRES = SecurityConfig.JWT_ACCESS_TOKEN_EXPIRES
@@ -114,8 +121,9 @@ class DevelopmentConfig(Config):
     """Development configuration"""
 
     DEBUG = True
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
     SESSION_COOKIE_SECURE = False
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
 
 
 class TestingConfig(Config):
@@ -123,6 +131,7 @@ class TestingConfig(Config):
 
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
     WTF_CSRF_ENABLED = False
     SESSION_COOKIE_SECURE = False
 
@@ -137,9 +146,11 @@ class ProductionConfig(Config):
     SESSION_COOKIE_SAMESITE = "Strict"
     RATELIMIT_DEFAULT = "500 per hour"
     SQLALCHEMY_ENGINE_OPTIONS = {
-        **Config.SQLALCHEMY_ENGINE_OPTIONS,
         "pool_size": 50,
         "max_overflow": 100,
+        "pool_timeout": 30,
+        "pool_pre_ping": True,
+        "pool_recycle": 3600,
     }
 
 
@@ -147,6 +158,5 @@ config = {
     "development": DevelopmentConfig,
     "testing": TestingConfig,
     "production": ProductionConfig,
-    "default": ProductionConfig,
+    "default": DevelopmentConfig,
 }
-# Config.validate_config() # Moved to app initialization

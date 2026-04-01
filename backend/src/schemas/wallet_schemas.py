@@ -14,7 +14,9 @@ class DepositFundsRequest(BaseModel):
     account_id: str = Field(..., description="Account ID to deposit into")
     amount: Decimal = Field(..., gt=0, description="Deposit amount")
     currency: str = Field(default="USD", min_length=3, max_length=3)
-    source: str = Field(..., description="Source of funds (e.g., bank_transfer, cash)")
+    source: Optional[str] = Field(
+        None, description="Source of funds (e.g., bank_transfer, cash)"
+    )
     description: Optional[str] = Field(None, max_length=500)
     reference: Optional[str] = Field(None, max_length=100)
 
@@ -30,7 +32,9 @@ class WithdrawFundsRequest(BaseModel):
     account_id: str = Field(..., description="Account ID to withdraw from")
     amount: Decimal = Field(..., gt=0, description="Withdrawal amount")
     currency: str = Field(default="USD", min_length=3, max_length=3)
-    destination: str = Field(..., description="Destination (e.g., bank_account, cash)")
+    destination: Optional[str] = Field(
+        None, description="Destination (e.g., bank_account, cash)"
+    )
     description: Optional[str] = Field(None, max_length=500)
     reference: Optional[str] = Field(None, max_length=100)
 

@@ -73,7 +73,7 @@ def process_external_payment(
             stripe_result = stripe_client.create_charge(
                 amount=data.amount,
                 currency=data.currency,
-                source=data.payment_details.get("token"),
+                source=(data.metadata or {}).get("token"),
                 description=data.description or f"Payment via {data.payment_method}",
                 metadata={"account_id": str(account.id), "user_id": str(user_id)},
             )
@@ -128,8 +128,8 @@ def process_internal_transfer(
     Handles internal transfers between two wallets.
     Consolidates logic from wallet_mvp.py's /transfer endpoint.
     """
-    from_account = session.get(Account, data.from_wallet_id)
-    to_account = session.get(Account, data.to_wallet_id)
+    from_account = session.get(Account, data.from_account_id)
+    to_account = session.get(Account, data.to_account_id)
     if not from_account:
         raise SourceWalletNotFound()
     if not to_account:
@@ -201,8 +201,8 @@ def send_payment(
     Handles sending a payment to a recipient (by email, phone, or account number).
     For now, we'll treat this as an internal transfer if the recipient is found.
     """
-    if data.recipient_identifier == "test_recipient@flowlet.com":
-        resolved_to_wallet_id = "mock_resolved_wallet_id"
+    if data.recipient == "test_recipient@flowlet.com":
+        resolved_to_account_id = "mock_resolved_account_id"
     else:
         raise PaymentServiceError(
             "Recipient not found or external payment not supported yet.",
@@ -210,8 +210,8 @@ def send_payment(
             404,
         )
     internal_transfer_data = InternalTransferRequest(
-        from_wallet_id=data.from_wallet_id,
-        to_wallet_id=resolved_to_wallet_id,
+        from_account_id=data.from_account_id,
+        to_account_id=resolved_to_account_id,
         amount=data.amount,
         description=data.description,
         reference=data.reference,
@@ -231,7 +231,7 @@ def create_payment_request(
     """
     Creates a payment request.
     """
-    account = session.get(Account, data.from_wallet_id)
+    account = session.get(Account, data.from_account_id)
     if not account:
         raise SourceWalletNotFound()
     request_reference = (
@@ -247,6 +247,6 @@ def create_payment_request(
         "description": data.description,
         "status": "pending",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "expires_at": data.expires_at.isoformat() if data.expires_at else None,
+        "expires_at": None,
         "message": "Payment request created successfully",
     }

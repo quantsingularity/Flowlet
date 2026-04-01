@@ -180,9 +180,7 @@ def transfer_funds(account_id: Any) -> Any:
             db.session, account_id, transfer_request
         )
         source_account = g.account
-        destination_account = db.session.get(
-            Account, transfer_request.destination_account_id
-        )
+        destination_account = db.session.get(Account, transfer_request.to_account_id)
         audit_logger.log_event(
             event_type=AuditEventType.TRANSACTION_COMPLETED,
             description=f"Internal transfer of {transfer_request.amount} {source_account.currency} from {source_account.id} to {destination_account.id}",

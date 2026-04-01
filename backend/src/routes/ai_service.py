@@ -1,10 +1,18 @@
 import logging
+import os
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
 
 from flask import Blueprint, g, jsonify, request
-from openai import OpenAI
+
+try:
+    from openai import OpenAI
+
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OpenAI = None
+    OPENAI_AVAILABLE = False
 from sqlalchemy import and_, func, select
 
 from ..models.audit_log import AuditEventType, AuditSeverity
@@ -18,7 +26,9 @@ from ..utils.auth import admin_required, token_required
 ai_service_bp = Blueprint("ai_service", __name__, url_prefix="/api/v1/ai")
 logger = logging.getLogger(__name__)
 try:
-    openai_client = OpenAI()
+    openai_client = (
+        OpenAI() if (OPENAI_AVAILABLE and os.environ.get("OPENAI_API_KEY")) else None
+    )
     logger.info("OpenAI client initialized for AI services.")
 except Exception as e:
     logger.error(f"Failed to initialize OpenAI client: {e}")

@@ -17,7 +17,14 @@ from src.utils.error_handlers import register_error_handlers
 
 def create_app() -> Any:
     """Create and configure the Flask application."""
-    app = Flask(__name__, static_folder="../web-frontend/dist", static_url_path="")
+    static_dir = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "web-frontend", "dist"
+    )
+    if not os.path.isdir(static_dir):
+        static_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "src", "static"
+        )
+    app = Flask(__name__, static_folder=static_dir, static_url_path="")
 
     # Configure JSON encoder for Decimal and datetime
     from flask.json.provider import DefaultJSONProvider

@@ -260,3 +260,45 @@ class Account(Base):
 
     def __repr__(self) -> Any:
         return f"<Account {self.account_number} ({self.account_type.value})>"
+
+    def can_debit(self, amount: Decimal) -> bool:
+        """Check if account can be debited by the given amount"""
+        if self.status != AccountStatus.ACTIVE:
+            return False
+        if self.account_type == AccountType.CREDIT:
+            return amount <= self.calculate_available_credit()
+        return amount <= self.balance
+
+    def credit(self, amount: Decimal, description: str = None) -> None:
+        """Credit the account balance"""
+        amount = Decimal(str(amount))
+        self.balance += amount
+        self.available_balance += amount
+        if self.available_balance_cents is not None:
+            self.available_balance_cents = int(self.available_balance * 100)
+        if self.current_balance_cents is not None:
+            self.current_balance_cents = int(self.balance * 100)
+        self.last_activity_at = datetime.now(timezone.utc)
+
+    def debit(self, amount: Decimal, description: str = None) -> None:
+        """Debit the account balance"""
+        amount = Decimal(str(amount))
+        self.balance -= amount
+        self.available_balance -= amount
+        if self.available_balance_cents is not None:
+            self.available_balance_cents = int(self.available_balance * 100)
+        if self.current_balance_cents is not None:
+            self.current_balance_cents = int(self.balance * 100)
+        self.last_activity_at = datetime.now(timezone.utc)
+
+    def set_available_balance(self, amount: Decimal) -> None:
+        """Set the available balance"""
+        amount = Decimal(str(amount))
+        self.available_balance = amount
+        self.available_balance_cents = int(amount * 100)
+
+    def set_current_balance(self, amount: Decimal) -> None:
+        """Set the current/main balance"""
+        amount = Decimal(str(amount))
+        self.balance = amount
+        self.current_balance_cents = int(amount * 100)

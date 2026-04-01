@@ -1,0 +1,154 @@
+version: "3.9"
+
+services:
+  # ── Backend API ──────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: flowlet_backend
+    restart: unless-stopped
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      FLASK_CONFIG: ${FLASK_CONFIG:-development}
+      FLASK_ENV: ${FLASK_ENV:-development}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-in-production-min-32-chars}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-jwt-secret-change-in-production-min-32}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-flowlet}:${POSTGRES_PASSWORD:-flowlet_pass}@db:5432/${POSTGRES_DB:-flowlet_db}
+      REDIS_URL: redis://redis:6379/0
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://localhost:5000}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_placeholder}
+      MAIL_SERVER: ${MAIL_SERVER:-}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USE_TLS: ${MAIL_USE_TLS:-true}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
+      FRAUD_DETECTION_ENABLED: ${FRAUD_DETECTION_ENABLED:-true}
+      KYC_VERIFICATION_REQUIRED: ${KYC_VERIFICATION_REQUIRED:-true}
+    volumes:
+      - backend_logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - flowlet_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/monitoring/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # ── PostgreSQL ───────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: flowlet_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-flowlet}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-flowlet_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-flowlet_db}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - flowlet_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-flowlet} -d ${POSTGRES_DB:-flowlet_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ── Redis ────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: flowlet_redis
+    restart: unless-stopped
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-redis_pass}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1
+      --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - flowlet_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-redis_pass}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Celery Worker ────────────────────────────────────────────────────────────
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: flowlet_worker
+    restart: unless-stopped
+    command: ["celery", "-A", "run_server.celery", "worker", "--loglevel=info", "--concurrency=4"]
+    environment:
+      FLASK_CONFIG: ${FLASK_CONFIG:-development}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-in-production-min-32-chars}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-jwt-secret-change-in-production-min-32}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-flowlet}:${POSTGRES_PASSWORD:-flowlet_pass}@db:5432/${POSTGRES_DB:-flowlet_db}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_pass}@redis:6379/0
+    volumes:
+      - backend_logs:/app/logs
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - flowlet_net
+    profiles:
+      - celery
+
+  # ── DB Migration / Init ──────────────────────────────────────────────────────
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: flowlet_migrate
+    command: ["flask", "db", "upgrade"]
+    environment:
+      FLASK_CONFIG: ${FLASK_CONFIG:-development}
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-in-production-min-32-chars}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-dev-jwt-secret-change-in-production-min-32}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-flowlet}:${POSTGRES_PASSWORD:-flowlet_pass}@db:5432/${POSTGRES_DB:-flowlet_db}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_pass}@redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - flowlet_net
+    profiles:
+      - migrate
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  backend_logs:
+    driver: local
+
+networks:
+  flowlet_net:
+    driver: bridge

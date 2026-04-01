@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from flask import Blueprint, jsonify
+from sqlalchemy import text
 
 from ..models.database import db
 
@@ -17,7 +18,7 @@ def system_health() -> Any:
     try:
         db_status = "unhealthy"
         try:
-            db.session.execute("SELECT 1").scalar()
+            db.session.execute(text("SELECT 1")).scalar()
             db_status = "healthy"
         except Exception as e:
             logger.error(f"Database health check failed: {e}")

@@ -18,21 +18,36 @@ class AuditLogger:
 
     def _log_to_db(self, audit_log_instance: AuditLog) -> Any:
         """Internal function to commit the AuditLog instance to the database."""
-        if not self.app:
-            logger.warning(
-                "AuditLogger not initialized with Flask app. Logging only to console."
-            )
-            return
-        with self.app.app_context():
-            try:
-                db.session.add(audit_log_instance)
-                db.session.commit()
-            except SQLAlchemyError as e:
-                db.session.rollback()
-                logger.error(f"Failed to log audit event to database: {e}")
-            except Exception as e:
-                db.session.rollback()
-                logger.error(f"Unexpected error during audit logging: {e}")
+        try:
+            from flask import has_app_context, has_request_context
+
+            if has_request_context() or has_app_context():
+                try:
+                    db.session.add(audit_log_instance)
+                    db.session.commit()
+                except SQLAlchemyError as e:
+                    db.session.rollback()
+                    logger.error(f"Failed to log audit event to database: {e}")
+                except Exception as e:
+                    db.session.rollback()
+                    logger.error(f"Unexpected error during audit logging: {e}")
+            elif self.app:
+                with self.app.app_context():
+                    try:
+                        db.session.add(audit_log_instance)
+                        db.session.commit()
+                    except SQLAlchemyError as e:
+                        db.session.rollback()
+                        logger.error(f"Failed to log audit event to database: {e}")
+                    except Exception as e:
+                        db.session.rollback()
+                        logger.error(f"Unexpected error during audit logging: {e}")
+            else:
+                logger.warning(
+                    "AuditLogger not initialized with Flask app. Logging only to console."
+                )
+        except Exception as e:
+            logger.error(f"Unexpected error in audit logger: {e}")
 
     def log_event(
         self,

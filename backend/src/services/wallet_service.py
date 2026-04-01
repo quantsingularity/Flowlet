@@ -26,9 +26,10 @@ class WalletServiceError(Exception):
     """Base exception for wallet service errors."""
 
     def __init__(self, message: str, error_code: str, status_code: int = 400) -> None:
-        super().__init__(message)
+        self.message = message
         self.error_code = error_code
         self.status_code = status_code
+        super().__init__(message)
 
 
 class AccountNotFound(WalletServiceError):
@@ -112,13 +113,12 @@ def create_wallet(session: Session, user_id: str, data: CreateWalletRequest) -> 
         currency=currency,
         status=AccountStatus.ACTIVE,
     )
-    initial_deposit = data.initial_deposit
-    if initial_deposit > Decimal("0.00"):
-        account.set_available_balance(initial_deposit)
-        account.set_current_balance(initial_deposit)
+    initial_balance = data.initial_balance or Decimal("0.00")
+    if initial_balance > Decimal("0.00"):
+        account.credit(initial_balance)
     session.add(account)
     session.flush()
-    if initial_deposit > Decimal("0.00"):
+    if initial_balance > Decimal("0.00"):
         deposit_transaction = Transaction(
             user_id=user.id,
             account_id=account.id,
@@ -128,7 +128,7 @@ def create_wallet(session: Session, user_id: str, data: CreateWalletRequest) -> 
             description=f"Initial deposit for account {account.account_name}",
             channel="api",
             currency=currency,
-            amount=initial_deposit,
+            amount=initial_balance,
         )
         session.add(deposit_transaction)
     session.commit()
@@ -152,7 +152,7 @@ def process_deposit(
         transaction_category=TransactionCategory.DEPOSIT,
         status=TransactionStatus.COMPLETED,
         description=data.description or f"Deposit to {account.account_name}",
-        channel=data.channel,
+        channel=getattr(data, "channel", "api"),
         currency=account.currency,
         amount=amount,
     )
@@ -179,7 +179,7 @@ def process_withdrawal(
         transaction_category=TransactionCategory.WITHDRAWAL,
         status=TransactionStatus.COMPLETED,
         description=data.description or f"Withdrawal from {account.account_name}",
-        channel=data.channel,
+        channel=getattr(data, "channel", "api"),
         currency=account.currency,
         amount=amount,
     )
@@ -193,12 +193,12 @@ def process_transfer(
 ) -> tuple[Transaction, Transaction]:
     """Handles the transfer of funds between two accounts."""
     source_account = get_account_by_id(session, source_account_id)
-    destination_account = get_account_by_id(session, data.destination_account_id)
+    destination_account = get_account_by_id(session, data.to_account_id)
     if (
         source_account.status != AccountStatus.ACTIVE
         or destination_account.status != AccountStatus.ACTIVE
     ):
-        raise AccountInactive(f"{source_account_id} or {data.destination_account_id}")
+        raise AccountInactive(f"{source_account_id} or {data.to_account_id}")
     amount = data.amount
     if source_account.balance < amount:
         raise InsufficientFunds(source_account_id)
@@ -217,7 +217,7 @@ def process_transfer(
         transaction_category=TransactionCategory.TRANSFER,
         status=TransactionStatus.COMPLETED,
         description=description,
-        channel=data.channel,
+        channel=getattr(data, "channel", "api"),
         currency=source_account.currency,
         amount=amount,
         related_account_id=destination_account.id,
@@ -229,7 +229,7 @@ def process_transfer(
         transaction_category=TransactionCategory.TRANSFER,
         status=TransactionStatus.COMPLETED,
         description=description,
-        channel=data.channel,
+        channel=getattr(data, "channel", "api"),
         currency=destination_account.currency,
         amount=amount,
         related_account_id=source_account.id,
