@@ -93,7 +93,7 @@ setup_dev_database() {
 
     # Initialize database using Python script
     python3 -c "
-from src.main import create_app
+from backend.app import create_app
 from src.models.database import db
 
 app = create_app('development')
