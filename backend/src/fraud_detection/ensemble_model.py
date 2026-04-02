@@ -4,18 +4,21 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import train_test_split
 
-from ..models.transaction import TransactionFeatures
 from . import (
     AutoencoderModel,
+    FeatureEngineer,
     FraudAlert,
     FraudDetectionError,
+    FraudExplainer,
     FraudModelBase,
     FraudType,
     IsolationForestModel,
     ModelNotTrainedError,
     OneClassSVMModel,
     RiskLevel,
+    TransactionFeatures,
 )
 from .supervised_models import (
     LightGBMFraudModel,
@@ -126,8 +129,6 @@ class EnsembleFraudModel(FraudModelBase):
         """
         Calculate model weights based on validation performance
         """
-        from sklearn.model_selection import train_test_split
-
         X_train, X_val, y_train, y_val = train_test_split(
             training_data, labels, test_size=0.2, random_state=42, stratify=labels
         )
@@ -326,8 +327,6 @@ class RealTimeFraudDetector:
             FraudAlert: Fraud detection result with explanation
         """
         try:
-            from . import FeatureEngineer, FraudExplainer
-
             feature_engineer = FeatureEngineer()
             features = feature_engineer.extract_transaction_features(
                 transaction_features, user_history

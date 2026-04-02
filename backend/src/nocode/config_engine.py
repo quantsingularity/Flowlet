@@ -695,21 +695,21 @@ class ConfigurationEngine:
         all_fields = {}
         for section in template.sections:
             self._collect_fields(section, all_fields)
-        for field_id, field in all_fields.items():
+        for field_id, field_obj in all_fields.items():
             value = values.get(field_id)
-            if field.required and (value is None or value == ""):
-                errors.append(f"Field '{field.name}' is required")
+            if field_obj.required and (value is None or value == ""):
+                errors.append(f"Field '{field_obj.name}' is required")
                 continue
             if value is None or value == "":
                 continue
-            if not self._validate_type(value, field.field_type):
-                errors.append(f"Field '{field.name}' has invalid type")
+            if not self._validate_type(value, field_obj.field_type):
+                errors.append(f"Field '{field_obj.name}' has invalid type")
                 continue
-            for rule_name, rule_value in field.validation_rules.items():
+            for rule_name, rule_value in field_obj.validation_rules.items():
                 validator = self._validators.get(rule_name)
                 if validator and (not validator(value, rule_value)):
                     errors.append(
-                        f"Field '{field.name}' failed validation rule: {rule_name}"
+                        f"Field '{field_obj.name}' failed validation rule: {rule_name}"
                     )
         return errors
 
@@ -717,8 +717,8 @@ class ConfigurationEngine:
         self, section: ConfigSection, fields_dict: Dict[str, ConfigField]
     ) -> Any:
         """Recursively collect all fields from section and subsections."""
-        for field in section.fields:
-            fields_dict[field.field_id] = field
+        for field_obj in section.fields:
+            fields_dict[field_obj.field_id] = field_obj
         for subsection in section.subsections:
             self._collect_fields(subsection, fields_dict)
 

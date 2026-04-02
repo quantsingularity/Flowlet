@@ -4,6 +4,18 @@ from typing import Any, Dict, List, Optional
 
 import aiohttp
 
+from . import (
+    AuthenticationError,
+    BankAccount,
+    BankingIntegrationBase,
+    BankingIntegrationError,
+    InvalidAccountError,
+    PaymentRequest,
+    Transaction,
+    TransactionStatus,
+    TransactionType,
+)
+
 
 class PlaidIntegration(BankingIntegrationBase):
     """
@@ -263,9 +275,6 @@ class PlaidIntegration(BankingIntegrationBase):
         # async with self.session.post(f"{self.base_url}/transfer/get", json=data) as response:
         #     result = await response.json()
         #     return self._map_plaid_status(result["status"])
-
-        # Return mock completed status
-        from src.models.transaction import TransactionStatus
 
         return TransactionStatus.COMPLETED
 

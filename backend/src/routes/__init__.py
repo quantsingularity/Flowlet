@@ -5,8 +5,10 @@ from .analytics import analytics_bp
 from .api_gateway import api_gateway_bp
 from .auth import auth_bp
 from .banking_integrations import banking_integrations_bp
+from .card import card_bp
 from .compliance import compliance_bp
 from .fraud_detection import fraud_detection_bp
+from .kyc import kyc_bp
 from .kyc_aml import kyc_aml_bp
 from .ledger import ledger_bp
 from .monitoring import monitoring_bp
@@ -20,8 +22,6 @@ from .wallet import wallet_bp
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
 
-# Import all sub-blueprints
-
 # Register all sub-blueprints with the main API blueprint
 api_bp.register_blueprint(user_bp)
 api_bp.register_blueprint(auth_bp)
@@ -33,6 +33,8 @@ api_bp.register_blueprint(compliance_bp)
 api_bp.register_blueprint(fraud_detection_bp)
 api_bp.register_blueprint(multicurrency_bp)
 api_bp.register_blueprint(kyc_aml_bp)
+api_bp.register_blueprint(kyc_bp)
+api_bp.register_blueprint(card_bp)
 api_bp.register_blueprint(monitoring_bp)
 api_bp.register_blueprint(security_bp)
 api_bp.register_blueprint(ai_service_bp)

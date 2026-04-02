@@ -13,7 +13,7 @@ from ..models.transaction import Transaction, TransactionType
 from .auth import token_required
 
 "\nFinancial Analytics Routes\n"
-analytics_bp = Blueprint("analytics", __name__, url_prefix="/api/v1/analytics")
+analytics_bp = Blueprint("analytics", __name__, url_prefix="/analytics")
 logger = logging.getLogger(__name__)
 
 

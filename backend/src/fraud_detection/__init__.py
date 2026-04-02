@@ -490,3 +490,9 @@ class RealTimeFraudDetector:
     ) -> Tuple[bool, float, str]:
         """Check transaction for fraud"""
         return (False, 0.1, "Low risk")
+
+
+try:
+    pass
+except Exception:
+    pass

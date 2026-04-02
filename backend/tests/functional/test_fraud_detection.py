@@ -5,11 +5,13 @@ import numpy as np
 import pandas as pd
 import pytest
 from src.fraud_detection import (
+    EnsembleFraudModel,
     FeatureEngineer,
     FraudAlert,
     FraudDetectionService,
     FraudExplainer,
     IsolationForestModel,
+    RealTimeFraudDetector,
     RiskLevel,
     TransactionFeatures,
     XGBoostFraudModel,

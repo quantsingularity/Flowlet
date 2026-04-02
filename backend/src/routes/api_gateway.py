@@ -5,7 +5,7 @@ from typing import Any
 from flask import Blueprint, jsonify
 
 "\nAPI Gateway Routes for Health Check and Documentation\n"
-api_gateway_bp = Blueprint("api_gateway", __name__, url_prefix="/api/v1")
+api_gateway_bp = Blueprint("api_gateway", __name__, url_prefix="")
 logger = logging.getLogger(__name__)
 
 

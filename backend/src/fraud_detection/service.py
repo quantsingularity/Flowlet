@@ -1,9 +1,11 @@
 import logging
+import os
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import classification_report, roc_auc_score
 
 from . import (
     EnsembleFraudModel,
@@ -86,8 +88,6 @@ class FraudDetectionService:
 
     def _model_exists(self) -> bool:
         """Check if a trained model exists"""
-        import os
-
         return os.path.exists(self.model_path)
 
     async def train_model(
@@ -127,8 +127,6 @@ class FraudDetectionService:
                 val_features, val_labels = validation_data
                 val_predictions = self.ensemble_model.predict(val_features)
                 if val_labels is not None:
-                    from sklearn.metrics import classification_report, roc_auc_score
-
                     auc_score = roc_auc_score(val_labels, val_predictions)
                     training_results["validation_auc"] = auc_score
                     val_pred_binary = (val_predictions > 0.5).astype(int)

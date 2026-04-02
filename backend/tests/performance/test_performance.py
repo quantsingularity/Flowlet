@@ -9,8 +9,7 @@ from unittest.mock import Mock, patch
 
 import psutil
 import pytest
-
-from backend.app import create_app
+from src.main import create_app
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 

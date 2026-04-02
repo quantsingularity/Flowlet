@@ -17,7 +17,7 @@ from ..utils.error_handlers import (
     handle_wallet_service_error,
 )
 
-payment_bp = Blueprint("payments", __name__, url_prefix="/api/v1/payments")
+payment_bp = Blueprint("payments", __name__, url_prefix="/payments")
 logger = logging.getLogger(__name__)
 
 

@@ -1,16 +1,8 @@
-from enum import Enum
-from typing import Any, Dict, List
-
-
-class VerificationLevel(Enum):
-    BASIC = "basic"
-    ENHANCED = "enhanced"
-    PREMIUM = "premium"
-
-
 import json
 import logging
 from datetime import datetime, timezone
+from enum import Enum
+from typing import Any, Dict, List
 
 from flask import Blueprint, g, jsonify, request
 from sqlalchemy import select
@@ -22,7 +14,14 @@ from ..models.user import KYCStatus, User
 from ..security.audit_logger import audit_logger
 from ..utils.auth import admin_required, token_required
 
-kyc_aml_bp = Blueprint("kyc_aml", __name__, url_prefix="/api/v1/kyc")
+
+class VerificationLevel(Enum):
+    BASIC = "basic"
+    ENHANCED = "enhanced"
+    PREMIUM = "premium"
+
+
+kyc_aml_bp = Blueprint("kyc_aml", __name__, url_prefix="/kyc")
 logger = logging.getLogger(__name__)
 
 

@@ -18,7 +18,7 @@ from ..fraud_detection.service import get_fraud_service
 
 "\nFlask Routes for Fraud Detection\nProvides REST API endpoints for fraud detection functionality\n"
 logger = logging.getLogger(__name__)
-fraud_detection_bp = Blueprint("fraud", __name__, url_prefix="/api/v1/fraud")
+fraud_detection_bp = Blueprint("fraud", __name__, url_prefix="/fraud")
 
 
 @fraud_detection_bp.route("/detect", methods=["POST"])

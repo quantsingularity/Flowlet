@@ -8,7 +8,7 @@ from sqlalchemy import text
 from ..models.database import db
 
 "\nSystem Monitoring and Health Check Routes\n"
-monitoring_bp = Blueprint("monitoring", __name__, url_prefix="/api/v1/monitoring")
+monitoring_bp = Blueprint("monitoring", __name__, url_prefix="/monitoring")
 logger = logging.getLogger(__name__)
 
 

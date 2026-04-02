@@ -39,7 +39,8 @@ services:
     networks:
       - flowlet_net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/monitoring/health"]
+      test:
+        ["CMD", "curl", "-f", "http://localhost:5000/api/v1/monitoring/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -62,7 +63,11 @@ services:
     networks:
       - flowlet_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-flowlet} -d ${POSTGRES_DB:-flowlet_db}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-flowlet} -d ${POSTGRES_DB:-flowlet_db}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -87,7 +92,15 @@ services:
     networks:
       - flowlet_net
     healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-redis_pass}", "ping"]
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "--no-auth-warning",
+          "-a",
+          "${REDIS_PASSWORD:-redis_pass}",
+          "ping",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -100,7 +113,15 @@ services:
       target: runtime
     container_name: flowlet_worker
     restart: unless-stopped
-    command: ["celery", "-A", "run_server.celery", "worker", "--loglevel=info", "--concurrency=4"]
+    command:
+      [
+        "celery",
+        "-A",
+        "run_server.celery",
+        "worker",
+        "--loglevel=info",
+        "--concurrency=4",
+      ]
     environment:
       FLASK_CONFIG: ${FLASK_CONFIG:-development}
       SECRET_KEY: ${SECRET_KEY:-dev-secret-change-in-production-min-32-chars}

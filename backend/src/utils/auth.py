@@ -75,3 +75,7 @@ def admin_required(f: Any) -> Any:
         return f(*args, **kwargs)
 
     return decorated
+
+
+# Re-export from password_security for backward compatibility
+from ..security.password_security import check_password  # noqa: F401

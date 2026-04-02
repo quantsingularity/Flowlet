@@ -5,7 +5,7 @@ from typing import Any
 from flask import Blueprint, jsonify
 
 "\nBanking Integrations Routes (Placeholder for External Banking APIs)\n"
-banking_integrations_bp = Blueprint("banking", __name__, url_prefix="/api/v1/banking")
+banking_integrations_bp = Blueprint("banking", __name__, url_prefix="/banking")
 logger = logging.getLogger(__name__)
 
 

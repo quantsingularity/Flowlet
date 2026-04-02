@@ -5,14 +5,6 @@ from decimal import Decimal
 from typing import Any
 
 from flask import Blueprint, g, jsonify, request
-
-try:
-    from openai import OpenAI
-
-    OPENAI_AVAILABLE = True
-except ImportError:
-    OpenAI = None
-    OPENAI_AVAILABLE = False
 from sqlalchemy import and_, func, select
 
 from ..models.audit_log import AuditEventType, AuditSeverity
@@ -23,7 +15,15 @@ from ..models.user import User
 from ..security.audit_logger import audit_logger
 from ..utils.auth import admin_required, token_required
 
-ai_service_bp = Blueprint("ai_service", __name__, url_prefix="/api/v1/ai")
+try:
+    from openai import OpenAI
+
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OpenAI = None
+    OPENAI_AVAILABLE = False
+
+ai_service_bp = Blueprint("ai_service", __name__, url_prefix="/ai")
 logger = logging.getLogger(__name__)
 try:
     openai_client = (

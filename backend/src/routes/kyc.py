@@ -6,7 +6,7 @@ from typing import Any
 
 from flask import Blueprint, jsonify, request
 
-kyc_bp = Blueprint("kyc", __name__, url_prefix="/kyc")
+kyc_bp = Blueprint("kyc", __name__, url_prefix="/kyc-legacy")
 
 
 @kyc_bp.route("/verify", methods=["POST"])

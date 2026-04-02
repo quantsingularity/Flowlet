@@ -7,9 +7,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 import pytest
-
-from backend.app import create_app
-from backend.src.gateway import CacheManager, CircuitBreaker, RequestBatcher
+from src.gateway.optimized_gateway import CacheManager, CircuitBreaker, RequestBatcher
+from src.main_optimized import create_app
 
 logging.basicConfig(
     level=logging.INFO,

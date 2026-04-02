@@ -13,7 +13,7 @@ from ..models.ledger import LedgerAccountType, LedgerEntry
 from ..security.audit_logger import audit_logger
 from ..utils.auth import admin_required
 
-ledger_bp = Blueprint("ledger", __name__, url_prefix="/api/v1/ledger")
+ledger_bp = Blueprint("ledger", __name__, url_prefix="/ledger")
 logger = logging.getLogger(__name__)
 CHART_OF_ACCOUNTS = {
     "cash_and_equivalents": {

@@ -24,12 +24,11 @@ from ..models.database import db
 from ..models.user import User
 from ..security.audit_logger import audit_logger
 from ..security.input_validator import InputValidator
-from ..security.password_security import hash_password
+from ..security.password_security import check_password, hash_password
 from ..security.rate_limiter import RateLimiter
 from ..security.token_manager import TokenManager
-from ..utils.auth import check_password
 
-auth_bp = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 logger = logging.getLogger(__name__)
 token_manager = TokenManager()
 rate_limiter = RateLimiter()

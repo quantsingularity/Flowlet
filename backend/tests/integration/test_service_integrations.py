@@ -5,9 +5,8 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
+from src.main import create_app
 from src.models.database import db
-
-from backend.app import create_app
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 

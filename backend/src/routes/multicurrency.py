@@ -7,13 +7,14 @@ from flask import Blueprint, g, jsonify, request
 from sqlalchemy import select
 
 from ..models.account import Account
+from ..models.audit_log import AuditEventType, AuditSeverity
 from ..models.database import db
 from ..models.transaction import Transaction
 from ..security.audit_logger import audit_logger
 from .auth import token_required
 
 "\nMulti-Currency and Exchange Rate Routes\n"
-multicurrency_bp = Blueprint("multicurrency", __name__, url_prefix="/api/v1/currency")
+multicurrency_bp = Blueprint("multicurrency", __name__, url_prefix="/currency")
 logger = logging.getLogger(__name__)
 
 

@@ -16,7 +16,7 @@ from ..security.audit_logger import audit_logger
 from ..utils.auth import admin_required, token_required
 from ..utils.validators import InputValidator
 
-user_bp = Blueprint("user", __name__, url_prefix="/api/v1/users")
+user_bp = Blueprint("user", __name__, url_prefix="/users")
 logger = logging.getLogger(__name__)
 
 

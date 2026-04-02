@@ -15,7 +15,7 @@ from ..models.database import db
 from ..security.audit_logger import audit_logger
 from ..utils.auth import admin_required
 
-security_bp = Blueprint("security", __name__, url_prefix="/api/v1/security")
+security_bp = Blueprint("security", __name__, url_prefix="/security")
 logger = logging.getLogger(__name__)
 
 

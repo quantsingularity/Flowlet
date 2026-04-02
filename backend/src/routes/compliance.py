@@ -14,7 +14,7 @@ from ..models.user import User
 from ..security.audit_logger import audit_logger
 from ..utils.auth import admin_required
 
-compliance_bp = Blueprint("compliance", __name__, url_prefix="/api/v1/compliance")
+compliance_bp = Blueprint("compliance", __name__, url_prefix="/compliance")
 logger = logging.getLogger(__name__)
 
 
