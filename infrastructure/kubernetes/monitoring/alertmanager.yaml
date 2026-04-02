@@ -48,7 +48,8 @@ spec:
           configMap:
             name: alertmanager-config
         - name: storage-volume
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: alertmanager-storage-pvc
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -85,3 +86,15 @@ data:
     #         severity: warning
     #       annotations:
     #         summary: Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) is crashlooping
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alertmanager-storage-pvc
+  namespace: monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

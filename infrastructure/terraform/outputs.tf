@@ -1,4 +1,3 @@
-# VPC Outputs
 output "vpc_id" {
   description = "ID of the VPC"
   value       = module.networking.vpc_id
@@ -19,7 +18,6 @@ output "private_subnet_ids" {
   value       = module.networking.private_subnet_ids
 }
 
-# Security Group Outputs
 output "database_security_group_id" {
   description = "ID of the database security group"
   value       = module.security.database_security_group_id
@@ -35,7 +33,6 @@ output "eks_security_group_id" {
   value       = module.security.eks_security_group_id
 }
 
-# Database Outputs
 output "database_endpoint" {
   description = "RDS instance endpoint"
   value       = module.database.db_instance_endpoint
@@ -63,16 +60,15 @@ output "database_password_secret_arn" {
   value       = aws_secretsmanager_secret.db_password.arn
 }
 
-# Redis Outputs
 output "redis_endpoint" {
   description = "Redis cluster endpoint"
-  value       = aws_elasticache_replication_group.redis.primary_endpoint_address
+  value       = module.redis.redis_endpoint
   sensitive   = true
 }
 
 output "redis_port" {
   description = "Redis cluster port"
-  value       = aws_elasticache_replication_group.redis.port
+  value       = module.redis.redis_port
 }
 
 output "redis_auth_token" {
@@ -81,54 +77,16 @@ output "redis_auth_token" {
   sensitive   = true
 }
 
-# Kubernetes Outputs
-output "cluster_id" {
-  description = "EKS cluster ID"
-  value       = module.kubernetes.cluster_id
-}
-
-output "cluster_arn" {
-  description = "EKS cluster ARN"
-  value       = module.kubernetes.cluster_arn
-}
-
-output "cluster_endpoint" {
-  description = "EKS cluster endpoint"
-  value       = module.kubernetes.cluster_endpoint
-}
-
-output "cluster_version" {
-  description = "EKS cluster version"
-  value       = module.kubernetes.cluster_version
-}
-
-output "cluster_security_group_id" {
-  description = "EKS cluster security group ID"
-  value       = module.kubernetes.cluster_security_group_id
-}
-
-output "node_groups" {
-  description = "EKS node groups"
-  value       = module.kubernetes.node_groups
-}
-
-output "oidc_provider_arn" {
-  description = "OIDC provider ARN for IRSA"
-  value       = module.kubernetes.oidc_provider_arn
-}
-
-# S3 Outputs
 output "app_assets_bucket_id" {
   description = "S3 bucket ID for application assets"
-  value       = aws_s3_bucket.app_assets.id
+  value       = module.s3.s3_bucket_id
 }
 
 output "app_assets_bucket_arn" {
   description = "S3 bucket ARN for application assets"
-  value       = aws_s3_bucket.app_assets.arn
+  value       = module.s3.s3_bucket_arn
 }
 
-# General Outputs
 output "aws_region" {
   description = "AWS region"
   value       = var.aws_region

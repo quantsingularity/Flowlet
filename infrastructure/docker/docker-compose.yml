@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: flowlet-postgres
@@ -12,7 +11,7 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ./init-scripts:/docker-entrypoint-initdb.d:ro
     ports:
       - "5432:5432"
     networks:
@@ -23,12 +22,17 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 10s
 
-  # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: flowlet-redis
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set in .env file}
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set in .env file}
+      --appendonly yes
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     ports:
@@ -37,12 +41,12 @@ services:
       - flowlet-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 10s
 
-  # Backend API Service
   backend:
     build:
       context: ../../
@@ -52,9 +56,13 @@ services:
       - DATABASE_URL=postgresql://flowlet:${POSTGRES_PASSWORD}@postgres:5432/flowlet
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
       - JWT_SECRET=${JWT_SECRET:?JWT_SECRET must be set in .env file}
-      - ENVIRONMENT=development
-      - LOG_LEVEL=INFO
-      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+      - SECRET_KEY=${SECRET_KEY:?SECRET_KEY must be set in .env file}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000,http://localhost:5173}
+      - STRIPE_API_KEY=${STRIPE_API_KEY:-}
+      - PLAID_CLIENT_ID=${PLAID_CLIENT_ID:-}
+      - PLAID_SECRET=${PLAID_SECRET:-}
     ports:
       - "8000:8000"
     networks:
@@ -72,40 +80,44 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 15s
 
-  # web-frontend Web Application
-  web-frontend:
+  frontend:
     build:
       context: ../../
-      dockerfile: infrastructure/docker/Dockerfile.web-frontend
-    container_name: flowlet-web-frontend
+      dockerfile: infrastructure/docker/Dockerfile.frontend
+    container_name: flowlet-frontend
+    environment:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8000}
     ports:
       - "3000:3000"
     networks:
       - flowlet-network
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 15s
 
-  # Nginx Load Balancer
   nginx:
-    image: nginx:alpine
+    image: nginx:1.25-alpine
     container_name: flowlet-nginx
     volumes:
       - ./nginx-lb.conf:/etc/nginx/nginx.conf:ro
     ports:
       - "80:80"
-      - "443:443"
     networks:
       - flowlet-network
     depends_on:
-      - backend
-      - web-frontend
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/health"]
@@ -113,34 +125,41 @@ services:
       timeout: 10s
       retries: 5
 
-  # Monitoring - Prometheus
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.47.0
     container_name: flowlet-prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--web.console.libraries=/etc/prometheus/console_libraries"
       - "--web.console.templates=/etc/prometheus/consoles"
-      - "--storage.tsdb.retention.time=200h"
+      - "--storage.tsdb.retention.time=30d"
       - "--web.enable-lifecycle"
+      - "--web.enable-admin-api"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alert.rules.yml:/etc/prometheus/rules/alert.rules.yml:ro
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
     networks:
       - flowlet-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  # Monitoring - Grafana
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.1.0
     container_name: flowlet-grafana
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:?GRAFANA_PASSWORD must be set in .env file}
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_ALLOW_EMBEDDING=false
+      - GF_SERVER_ROOT_URL=http://localhost:3001
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
@@ -149,7 +168,38 @@ services:
     networks:
       - flowlet-network
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: flowlet-postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://flowlet:${POSTGRES_PASSWORD}@postgres:5432/flowlet?sslmode=disable
+    networks:
+      - flowlet-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    container_name: flowlet-redis-exporter
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - flowlet-network
+    depends_on:
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:

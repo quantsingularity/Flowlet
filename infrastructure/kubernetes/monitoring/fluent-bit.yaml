@@ -59,7 +59,7 @@ spec:
       containers:
         - name: fluent-bit
           image: fluent/fluent-bit:2.2.2
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
             - name: FLUENT_ELASTICSEARCH_HOST
               value: "elasticsearch-logging.logging.svc.cluster.local"
@@ -136,6 +136,8 @@ data:
         Logstash_Prefix fluent-bit
         Retry_Limit     False
         Suppress_Type_Name On
+        tls             Off
+        tls.verify      Off
 
   parsers.conf: |
     [PARSER]

@@ -356,3 +356,30 @@ resource "aws_secretsmanager_secret_version" "flowlet_secrets_version" {
 }
 
 data "aws_caller_identity" "current" {}
+
+resource "aws_network_acl" "private" {
+  vpc_id     = var.vpc_id
+  subnet_ids = []
+
+  ingress {
+    protocol   = "tcp"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "10.0.0.0/8"
+    from_port  = 0
+    to_port    = 65535
+  }
+
+  egress {
+    protocol   = "-1"
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  tags = merge(var.tags, {
+    Name = "${var.name_prefix}-private-nacl"
+  })
+}

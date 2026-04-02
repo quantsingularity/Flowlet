@@ -116,6 +116,8 @@ module "security" {
 
   allowed_cidr_blocks = var.allowed_cidr_blocks
 
+  initial_secrets_json = "{}"
+
   tags = local.common_tags
 }
 

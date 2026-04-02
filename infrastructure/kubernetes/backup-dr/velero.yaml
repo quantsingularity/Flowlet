@@ -52,3 +52,33 @@ subjects:
   - kind: ServiceAccount
     name: velero
     namespace: velero
+---
+apiVersion: velero.io/v1
+kind: BackupStorageLocation
+metadata:
+  name: default
+  namespace: velero
+spec:
+  provider: aws
+  objectStorage:
+    bucket: flowlet-velero-backups
+    prefix: k8s-backups
+  config:
+    region: us-west-2
+---
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-cluster-backup
+  namespace: velero
+spec:
+  schedule: "0 1 * * *"
+  template:
+    includedNamespaces:
+      - flowlet-core
+      - flowlet-data
+      - flowlet-messaging
+      - flowlet-monitoring
+    storageLocation: default
+    ttl: 720h0m0s
+    snapshotVolumes: true

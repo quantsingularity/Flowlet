@@ -35,6 +35,10 @@ spec:
       labels:
         app: wallet-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: wallet-service
           image: flowlet/wallet-service:latest
@@ -53,6 +57,12 @@ spec:
                 secretKeyRef:
                   name: redis-credentials
                   key: password
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
           volumeMounts:
             - name: config
               mountPath: /app/config

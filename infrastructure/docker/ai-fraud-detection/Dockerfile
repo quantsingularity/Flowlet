@@ -1,36 +1,40 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
 COPY requirements.txt ./
 
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+FROM python:3.11-slim AS production
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
 COPY src/ ./src/
 COPY models/ ./models/
 COPY config/ ./config/
 
-# Create non-root user
-RUN useradd --create-home --shell /bin/bash flowlet
-RUN chown -R flowlet:flowlet /app
+RUN groupadd -r flowlet && useradd -r -g flowlet flowlet \
+    && chown -R flowlet:flowlet /app
+
 USER flowlet
 
-# Expose port
 EXPOSE 3008
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:3008/health || exit 1
 
-# Start the application
 CMD ["python", "src/main.py"]

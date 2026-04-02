@@ -104,7 +104,7 @@ check_directory "terraform" "Terraform directory"
 check_directory "kubernetes" "Kubernetes directory"
 check_directory "docker" "Docker directory"
 check_directory "scripts" "Scripts directory"
-check_directory "docs" "Documentation directory"
+check_directory "ansible" "Ansible directory"
 
 # Check Kubernetes subdirectories
 check_directory "kubernetes/namespaces" "Kubernetes namespaces directory"

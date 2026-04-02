@@ -28,7 +28,7 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           ports:
-            - containerPort: 80
+            - containerPort: 8000
 ---
 apiVersion: apps/v1
 kind: Deployment

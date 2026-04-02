@@ -40,6 +40,10 @@ spec:
       labels:
         app: kyc-aml-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: kyc-aml-service
           image: flowlet/kyc-aml-service:latest
@@ -63,6 +67,12 @@ spec:
                 secretKeyRef:
                   name: redis-credentials
                   key: password
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
           volumeMounts:
             - name: config
               mountPath: /app/config

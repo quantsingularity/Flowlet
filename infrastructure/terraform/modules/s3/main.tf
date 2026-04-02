@@ -13,7 +13,7 @@ resource "aws_s3_bucket_versioning" "app_assets" {
   }
 }
 
-resource "aws_s3_bucket_encryption" "app_assets" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "app_assets" {
   bucket = aws_s3_bucket.app_assets.id
 
   server_side_encryption_configuration {

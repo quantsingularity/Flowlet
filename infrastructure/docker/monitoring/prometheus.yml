@@ -15,138 +15,20 @@ scrape_configs:
     static_configs:
       - targets: ["localhost:9090"]
 
-  - job_name: "kubernetes-nodes"
-    kubernetes_sd_configs:
-      - role: node
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: "(.*):10250"
-        replacement: "${1}:10255"
-        target_label: __address__
-
-  - job_name: "kubernetes-pods"
-    kubernetes_sd_configs:
-      - role: pod
-    relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-        action: keep
-        regex: true
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-        action: replace
-        target_label: __metrics_path__
-        regex: (.+)
-      - source_labels:
-          [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-        action: replace
-        regex: ([^:]+)(?::\d+)?;(\d+)
-        target_label: __address__
-        replacement: $1:$2
-      - action: labelmap
-        regex: __meta_kubernetes_pod_label_(.+)
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: kubernetes_namespace
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: kubernetes_pod_name
-
-  - job_name: "kubernetes-cadvisor"
-    kubernetes_sd_configs:
-      - role: cadvisor
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: "(.*):8080"
-        replacement: "${1}:4194"
-        target_label: __address__
-      - action: labelmap
-        regex: __meta_kubernetes_node_label_(.+)
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: kubernetes_namespace
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: kubernetes_pod_name
-
-  - job_name: "kubernetes-service-endpoints"
-    kubernetes_sd_configs:
-      - role: endpoints
-    relabel_configs:
-      - source_labels:
-          [__meta_kubernetes_service_annotation_prometheus_io_scrape]
-        action: keep
-        regex: true
-      - source_labels:
-          [__meta_kubernetes_service_annotation_prometheus_io_scheme]
-        action: replace
-        target_label: __scheme__
-        regex: (.+)
-      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
-        action: replace
-        target_label: __metrics_path__
-        regex: (.+)
-      - source_labels:
-          [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
-        action: replace
-        regex: ([^:]+)(?::\d+)?;(\d+)
-        target_label: __address__
-        replacement: $1:$2
-      - action: labelmap
-        regex: __meta_kubernetes_service_label_(.+)
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: kubernetes_namespace
-      - source_labels: [__meta_kubernetes_service_name]
-        action: replace
-        target_label: kubernetes_name
-
-  - job_name: "blackbox"
-    metrics_path: /probe
-    params:
-      module: [http_2xx]
+  - job_name: "flowlet-backend"
     static_configs:
-      - targets:
-          - http://api-gateway.flowlet-core.svc.cluster.local # Example: API Gateway endpoint
-          - http://wallet-service.flowlet-core.svc.cluster.local # Example: Wallet Service endpoint
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__param_target]
-        target_label: instance
-      - target_label: __address__
-        replacement: blackbox-exporter:9115 # Replace with your blackbox exporter service address
+      - targets: ["backend:8000"]
+    metrics_path: /metrics
 
-  - job_name: "node-exporter"
+  - job_name: "postgresql-exporter"
     static_configs:
-      - targets: ["node-exporter:9100"] # Assuming node-exporter is deployed as a service
+      - targets: ["postgres-exporter:9187"]
 
-  - job_name: "kube-state-metrics"
+  - job_name: "redis-exporter"
     static_configs:
-      - targets: ["kube-state-metrics:8080"] # Assuming kube-state-metrics is deployed as a service
+      - targets: ["redis-exporter:9121"]
 
   - job_name: "grafana"
     static_configs:
       - targets: ["grafana:3000"]
-
-  - job_name: "influxdb"
-    static_configs:
-      - targets: ["influxdb:8086"]
-
-  - job_name: "mongodb"
-    static_configs:
-      - targets: ["mongodb:27017"]
-
-  - job_name: "postgresql"
-    static_configs:
-      - targets: ["postgresql:5432"]
-
-  - job_name: "redis"
-    static_configs:
-      - targets: ["redis:6379"]
-
-  - job_name: "kafka"
-    static_configs:
-      - targets: ["kafka:9092"]
-
-  - job_name: "rabbitmq"
-    static_configs:
-      - targets: ["rabbitmq:15672"]
+    metrics_path: /metrics

@@ -16,15 +16,15 @@ data:
       host: redis.flowlet-data.svc.cluster.local
       port: 6379
     jwt:
-      secret: "flowlet-jwt-secret-key-change-in-production"
+      secret: "${JWT_SECRET}"
       expiresIn: "24h"
     oauth:
       google:
-        clientId: "your-google-client-id"
-        clientSecret: "your-google-client-secret"
+        clientId: "${GOOGLE_CLIENT_ID}"
+        clientSecret: "${GOOGLE_CLIENT_SECRET}"
       github:
-        clientId: "your-github-client-id"
-        clientSecret: "your-github-client-secret"
+        clientId: "${GITHUB_CLIENT_ID}"
+        clientSecret: "${GITHUB_CLIENT_SECRET}"
     logging:
       level: info
 ---
@@ -61,6 +61,11 @@ spec:
                 secretKeyRef:
                   name: redis-credentials
                   key: password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: flowlet-secrets
+                  key: jwt-secret
           volumeMounts:
             - name: config
               mountPath: /app/config

@@ -36,7 +36,7 @@ groups:
         expr: sum(rate(http_requests_total{status=~"5.."}[5m])) by (service) / sum(rate(http_requests_total[5m])) by (service) > 0.05
         for: 5m
         labels:
-          severity: major
+          severity: warning
         annotations:
           summary: "High error rate for service {{ $labels.service }}"
           description: "Service {{ $labels.service }} has an error rate of {{ $value | humanizePercentage }} for the last 5 minutes."
@@ -45,7 +45,7 @@ groups:
         expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service)) > 0.5
         for: 5m
         labels:
-          severity: major
+          severity: warning
         annotations:
           summary: "High latency for service {{ $labels.service }}"
           description: "Service {{ $labels.service }} 99th percentile request duration is {{ $value }} seconds for the last 5 minutes."
@@ -76,7 +76,7 @@ groups:
         expr: sum(rate(auth_login_attempts_total{status="failed"}[5m])) by (user) > 5
         for: 1m
         labels:
-          severity: high
+          severity: critical
         annotations:
           summary: "Multiple failed login attempts for user {{ $labels.user }}"
           description: "User {{ $labels.user }} has had {{ $value }} failed login attempts in the last 1 minute."

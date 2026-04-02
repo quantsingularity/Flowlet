@@ -10,7 +10,7 @@ data:
       evaluation_interval: 15s
 
     rule_files:
-      - "flowlet_rules.yml"
+      - "/etc/prometheus/flowlet_rules.yml"
 
     scrape_configs:
       - job_name: 'kubernetes-apiservers'
@@ -179,6 +179,20 @@ spec:
             limits:
               memory: "2Gi"
               cpu: "2000m"
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 10
       volumes:
         - name: prometheus-config
           configMap:

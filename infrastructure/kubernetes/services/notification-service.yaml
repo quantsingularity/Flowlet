@@ -49,6 +49,10 @@ spec:
       labels:
         app: notification-service
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
       containers:
         - name: notification-service
           image: flowlet/notification-service:latest
@@ -72,6 +76,12 @@ spec:
                 secretKeyRef:
                   name: rabbitmq-credentials
                   key: password
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
           volumeMounts:
             - name: config
               mountPath: /app/config

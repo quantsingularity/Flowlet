@@ -12,7 +12,7 @@ resource "aws_elasticache_replication_group" "default" {
 
   node_type                    = var.redis_node_type
   port                         = 6379
-  parameter_group_name         = "default.redis7"
+  parameter_group_name         = "default.redis7.cluster.off"
 
   num_cache_clusters           = var.redis_num_cache_nodes
 
@@ -26,6 +26,7 @@ resource "aws_elasticache_replication_group" "default" {
   automatic_failover_enabled   = var.redis_num_cache_nodes > 1
   multi_az_enabled             = var.redis_num_cache_nodes > 1
 
+  apply_immediately            = false
   snapshot_retention_limit     = 5
   snapshot_window              = "03:00-05:00"
 

@@ -2,7 +2,7 @@
 
 resource "aws_db_instance" "default" {
   allocated_storage    = var.db_allocated_storage
-  storage_type         = "gp2"
+  storage_type         = "gp3"
   engine               = "postgres"
   engine_version       = var.db_engine_version
   instance_class       = var.db_instance_class
@@ -31,4 +31,26 @@ resource "aws_db_subnet_group" "default" {
   name       = "${var.name_prefix}-db-subnet-group"
   subnet_ids = var.private_subnet_ids
   tags       = var.tags
+}
+
+resource "aws_db_parameter_group" "default" {
+  name   = "${var.name_prefix}-pg15"
+  family = "postgres15"
+
+  parameter {
+    name  = "log_connections"
+    value = "1"
+  }
+
+  parameter {
+    name  = "log_disconnections"
+    value = "1"
+  }
+
+  parameter {
+    name  = "log_duration"
+    value = "1"
+  }
+
+  tags = var.tags
 }

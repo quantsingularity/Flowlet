@@ -9,6 +9,8 @@ COPY package*.json ./
 RUN npm ci --only=production
 
 # Copy source code
+RUN apk add --no-cache curl
+
 COPY src/ ./src/
 COPY config/ ./config/
 

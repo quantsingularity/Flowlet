@@ -67,11 +67,11 @@ wait_for_resource() {
 echo "📁 Creating namespaces..."
 apply_manifest "kubernetes/namespaces/namespaces.yaml"
 
-wait_for_resource namespace flowlet-core 60
-wait_for_resource namespace flowlet-data 60
-wait_for_resource namespace flowlet-messaging 60
-wait_for_resource namespace flowlet-monitoring 60
-wait_for_resource namespace flowlet-security 60
+echo "⏳ Waiting for namespaces to be created..."
+for ns in flowlet-core flowlet-data flowlet-messaging flowlet-monitoring flowlet-security; do
+    until kubectl get namespace "$ns" &>/dev/null; do sleep 2; done
+    echo "✅ Namespace $ns is ready."
+done
 
 # 2. Deploy External Secrets Operator and Vault SecretStore (Prerequisite for secrets)
 echo "🔑 Deploying External Secrets Operator and Vault SecretStore..."

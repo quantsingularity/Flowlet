@@ -1,57 +1,39 @@
-# Multi-stage build for Flowlet web-frontend
-FROM node:20-alpine as builder
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY web-frontend/web-web-frontend/package*.json ./
-COPY web-frontend/web-web-frontend/pnpm-lock.yaml ./
 
-# Install pnpm
 RUN npm install -g pnpm
 
-# Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
 COPY web-frontend/web-web-frontend/ .
 
-# Build the application
 RUN pnpm run build
 
-# Production stage with nginx
-FROM nginx:alpine as production
+FROM nginx:alpine AS production
 
-# Install curl for health checks
 RUN apk add --no-cache curl gettext
 
-# Copy custom nginx configuration
-# Copy custom nginx configuration and entrypoint
 COPY infrastructure/docker/nginx.conf /etc/nginx/nginx.conf.template
-COPY infrastructure/docker/web-frontend-entrypoint.sh /usr/local/bin/
+COPY infrastructure/docker/frontend-entrypoint.sh /usr/local/bin/
 
-# Copy built application from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Nginx official image already runs as non-root user 'nginx' (UID 101)
-# No need to create a new user, using default 'nginx' user.
+RUN chown -R nginx:nginx /var/cache/nginx \
+    && chown -R nginx:nginx /var/log/nginx \
+    && chown -R nginx:nginx /etc/nginx/conf.d \
+    && chown -R nginx:nginx /usr/share/nginx/html \
+    && touch /var/run/nginx.pid \
+    && chown nginx:nginx /var/run/nginx.pid \
+    && chmod +x /usr/local/bin/frontend-entrypoint.sh
 
-# Change ownership of necessary directories for 'nginx' user
-RUN chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    chown -R nginx:nginx /etc/nginx/conf.d
-
-# Switch to non-root user 'nginx'
 USER nginx
 
-# Expose port and add a placeholder for environment variable substitution in nginx.conf
 EXPOSE 3000
 
-# Health check - already present and good
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3000 || exit 1
 
-# Start nginx - use the entrypoint script
-RUN chmod +x /usr/local/bin/web-frontend-entrypoint.sh
-CMD ["/usr/local/bin/web-frontend-entrypoint.sh", "nginx", "-g", "daemon off;"]
+CMD ["/usr/local/bin/frontend-entrypoint.sh", "nginx", "-g", "daemon off;"]

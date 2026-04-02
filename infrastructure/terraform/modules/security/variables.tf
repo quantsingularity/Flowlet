@@ -19,3 +19,10 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "initial_secrets_json" {
+  description = "Initial secrets JSON to store in Secrets Manager (managed externally in production)"
+  type        = string
+  sensitive   = true
+  default     = "{}"
+}
