@@ -9,9 +9,6 @@ import {
 } from "@/components/ui/card";
 import type { TransactionListProps } from "@/types/wallet";
 
-/**
- * Renders a single transaction item.
- */
 const TransactionItem: React.FC<{
   transaction: TransactionListProps["transactions"][0];
 }> = ({ transaction }) => {
@@ -20,7 +17,7 @@ const TransactionItem: React.FC<{
   const indicatorClass = isIncome ? "bg-green-500" : "bg-red-500";
 
   return (
-    <div key={transaction.id} className="flex items-center justify-between">
+    <div className="flex items-center justify-between">
       <div className="flex items-center space-x-3">
         <div className={`w-2 h-2 rounded-full ${indicatorClass}`} />
         <div>
@@ -40,10 +37,6 @@ const TransactionItem: React.FC<{
   );
 };
 
-/**
- * Displays a list of recent financial transactions.
- * @param {TransactionListProps} props - The component props.
- */
 const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
   return (
     <Card className="lg:col-span-2">
@@ -53,9 +46,15 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {transactions.map((transaction) => (
-            <TransactionItem key={transaction.id} transaction={transaction} />
-          ))}
+          {transactions.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">
+              No recent transactions
+            </p>
+          ) : (
+            transactions.map((transaction) => (
+              <TransactionItem key={transaction.id} transaction={transaction} />
+            ))
+          )}
         </div>
         <Button variant="outline" className="w-full mt-4">
           View All Transactions

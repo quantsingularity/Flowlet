@@ -15,7 +15,12 @@ const initialState: AuthState = {
   error: null,
 };
 
-// Async thunks for authentication
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof ApiError) return error.message;
+  if (error instanceof Error) return error.message || fallback;
+  return fallback;
+};
+
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (credentials: LoginCredentials, { rejectWithValue }) => {
@@ -23,10 +28,7 @@ export const loginUser = createAsyncThunk(
       const response = await authService.login(credentials);
       return response;
     } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Login failed");
+      return rejectWithValue(getErrorMessage(error, "Login failed"));
     }
   },
 );
@@ -38,10 +40,7 @@ export const registerUser = createAsyncThunk(
       const response = await authService.register(userData);
       return response;
     } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Registration failed");
+      return rejectWithValue(getErrorMessage(error, "Registration failed"));
     }
   },
 );
@@ -53,7 +52,7 @@ export const logoutUser = createAsyncThunk(
       await authService.logout();
       return null;
     } catch (error: unknown) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(getErrorMessage(error, "Logout failed"));
     }
   },
 );
@@ -65,14 +64,10 @@ export const validateToken = createAsyncThunk(
       if (!authService.isAuthenticated()) {
         throw new Error("No valid token found");
       }
-
       const user = await authService.getCurrentUser();
-      return { user, token: "validated" }; // Token is managed by TokenManager
+      return { user, token: "validated" };
     } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Token validation failed");
+      return rejectWithValue(getErrorMessage(error, "Token validation failed"));
     }
   },
 );
@@ -85,10 +80,7 @@ export const refreshToken = createAsyncThunk(
       const user = authService.getCurrentUserFromStorage();
       return { user, token };
     } catch (error: unknown) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Token refresh failed");
+      return rejectWithValue(getErrorMessage(error, "Token refresh failed"));
     }
   },
 );

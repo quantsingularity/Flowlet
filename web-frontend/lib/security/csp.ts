@@ -210,7 +210,7 @@ export class CSPService {
     console.error("CSP Violation:", violationReport);
 
     // Send to monitoring service in production
-    if (process.env.NODE_ENV === "production") {
+    if (import.meta.env.PROD) {
       fetch("/api/csp-violation", {
         method: "POST",
         headers: {

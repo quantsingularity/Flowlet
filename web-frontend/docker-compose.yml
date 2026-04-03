@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  # ── Frontend ──────────────────────────────────────────────────────────────
+  web-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+        VITE_ENABLE_MFA: ${VITE_ENABLE_MFA:-true}
+        VITE_ENABLE_BIOMETRIC: ${VITE_ENABLE_BIOMETRIC:-true}
+        VITE_ENABLE_ANALYTICS: ${VITE_ENABLE_ANALYTICS:-false}
+        VITE_CSP_ENABLED: ${VITE_CSP_ENABLED:-true}
+        VITE_ENABLE_SECURITY_HEADERS: ${VITE_ENABLE_SECURITY_HEADERS:-true}
+    image: flowlet-web-frontend:${TAG:-latest}
+    container_name: flowlet-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - flowlet-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN:-localhost}`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  # ── Dev server (hot-reload) ────────────────────────────────────────────────
+  web-frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: flowlet-web-frontend-dev:${TAG:-latest}
+    container_name: flowlet-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "${DEV_PORT:-5173}:5173"
+    environment:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8000}
+      - VITE_ENABLE_MFA=${VITE_ENABLE_MFA:-true}
+      - VITE_ENABLE_BIOMETRIC=${VITE_ENABLE_BIOMETRIC:-true}
+      - VITE_ENABLE_ANALYTICS=${VITE_ENABLE_ANALYTICS:-false}
+      - VITE_DEBUG=true
+      - VITE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - flowlet-network
+    profiles:
+      - dev
+
+networks:
+  flowlet-network:
+    driver: bridge
+    name: flowlet-network

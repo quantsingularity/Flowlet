@@ -11,7 +11,12 @@ import {
   walletService,
 } from "@/lib/walletService";
 
-// State interface
+const getErrorMessage = (error: unknown, fallback: string): string => {
+  if (error instanceof ApiError) return error.message;
+  if (error instanceof Error) return error.message || fallback;
+  return fallback;
+};
+
 interface WalletState {
   accounts: Account[];
   currentAccount: Account | null;
@@ -35,7 +40,6 @@ interface WalletState {
   error: string | null;
 }
 
-// Initial state
 const initialState: WalletState = {
   accounts: [],
   currentAccount: null,
@@ -48,17 +52,15 @@ const initialState: WalletState = {
   error: null,
 };
 
-// Async thunks
 export const fetchAccounts = createAsyncThunk(
   "wallet/fetchAccounts",
   async (_, { rejectWithValue }) => {
     try {
       return await walletService.getAccounts();
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to fetch accounts");
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to fetch accounts"),
+      );
     }
   },
 );
@@ -68,12 +70,9 @@ export const fetchAccountDetails = createAsyncThunk(
   async (accountId: string, { rejectWithValue }) => {
     try {
       return await walletService.getAccount(accountId);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
+    } catch (error: unknown) {
       return rejectWithValue(
-        error.message || "Failed to fetch account details",
+        getErrorMessage(error, "Failed to fetch account details"),
       );
     }
   },
@@ -90,11 +89,10 @@ export const createAccount = createAsyncThunk(
   ) => {
     try {
       return await walletService.createAccount(accountData);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to create account");
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to create account"),
+      );
     }
   },
 );
@@ -102,17 +100,19 @@ export const createAccount = createAsyncThunk(
 export const fetchTransactions = createAsyncThunk(
   "wallet/fetchTransactions",
   async (
-    { accountId, filters }: { accountId: string; filters?: any },
+    {
+      accountId,
+      filters,
+    }: { accountId: string; filters?: Record<string, unknown> },
     { rejectWithValue },
   ) => {
     try {
       const response = await walletService.getTransactions(accountId, filters);
       return response.data || [];
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to fetch transactions");
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to fetch transactions"),
+      );
     }
   },
 );
@@ -125,11 +125,8 @@ export const depositFunds = createAsyncThunk(
   ) => {
     try {
       return await walletService.depositFunds(depositData);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to deposit funds");
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, "Failed to deposit funds"));
     }
   },
 );
@@ -146,11 +143,10 @@ export const withdrawFunds = createAsyncThunk(
   ) => {
     try {
       return await walletService.withdrawFunds(withdrawalData);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to withdraw funds");
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to withdraw funds"),
+      );
     }
   },
 );
@@ -168,11 +164,10 @@ export const transferFunds = createAsyncThunk(
   ) => {
     try {
       return await walletService.transferFunds(transferData);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to transfer funds");
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to transfer funds"),
+      );
     }
   },
 );
@@ -182,11 +177,8 @@ export const fetchCards = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       return await walletService.getCards();
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to fetch cards");
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, "Failed to fetch cards"));
     }
   },
 );
@@ -196,11 +188,10 @@ export const fetchCardDetails = createAsyncThunk(
   async (cardId: string, { rejectWithValue }) => {
     try {
       return await walletService.getCard(cardId);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to fetch card details");
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getErrorMessage(error, "Failed to fetch card details"),
+      );
     }
   },
 );
@@ -218,11 +209,8 @@ export const issueCard = createAsyncThunk(
   ) => {
     try {
       return await walletService.issueCard(cardData);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to issue card");
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, "Failed to issue card"));
     }
   },
 );
@@ -236,11 +224,8 @@ export const activateCard = createAsyncThunk(
     try {
       await walletService.activateCard(cardId, activationCode);
       return cardId;
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || "Failed to activate card");
+    } catch (error: unknown) {
+      return rejectWithValue(getErrorMessage(error, "Failed to activate card"));
     }
   },
 );
@@ -254,11 +239,10 @@ export const toggleCardStatus = createAsyncThunk(
     try {
       await walletService.toggleCardStatus(cardId, action);
       return { cardId, action };
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue(error.message || `Failed to ${action} card`);
+    } catch (error: unknown) {
+      return rejectWithValue(
+        getErrorMessage(error, `Failed to ${action} card`),
+      );
     }
   },
 );
@@ -268,12 +252,9 @@ export const fetchDashboardSummary = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       return await walletService.getAccountSummary();
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
+    } catch (error: unknown) {
       return rejectWithValue(
-        error.message || "Failed to fetch dashboard summary",
+        getErrorMessage(error, "Failed to fetch dashboard summary"),
       );
     }
   },
@@ -290,18 +271,14 @@ export const fetchSpendingAnalytics = createAsyncThunk(
   ) => {
     try {
       return await walletService.getSpendingAnalytics(accountId, period);
-    } catch (error: any) {
-      if (error instanceof ApiError) {
-        return rejectWithValue(error.message);
-      }
+    } catch (error: unknown) {
       return rejectWithValue(
-        error.message || "Failed to fetch spending analytics",
+        getErrorMessage(error, "Failed to fetch spending analytics"),
       );
     }
   },
 );
 
-// Slice
 const walletSlice = createSlice({
   name: "wallet",
   initialState,
@@ -320,7 +297,6 @@ const walletSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // Fetch Accounts
     builder
       .addCase(fetchAccounts.pending, (state) => {
         state.isLoading = true;
@@ -338,7 +314,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch Account Details
     builder
       .addCase(fetchAccountDetails.pending, (state) => {
         state.isLoading = true;
@@ -347,8 +322,6 @@ const walletSlice = createSlice({
       .addCase(fetchAccountDetails.fulfilled, (state, action) => {
         state.isLoading = false;
         state.currentAccount = action.payload;
-
-        // Update account in accounts array
         const index = state.accounts.findIndex(
           (acc) => acc.id === action.payload.id,
         );
@@ -363,7 +336,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Create Account
     builder
       .addCase(createAccount.pending, (state) => {
         state.isLoading = true;
@@ -379,7 +351,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch Transactions
     builder
       .addCase(fetchTransactions.pending, (state) => {
         state.isLoading = true;
@@ -394,7 +365,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Deposit Funds
     builder
       .addCase(depositFunds.pending, (state) => {
         state.isLoading = true;
@@ -403,8 +373,6 @@ const walletSlice = createSlice({
       .addCase(depositFunds.fulfilled, (state, action) => {
         state.isLoading = false;
         state.transactions = [action.payload, ...state.transactions];
-
-        // Update account balance
         if (
           state.currentAccount &&
           state.currentAccount.id === action.payload.account_id
@@ -412,7 +380,6 @@ const walletSlice = createSlice({
           state.currentAccount.balance += action.payload.amount;
           state.currentAccount.available_balance += action.payload.amount;
         }
-
         const accountIndex = state.accounts.findIndex(
           (acc) => acc.id === action.payload.account_id,
         );
@@ -427,7 +394,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Withdraw Funds
     builder
       .addCase(withdrawFunds.pending, (state) => {
         state.isLoading = true;
@@ -436,8 +402,6 @@ const walletSlice = createSlice({
       .addCase(withdrawFunds.fulfilled, (state, action) => {
         state.isLoading = false;
         state.transactions = [action.payload, ...state.transactions];
-
-        // Update account balance
         if (
           state.currentAccount &&
           state.currentAccount.id === action.payload.account_id
@@ -445,7 +409,6 @@ const walletSlice = createSlice({
           state.currentAccount.balance -= action.payload.amount;
           state.currentAccount.available_balance -= action.payload.amount;
         }
-
         const accountIndex = state.accounts.findIndex(
           (acc) => acc.id === action.payload.account_id,
         );
@@ -460,7 +423,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Transfer Funds
     builder
       .addCase(transferFunds.pending, (state) => {
         state.isLoading = true;
@@ -469,26 +431,20 @@ const walletSlice = createSlice({
       .addCase(transferFunds.fulfilled, (state, action) => {
         state.isLoading = false;
         state.transactions = [action.payload, ...state.transactions];
-
-        // Update account balances
-        const fromAccountIndex = state.accounts.findIndex(
+        const fromIdx = state.accounts.findIndex(
           (acc) => acc.id === action.payload.from_account_id,
         );
-        if (fromAccountIndex !== -1) {
-          state.accounts[fromAccountIndex].balance -= action.payload.amount;
-          state.accounts[fromAccountIndex].available_balance -=
-            action.payload.amount;
+        if (fromIdx !== -1) {
+          state.accounts[fromIdx].balance -= action.payload.amount;
+          state.accounts[fromIdx].available_balance -= action.payload.amount;
         }
-
-        const toAccountIndex = state.accounts.findIndex(
+        const toIdx = state.accounts.findIndex(
           (acc) => acc.id === action.payload.to_account_id,
         );
-        if (toAccountIndex !== -1) {
-          state.accounts[toAccountIndex].balance += action.payload.amount;
-          state.accounts[toAccountIndex].available_balance +=
-            action.payload.amount;
+        if (toIdx !== -1) {
+          state.accounts[toIdx].balance += action.payload.amount;
+          state.accounts[toIdx].available_balance += action.payload.amount;
         }
-
         if (state.currentAccount) {
           if (state.currentAccount.id === action.payload.from_account_id) {
             state.currentAccount.balance -= action.payload.amount;
@@ -504,7 +460,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch Cards
     builder
       .addCase(fetchCards.pending, (state) => {
         state.isLoading = true;
@@ -522,7 +477,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch Card Details
     builder
       .addCase(fetchCardDetails.pending, (state) => {
         state.isLoading = true;
@@ -531,8 +485,6 @@ const walletSlice = createSlice({
       .addCase(fetchCardDetails.fulfilled, (state, action) => {
         state.isLoading = false;
         state.currentCard = action.payload;
-
-        // Update card in cards array
         const index = state.cards.findIndex(
           (card) => card.id === action.payload.id,
         );
@@ -547,7 +499,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Issue Card
     builder
       .addCase(issueCard.pending, (state) => {
         state.isLoading = true;
@@ -563,7 +514,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Activate Card
     builder
       .addCase(activateCard.pending, (state) => {
         state.isLoading = true;
@@ -571,15 +521,12 @@ const walletSlice = createSlice({
       })
       .addCase(activateCard.fulfilled, (state, action) => {
         state.isLoading = false;
-
-        // Update card status
         const cardIndex = state.cards.findIndex(
           (card) => card.id === action.payload,
         );
         if (cardIndex !== -1) {
           state.cards[cardIndex].status = "active";
         }
-
         if (state.currentCard && state.currentCard.id === action.payload) {
           state.currentCard.status = "active";
         }
@@ -589,7 +536,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Toggle Card Status
     builder
       .addCase(toggleCardStatus.pending, (state) => {
         state.isLoading = true;
@@ -597,16 +543,12 @@ const walletSlice = createSlice({
       })
       .addCase(toggleCardStatus.fulfilled, (state, action) => {
         state.isLoading = false;
-
-        // Update card status
         const { cardId, action: cardAction } = action.payload;
         const newStatus = cardAction === "block" ? "blocked" : "active";
-
         const cardIndex = state.cards.findIndex((card) => card.id === cardId);
         if (cardIndex !== -1) {
           state.cards[cardIndex].status = newStatus;
         }
-
         if (state.currentCard && state.currentCard.id === cardId) {
           state.currentCard.status = newStatus;
         }
@@ -616,7 +558,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch Dashboard Summary
     builder
       .addCase(fetchDashboardSummary.pending, (state) => {
         state.isLoading = true;
@@ -631,7 +572,6 @@ const walletSlice = createSlice({
         state.error = action.payload as string;
       });
 
-    // Fetch Spending Analytics
     builder
       .addCase(fetchSpendingAnalytics.pending, (state) => {
         state.isLoading = true;

@@ -1190,7 +1190,7 @@ export function DataClassification({
                               {level.handlingInstructions.map(
                                 (instruction, index) => (
                                   <li
-                                    key={index}
+                                    key={instruction + index}
                                     className="flex items-start space-x-1"
                                   >
                                     <span>•</span>

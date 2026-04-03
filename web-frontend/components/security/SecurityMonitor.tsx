@@ -257,7 +257,7 @@ export function SecurityMonitor({
                 </h4>
                 <ul className="text-sm text-gray-600 space-y-1">
                   {threatLevel.factors.map((factor, index) => (
-                    <li key={index} className="flex items-center">
+                    <li key={factor + index} className="flex items-center">
                       <AlertTriangle className="w-3 h-3 mr-2 text-amber-500" />
                       {factor}
                     </li>
@@ -272,7 +272,7 @@ export function SecurityMonitor({
                   <h4 className="text-sm font-medium mb-2">Recommendations:</h4>
                   <ul className="text-sm text-blue-600 space-y-1">
                     {threatLevel.recommendations.map((rec, index) => (
-                      <li key={index} className="flex items-center">
+                      <li key={rec + index} className="flex items-center">
                         <CheckCircle className="w-3 h-3 mr-2 text-blue-500" />
                         {rec}
                       </li>

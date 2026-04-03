@@ -328,27 +328,34 @@ class ApiService {
     }
   }
 
-  private async handleError(error: any, context?: string): Promise<never> {
+  private async handleError(error: unknown, context?: string): Promise<never> {
     let apiError: ApiError;
 
-    if (error.response) {
-      // Server responded with error status
-      apiError = new ApiError(
-        error.response.data?.message || `HTTP ${error.response.status} Error`,
-        error.response.status,
-        error.response.data,
-        error.response.data?.meta?.request_id,
-      );
-    } else if (error.request) {
-      // Network error
-      apiError = new ApiError(
-        "Network error - please check your connection",
-        0,
-        { type: "network_error" },
-      );
-    } else {
-      // Other error
+    if (isAxiosError(error)) {
+      if (error.response) {
+        apiError = new ApiError(
+          error.response.data?.message || `HTTP ${error.response.status} Error`,
+          error.response.status,
+          error.response.data,
+          error.response.data?.meta?.request_id,
+        );
+      } else if (error.request) {
+        apiError = new ApiError(
+          "Network error - please check your connection",
+          0,
+          { type: "network_error" },
+        );
+      } else {
+        apiError = new ApiError(error.message || "Unknown error occurred", 0, {
+          type: "unknown_error",
+        });
+      }
+    } else if (error instanceof Error) {
       apiError = new ApiError(error.message || "Unknown error occurred", 0, {
+        type: "unknown_error",
+      });
+    } else {
+      apiError = new ApiError("Unknown error occurred", 0, {
         type: "unknown_error",
       });
     }

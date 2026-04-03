@@ -75,8 +75,10 @@ const RegisterScreen: React.FC = () => {
       await dispatch(registerUser(registerData)).unwrap();
       toast.success("Account created successfully!");
       navigate("/onboarding");
-    } catch (error: any) {
-      setError("root", { message: error || "Registration failed" });
+    } catch (error: unknown) {
+      setError("root", {
+        message: typeof error === "string" ? error : "Registration failed",
+      });
       toast.error("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);

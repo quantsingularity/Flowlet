@@ -84,7 +84,7 @@ const QuickActionsCard: React.FC = () => (
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const userName = user?.name?.split(" ")[0] || "User";
+  const userName = user?.firstName || user?.fullName?.split(" ")[0] || "User";
 
   const [state, setState] = useState<DashboardState>({
     data: null,

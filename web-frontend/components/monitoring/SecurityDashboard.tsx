@@ -1306,8 +1306,8 @@ export function SecurityDashboard({
                             <ul className="text-xs text-red-600 space-y-1">
                               {compliance.criticalFindings
                                 .slice(0, 3)
-                                .map((finding, index) => (
-                                  <li key={index}>• {finding}</li>
+                                .map((finding) => (
+                                  <li key={finding}>• {finding}</li>
                                 ))}
                             </ul>
                           </div>

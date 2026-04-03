@@ -647,7 +647,7 @@ const TemplatePreview: React.FC<{
           <div className="space-y-2">
             {template.preview.map((step, index) => (
               <div
-                key={index}
+                key={step + index}
                 className="flex items-center gap-3 p-2 border rounded"
               >
                 <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
@@ -663,7 +663,7 @@ const TemplatePreview: React.FC<{
           <h3 className="font-semibold mb-3">Key Features</h3>
           <div className="space-y-2">
             {template.features.map((feature, index) => (
-              <div key={index} className="flex items-center gap-2">
+              <div key={feature + index} className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-500" />
                 <span className="text-sm">{feature}</span>
               </div>

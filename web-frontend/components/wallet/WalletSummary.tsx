@@ -2,9 +2,6 @@ import type React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { WalletSummaryProps } from "@/types/wallet";
 
-/**
- * Renders a single quick statistic card.
- */
 const QuickStatCard: React.FC<{
   stat: WalletSummaryProps["quickStats"][0];
 }> = ({ stat }) => {
@@ -27,15 +24,11 @@ const QuickStatCard: React.FC<{
   );
 };
 
-/**
- * Displays a grid of quick financial statistics.
- * @param {WalletSummaryProps} props - The component props.
- */
 const WalletSummary: React.FC<WalletSummaryProps> = ({ quickStats }) => {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {quickStats.map((stat, index) => (
-        <QuickStatCard key={index} stat={stat} />
+      {quickStats.map((stat) => (
+        <QuickStatCard key={stat.title} stat={stat} />
       ))}
     </div>
   );

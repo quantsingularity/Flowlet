@@ -1,8 +1,10 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Notification } from "@/types";
 
+type Theme = "light" | "dark" | "system";
+
 interface UIState {
-  theme: "light" | "dark" | "system";
+  theme: Theme;
   sidebarOpen: boolean;
   mobileMenuOpen: boolean;
   notifications: Notification[];
@@ -24,13 +26,25 @@ interface UIState {
   }>;
 }
 
+// Restore persisted theme from localStorage on store init
+const getInitialTheme = (): Theme => {
+  try {
+    const saved = localStorage.getItem("flowlet_theme");
+    if (saved === "light" || saved === "dark" || saved === "system")
+      return saved;
+  } catch {
+    // ignore
+  }
+  return "system";
+};
+
 const initialState: UIState = {
-  theme: "system",
+  theme: getInitialTheme(),
   sidebarOpen: true,
   mobileMenuOpen: false,
   notifications: [],
   unreadNotifications: 0,
-  isOnline: navigator.onLine,
+  isOnline: typeof navigator !== "undefined" ? navigator.onLine : true,
   loading: {
     global: false,
     components: {},
@@ -43,7 +57,7 @@ const uiSlice = createSlice({
   name: "ui",
   initialState,
   reducers: {
-    setTheme: (state, action: PayloadAction<"light" | "dark" | "system">) => {
+    setTheme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
     },
     toggleSidebar: (state) => {
@@ -115,7 +129,7 @@ const uiSlice = createSlice({
       state,
       action: PayloadAction<Omit<UIState["toasts"][0], "id">>,
     ) => {
-      const id = Date.now().toString();
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       state.toasts.push({ ...action.payload, id });
     },
     removeToast: (state, action: PayloadAction<string>) => {

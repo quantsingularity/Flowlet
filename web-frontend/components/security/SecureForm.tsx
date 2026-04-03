@@ -363,7 +363,7 @@ export function SecureForm<T extends FieldValues>({
           <AlertDescription className="text-amber-800">
             <ul className="list-disc list-inside">
               {formState.securityWarnings.map((warning, index) => (
-                <li key={index}>{warning}</li>
+                <li key={warning + index}>{warning}</li>
               ))}
             </ul>
           </AlertDescription>

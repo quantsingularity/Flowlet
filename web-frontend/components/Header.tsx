@@ -48,6 +48,17 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
     }
   };
 
+  // Derive display values from correct User type fields
+  const displayName =
+    (user?.fullName ??
+      `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim()) ||
+    "User";
+  const initials =
+    [user?.firstName?.[0], user?.lastName?.[0]]
+      .filter(Boolean)
+      .join("")
+      .toUpperCase() || "U";
+
   return (
     <header className="fixed top-0 left-0 right-0 h-16 bg-background border-b z-40">
       <div className="flex items-center justify-between h-full px-4">
@@ -57,6 +68,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
             size="sm"
             onClick={onMenuClick}
             className="p-2"
+            aria-label="Toggle menu"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -73,7 +85,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
 
         <div className="flex items-center space-x-2">
           {/* Notifications */}
-          <Button variant="ghost" size="sm" className="relative">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="relative"
+            aria-label="Notifications"
+          >
             <Bell className="h-5 w-5" />
             {unreadNotifications > 0 && (
               <Badge
@@ -88,16 +105,14 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
           {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full"
+                aria-label="User menu"
+              >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.avatar} alt={user?.name} />
-                  <AvatarFallback>
-                    {user?.name
-                      ?.split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase() || "U"}
-                  </AvatarFallback>
+                  <AvatarImage src={user?.profilePicture} alt={displayName} />
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -105,7 +120,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    {user?.name}
+                    {displayName}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground">
                     {user?.email}

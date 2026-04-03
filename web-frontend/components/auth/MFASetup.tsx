@@ -614,9 +614,9 @@ export function MFASetup({
               {state.backupCodes.length > 0 ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-2 p-4 bg-gray-50 rounded-lg">
-                    {state.backupCodes.map((code, index) => (
+                    {state.backupCodes.map((code) => (
                       <div
-                        key={index}
+                        key={code}
                         className="font-mono text-sm p-2 bg-white rounded border"
                       >
                         {code}

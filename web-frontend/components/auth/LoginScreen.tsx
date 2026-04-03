@@ -55,8 +55,10 @@ const LoginScreen: React.FC = () => {
       await dispatch(loginUser(data)).unwrap();
       toast.success("Welcome back!");
       navigate("/dashboard");
-    } catch (error: any) {
-      setError("root", { message: error || "Login failed" });
+    } catch (error: unknown) {
+      setError("root", {
+        message: typeof error === "string" ? error : "Login failed",
+      });
       toast.error("Login failed. Please check your credentials.");
     } finally {
       setIsLoading(false);

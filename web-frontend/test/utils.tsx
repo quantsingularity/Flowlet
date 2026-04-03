@@ -1,3 +1,4 @@
+import type React from "react";
 import { configureStore } from "@reduxjs/toolkit";
 import { type RenderOptions, render } from "@testing-library/react";
 import { Provider } from "react-redux";
@@ -7,9 +8,9 @@ import authReducer from "@/store/authSlice";
 import transactionReducer from "@/store/transactionSlice";
 import uiReducer from "@/store/uiSlice";
 import walletReducer from "@/store/walletSlice";
+import type { RootState } from "@/store";
 
-// Create a custom render function that includes providers
-const createTestStore = (preloadedState?: any) => {
+const createTestStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: {
       auth: authReducer,
@@ -27,7 +28,7 @@ const createTestStore = (preloadedState?: any) => {
 };
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, "wrapper"> {
-  preloadedState?: any;
+  preloadedState?: Partial<RootState>;
   store?: ReturnType<typeof createTestStore>;
 }
 
@@ -50,31 +51,24 @@ export const renderWithProviders = (
   return { store, ...render(ui, { wrapper: Wrapper, ...renderOptions }) };
 };
 
-// Mock user for testing
+// Mock user aligned with actual User type from @/types
 export const mockUser = {
   id: "1",
   email: "test@example.com",
-  name: "Test User",
-  avatar: "",
-  role: "user" as const,
-  preferences: {
-    theme: "light" as const,
-    language: "en",
-    currency: "USD",
-    notifications: {
-      email: true,
-      push: true,
-      sms: false,
-      transactionAlerts: true,
-      securityAlerts: true,
-      marketingEmails: false,
-    },
-  },
+  firstName: "Test",
+  lastName: "User",
+  fullName: "Test User",
+  role: "customer" as const,
+  permissions: [],
+  isEmailVerified: true,
+  isPhoneVerified: false,
+  kycStatus: "verified" as const,
+  mfaEnabled: false,
+  status: "active" as const,
   createdAt: "2023-01-01T00:00:00Z",
   updatedAt: "2023-01-01T00:00:00Z",
 };
 
-// Mock wallet for testing
 export const mockWallet = {
   id: "1",
   userId: "1",
@@ -86,7 +80,6 @@ export const mockWallet = {
   updatedAt: "2023-01-01T00:00:00Z",
 };
 
-// Mock transaction for testing
 export const mockTransaction = {
   id: "1",
   walletId: "1",

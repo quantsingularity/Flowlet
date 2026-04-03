@@ -1,19 +1,21 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
 // Performance monitoring with better error handling
 if (import.meta.env.PROD) {
-  // Performance monitoring in production
   try {
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === "navigation") {
-          // Log navigation timing for monitoring
+          const navEntry = entry as PerformanceNavigationTiming;
           console.log("Navigation timing:", {
-            loadTime: entry.loadEventEnd - entry.loadEventStart,
+            loadTime: navEntry.loadEventEnd - navEntry.loadEventStart,
             domContentLoaded:
-              entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart,
-            firstPaint: entry.responseEnd - entry.requestStart,
+              navEntry.domContentLoadedEventEnd -
+              navEntry.domContentLoadedEventStart,
+            firstPaint: navEntry.responseEnd - navEntry.requestStart,
           });
         }
       }
@@ -38,30 +40,17 @@ window.addEventListener("error", (event) => {
   };
 
   console.error("Global error:", errorInfo);
-
-  // In production, send to error reporting service
-  if (import.meta.env.PROD) {
-    // Example: Send to error reporting service
-    // errorReportingService.captureException(errorInfo);
-  }
 });
 
 window.addEventListener("unhandledrejection", (event) => {
   const errorInfo = {
     reason: event.reason,
-    promise: event.promise,
     timestamp: new Date().toISOString(),
     userAgent: navigator.userAgent,
     url: window.location.href,
   };
 
   console.error("Unhandled promise rejection:", errorInfo);
-
-  // In production, send to error reporting service
-  if (import.meta.env.PROD) {
-    // Example: Send to error reporting service
-    // errorReportingService.captureException(errorInfo);
-  }
 });
 
 // Security: Remove console in production
