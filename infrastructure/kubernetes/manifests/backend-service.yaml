@@ -1,16 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: flowlet-backend-service
+  name: flowlet-backend
+  namespace: flowlet-core
   labels:
     app: flowlet
     tier: backend
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8000"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     app: flowlet
     tier: backend
   ports:
-    - protocol: TCP
+    - name: http
       port: 80
       targetPort: 8000
+      protocol: TCP
   type: ClusterIP

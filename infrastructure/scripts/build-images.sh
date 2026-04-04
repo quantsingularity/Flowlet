@@ -2,15 +2,15 @@
 
 # Build all Flowlet Docker images
 
-set -e
+set -euo pipefail
 
 echo "🐳 Building Flowlet Docker Images"
 
-# Registry configuration
 REGISTRY=${REGISTRY:-"flowlet"}
 TAG=${TAG:-"latest"}
+PUSH=${PUSH:-"false"}
+PARALLEL=${PARALLEL:-"false"}
 
-# Services to build
 SERVICES=(
     "wallet-service"
     "payments-service"
@@ -25,7 +25,6 @@ SERVICES=(
     "ai-chatbot"
 )
 
-# Function to build a service
 build_service() {
     local service=$1
     local dockerfile_path="docker/$service/Dockerfile"
@@ -33,17 +32,62 @@ build_service() {
 
     if [ -f "$dockerfile_path" ]; then
         echo "🔨 Building $service..."
-        docker build -t "$image_name" -f "$dockerfile_path" "docker/$service/"
+        docker build \
+            --tag "$image_name" \
+            --file "$dockerfile_path" \
+            --label "build.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --label "build.version=$TAG" \
+            "docker/$service/"
         echo "✅ Built $image_name"
+
+        if [ "$PUSH" = "true" ]; then
+            echo "📤 Pushing $image_name..."
+            docker push "$image_name"
+            echo "✅ Pushed $image_name"
+        fi
     else
-        echo "⚠️  Dockerfile not found for $service at $dockerfile_path"
+        echo "⚠️  No Dockerfile at $dockerfile_path — skipping $service"
     fi
 }
 
-# Build all services
-for service in "${SERVICES[@]}"; do
-    build_service "$service"
-done
+# Also build main backend and frontend
+build_main_images() {
+    echo "🔨 Building main backend image..."
+    docker build \
+        --tag "$REGISTRY/backend:$TAG" \
+        --file "docker/Dockerfile.backend" \
+        --label "build.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        --label "build.version=$TAG" \
+        "../../"
+    echo "✅ Built $REGISTRY/backend:$TAG"
+
+    echo "🔨 Building main frontend image..."
+    docker build \
+        --tag "$REGISTRY/frontend:$TAG" \
+        --file "docker/Dockerfile.frontend" \
+        --label "build.date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+        --label "build.version=$TAG" \
+        "../../"
+    echo "✅ Built $REGISTRY/frontend:$TAG"
+}
+
+if [ "$PARALLEL" = "true" ]; then
+    echo "⚡ Building in parallel..."
+    pids=()
+    for service in "${SERVICES[@]}"; do
+        build_service "$service" &
+        pids+=($!)
+    done
+    for pid in "${pids[@]}"; do
+        wait "$pid" || { echo "❌ A parallel build failed"; exit 1; }
+    done
+else
+    for service in "${SERVICES[@]}"; do
+        build_service "$service"
+    done
+fi
+
+build_main_images
 
 echo ""
 echo "🎉 All Docker images built successfully!"
@@ -52,9 +96,10 @@ echo "📋 Built Images:"
 for service in "${SERVICES[@]}"; do
     echo "  - $REGISTRY/$service:$TAG"
 done
+echo "  - $REGISTRY/backend:$TAG"
+echo "  - $REGISTRY/frontend:$TAG"
 echo ""
-echo "📤 To push images to registry:"
-echo "  docker push $REGISTRY/SERVICE_NAME:$TAG"
-echo ""
-echo "🔧 To use with different registry:"
-echo "  REGISTRY=your-registry.com ./scripts/build-images.sh"
+echo "💡 Usage:"
+echo "  REGISTRY=myregistry.io TAG=v1.2.3 ./scripts/build-images.sh"
+echo "  PUSH=true ./scripts/build-images.sh"
+echo "  PARALLEL=true ./scripts/build-images.sh"

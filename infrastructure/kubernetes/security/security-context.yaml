@@ -1,8 +1,12 @@
+# Security context templates — these are reference examples only.
+# Actual security contexts are applied inline in each service's Deployment manifest.
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flowlet-backend
-  namespace: default
+  namespace: flowlet-core
 spec:
   selector:
     matchLabels:
@@ -16,6 +20,8 @@ spec:
         runAsNonRoot: true
         runAsUser: 1000
         fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: backend
           image: flowlet/backend:latest
@@ -25,39 +31,57 @@ spec:
             capabilities:
               drop:
                 - ALL
-            seccompProfile:
-              type: RuntimeDefault
           ports:
             - containerPort: 8000
+          volumeMounts:
+            - name: tmp-vol
+              mountPath: /tmp
+      volumes:
+        - name: tmp-vol
+          emptyDir: {}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flowlet-web-frontend
-  namespace: default
+  name: flowlet-frontend
+  namespace: flowlet-core
 spec:
   selector:
     matchLabels:
-      app: web-frontend
+      app: frontend
   template:
     metadata:
       labels:
-        app: web-frontend
+        app: frontend
     spec:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsUser: 101
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-        - name: web-frontend
-          image: flowlet/web-frontend:latest
+        - name: frontend
+          image: flowlet/frontend:latest
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
-            seccompProfile:
-              type: RuntimeDefault
           ports:
-            - containerPort: 80
+            - containerPort: 3000
+          volumeMounts:
+            - name: tmp-vol
+              mountPath: /tmp
+            - name: nginx-cache
+              mountPath: /var/cache/nginx
+            - name: nginx-run
+              mountPath: /var/run
+      volumes:
+        - name: tmp-vol
+          emptyDir: {}
+        - name: nginx-cache
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}

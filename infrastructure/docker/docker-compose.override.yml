@@ -1,0 +1,31 @@
+# Development overrides — used automatically by docker compose up in dev
+# DO NOT use in production (docker compose -f docker-compose.yml up)
+version: "3.8"
+
+services:
+  backend:
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ../../backend/src:/app/src:ro
+    healthcheck:
+      start_period: 10s
+
+  frontend:
+    environment:
+      - NODE_ENV=development
+    healthcheck:
+      start_period: 10s
+
+  postgres:
+    ports:
+      - "5432:5432"
+    healthcheck:
+      start_period: 10s
+
+  redis:
+    ports:
+      - "6379:6379"
+    healthcheck:
+      start_period: 5s

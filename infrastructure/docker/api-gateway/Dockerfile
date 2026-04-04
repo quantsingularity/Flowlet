@@ -1,33 +1,30 @@
-FROM node:18-alpine
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
 
-# Install dependencies
 RUN npm ci --only=production
 
-# Copy source code
-RUN apk add --no-cache curl
+FROM node:20-alpine AS production
 
+WORKDIR /app
+
+RUN apk add --no-cache curl \
+    && addgroup -g 1001 -S nodejs \
+    && adduser -S flowlet -u 1001
+
+COPY --from=builder /app/node_modules ./node_modules
 COPY src/ ./src/
 COPY config/ ./config/
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S flowlet -u 1001
-
-# Change ownership of the app directory
 RUN chown -R flowlet:nodejs /app
+
 USER flowlet
 
-# Expose port
 EXPOSE 8080
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:8080/health || exit 1
 
-# Start the application
 CMD ["node", "src/index.js"]

@@ -2,22 +2,23 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY web-frontend/web-web-frontend/package*.json ./
-
 RUN npm install -g pnpm
+
+COPY web-frontend/package*.json ./
+COPY web-frontend/pnpm-lock.yaml* ./
 
 RUN pnpm install --frozen-lockfile
 
-COPY web-frontend/web-web-frontend/ .
+COPY web-frontend/ .
 
 RUN pnpm run build
 
-FROM nginx:alpine AS production
+FROM nginx:1.25-alpine AS production
 
 RUN apk add --no-cache curl gettext
 
 COPY infrastructure/docker/nginx.conf /etc/nginx/nginx.conf.template
-COPY infrastructure/docker/frontend-entrypoint.sh /usr/local/bin/
+COPY infrastructure/docker/frontend-entrypoint.sh /usr/local/bin/frontend-entrypoint.sh
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
@@ -33,7 +34,8 @@ USER nginx
 
 EXPOSE 3000
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000 || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
 
-CMD ["/usr/local/bin/frontend-entrypoint.sh", "nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/usr/local/bin/frontend-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]

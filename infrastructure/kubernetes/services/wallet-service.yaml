@@ -34,16 +34,21 @@ spec:
     metadata:
       labels:
         app: wallet-service
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
     spec:
+      serviceAccountName: flowlet-services
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsUser: 1001
+        fsGroup: 1001
       containers:
         - name: wallet-service
           image: flowlet/wallet-service:latest
           ports:
             - containerPort: 3000
+              name: http
           env:
             - name: NODE_ENV
               value: "production"
@@ -59,13 +64,15 @@ spec:
                   key: password
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
           volumeMounts:
             - name: config
               mountPath: /app/config
+            - name: tmp-vol
+              mountPath: /tmp
           resources:
             requests:
               memory: "256Mi"
@@ -79,16 +86,22 @@ spec:
               port: 3000
             initialDelaySeconds: 30
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /ready
+              path: /health
               port: 3000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
         - name: config
           configMap:
             name: wallet-service-config
+        - name: tmp-vol
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
@@ -99,6 +112,7 @@ spec:
   selector:
     app: wallet-service
   ports:
-    - port: 80
+    - name: http
+      port: 80
       targetPort: 3000
   type: ClusterIP

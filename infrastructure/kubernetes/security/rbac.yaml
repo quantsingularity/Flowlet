@@ -1,23 +1,61 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: default
-  name: pod-reader
+  namespace: flowlet-core
+  name: flowlet-service-reader
 rules:
-  - apiGroups: [""] # "" indicates the core API group
-    resources: ["pods"]
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints", "configmaps"]
     verbs: ["get", "watch", "list"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: read-pods
-  namespace: default
+  name: flowlet-service-reader-binding
+  namespace: flowlet-core
 subjects:
-  - kind: User
-    name: dev-user # Name is case sensitive
-    apiGroup: rbac.authorization.k8s.io
+  - kind: ServiceAccount
+    name: flowlet-services
+    namespace: flowlet-core
 roleRef:
   kind: Role
-  name: pod-reader
+  name: flowlet-service-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: flowlet-services
+  namespace: flowlet-core
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: flowlet-metrics-reader
+rules:
+  - apiGroups: [""]
+    resources:
+      ["nodes", "nodes/proxy", "nodes/metrics", "services", "endpoints", "pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/metrics", "/metrics/cadvisor"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: flowlet-metrics-reader-binding
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: flowlet-monitoring
+roleRef:
+  kind: ClusterRole
+  name: flowlet-metrics-reader
   apiGroup: rbac.authorization.k8s.io

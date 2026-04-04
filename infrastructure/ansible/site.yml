@@ -1,5 +1,4 @@
 ---
-# Main playbook for Flowlet infrastructure
 - name: Setup all infrastructure
   hosts: all
   become: true
@@ -22,6 +21,10 @@
           - vim
           - htop
           - net-tools
+          - apt-transport-https
+          - ca-certificates
+          - gnupg
+          - lsb-release
         state: present
       when: ansible_os_family == "Debian"
       tags: [system]
@@ -32,25 +35,6 @@
         update_cache: true
       when: ansible_os_family == "Debian"
       tags: [system, updates]
-
-# Docker setup on all nodes
-- name: Install Docker
-  hosts: all
-  become: true
-  gather_facts: true
-
-  tasks:
-    - name: Install Docker prerequisites
-      ansible.builtin.apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg
-          - lsb-release
-        state: present
-      when: ansible_os_family == "Debian"
-      tags: [docker]
 
     - name: Add Docker GPG key
       ansible.builtin.apt_key:
@@ -72,6 +56,7 @@
           - docker-ce
           - docker-ce-cli
           - containerd.io
+          - docker-compose-plugin
         state: present
         update_cache: true
       when: ansible_os_family == "Debian"
@@ -84,7 +69,6 @@
         enabled: true
       tags: [docker]
 
-# Include additional playbooks
 - import_playbook: playbooks/docker-setup.yml
   tags: [docker]
 

@@ -22,7 +22,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 10s
+      start_period: 30s
 
   redis:
     image: redis:7-alpine
@@ -33,6 +33,10 @@ services:
       --appendonly yes
       --maxmemory 256mb
       --maxmemory-policy allkeys-lru
+      --protected-mode yes
+      --tcp-keepalive 300
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
     ports:
@@ -41,11 +45,11 @@ services:
       - flowlet-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping | grep PONG"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 10s
+      start_period: 15s
 
   backend:
     build:
@@ -73,14 +77,12 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
-    volumes:
-      - ../../backend/src:/app/src:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 30s
 
   frontend:
     build:
@@ -102,7 +104,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 20s
 
   nginx:
     image: nginx:1.25-alpine
@@ -124,6 +126,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+      start_period: 10s
 
   prometheus:
     image: prom/prometheus:v2.47.0
@@ -150,6 +153,29 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 15s
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: flowlet-alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+      - "--storage.path=/alertmanager"
+      - "--web.listen-address=:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "9093:9093"
+    networks:
+      - flowlet-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   grafana:
     image: grafana/grafana:10.1.0
@@ -160,6 +186,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SECURITY_ALLOW_EMBEDDING=false
       - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_ALERTING_ENABLED=true
     volumes:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
@@ -176,6 +203,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 15s
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.15.0
@@ -210,6 +238,8 @@ volumes:
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+  alertmanager_data:
     driver: local
 
 networks:

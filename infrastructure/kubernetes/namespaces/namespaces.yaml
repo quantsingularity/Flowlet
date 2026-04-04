@@ -5,6 +5,8 @@ metadata:
   labels:
     name: flowlet-core
     tier: application
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/warn: restricted
 ---
 apiVersion: v1
 kind: Namespace
@@ -13,6 +15,8 @@ metadata:
   labels:
     name: flowlet-data
     tier: data
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
 ---
 apiVersion: v1
 kind: Namespace
@@ -21,6 +25,8 @@ metadata:
   labels:
     name: flowlet-messaging
     tier: messaging
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: restricted
 ---
 apiVersion: v1
 kind: Namespace
@@ -29,6 +35,7 @@ metadata:
   labels:
     name: flowlet-monitoring
     tier: monitoring
+    pod-security.kubernetes.io/enforce: baseline
 ---
 apiVersion: v1
 kind: Namespace
@@ -37,3 +44,4 @@ metadata:
   labels:
     name: flowlet-security
     tier: security
+    pod-security.kubernetes.io/enforce: restricted

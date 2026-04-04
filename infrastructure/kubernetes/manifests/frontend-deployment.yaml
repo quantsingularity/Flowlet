@@ -1,34 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flowlet-web-frontend
+  name: flowlet-frontend
+  namespace: flowlet-core
   labels:
     app: flowlet
-    tier: web-frontend
+    tier: frontend
 spec:
   replicas: 2
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: flowlet
-      tier: web-frontend
+      tier: frontend
   template:
     metadata:
       labels:
         app: flowlet
-        tier: web-frontend
+        tier: frontend
     spec:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1000
-        fsGroup: 2000
+        runAsUser: 101
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-        - name: flowlet-web-frontend
-          image: flowlet/web-frontend:latest # Replace with your actual image
+        - name: flowlet-frontend
+          image: flowlet/frontend:latest
           ports:
             - containerPort: 3000
           resources:
@@ -40,24 +43,26 @@ spec:
               cpu: "200m"
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 3000
-            initialDelaySeconds: 30
+            initialDelaySeconds: 15
             periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 3000
-            initialDelaySeconds: 10
+            initialDelaySeconds: 5
             periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
-            seccompProfile:
-              type: RuntimeDefault
           volumeMounts:
             - name: tmp-vol
               mountPath: /tmp

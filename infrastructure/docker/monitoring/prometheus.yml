@@ -1,6 +1,9 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    cluster: flowlet-docker
+    environment: development
 
 rule_files:
   - "/etc/prometheus/rules/alert.rules.yml"
@@ -9,6 +12,7 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets: ["alertmanager:9093"]
+      timeout: 10s
 
 scrape_configs:
   - job_name: "prometheus"
@@ -19,6 +23,7 @@ scrape_configs:
     static_configs:
       - targets: ["backend:8000"]
     metrics_path: /metrics
+    scrape_interval: 15s
 
   - job_name: "postgresql-exporter"
     static_configs:
@@ -32,3 +37,7 @@ scrape_configs:
     static_configs:
       - targets: ["grafana:3000"]
     metrics_path: /metrics
+
+  - job_name: "alertmanager"
+    static_configs:
+      - targets: ["alertmanager:9093"]

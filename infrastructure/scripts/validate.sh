@@ -2,47 +2,42 @@
 
 # Flowlet Infrastructure Validation Script
 
-set -e
+set -euo pipefail
 
-# Create validation logs directory
 mkdir -p ../validation_logs
 LOG_DIR="../validation_logs"
 VALIDATION_LOG="${LOG_DIR}/validation_$(date +%Y%m%d_%H%M%S).log"
 
-echo "🔍 Validating Flowlet Infrastructure"
+# Tee all output to both terminal and log file
+exec > >(tee -a "$VALIDATION_LOG") 2>&1
 
-# Colors for output
+echo "🔍 Validating Flowlet Infrastructure"
+echo "📝 Logging to: $VALIDATION_LOG"
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Function to print colored output
+ERRORS=0
+WARNINGS=0
+
 print_status() {
     local status=$1
     local message=$2
     case $status in
-        "SUCCESS")
-            echo -e "${GREEN}✅ $message${NC}"
-            ;;
-        "WARNING")
-            echo -e "${YELLOW}⚠️  $message${NC}"
-            ;;
-        "ERROR")
-            echo -e "${RED}❌ $message${NC}"
-            ;;
-        "INFO")
-            echo -e "ℹ️  $message"
-            ;;
+        "SUCCESS") echo -e "${GREEN}✅ $message${NC}" ;;
+        "WARNING") echo -e "${YELLOW}⚠️  $message${NC}"; WARNINGS=$((WARNINGS+1)) ;;
+        "ERROR")   echo -e "${RED}❌ $message${NC}";   ERRORS=$((ERRORS+1)) ;;
+        "INFO")    echo -e "ℹ️  $message" ;;
     esac
 }
 
-# Function to check if a file exists
 check_file() {
     local file=$1
     local description=$2
     if [ -f "$file" ]; then
-        print_status "SUCCESS" "$description exists: $file"
+        print_status "SUCCESS" "$description: $file"
         return 0
     else
         print_status "ERROR" "$description missing: $file"
@@ -50,12 +45,11 @@ check_file() {
     fi
 }
 
-# Function to check if a directory exists
 check_directory() {
     local dir=$1
     local description=$2
     if [ -d "$dir" ]; then
-        print_status "SUCCESS" "$description exists: $dir"
+        print_status "SUCCESS" "$description: $dir"
         return 0
     else
         print_status "ERROR" "$description missing: $dir"
@@ -63,186 +57,141 @@ check_directory() {
     fi
 }
 
-# Function to validate YAML syntax
 validate_yaml() {
     local file=$1
     if command -v yamllint &> /dev/null; then
-        if yamllint "$file" &> /dev/null; then
-            print_status "SUCCESS" "YAML syntax valid: $file"
-            return 0
+        if yamllint -c .yamllint.yaml "$file" &> /dev/null; then
+            print_status "SUCCESS" "YAML valid: $file"
         else
-            print_status "ERROR" "YAML syntax invalid: $file"
-            return 1
+            print_status "ERROR" "YAML invalid: $file"
+            yamllint -c .yamllint.yaml "$file" || true
         fi
     else
-        print_status "WARNING" "yamllint not available, skipping YAML validation for $file"
-        return 0
+        print_status "WARNING" "yamllint not installed — skipping YAML lint for $file"
     fi
 }
 
-# Function to check Kubernetes manifest syntax
 check_k8s_manifest() {
     local file=$1
     if command -v kubectl &> /dev/null; then
         if kubectl apply --dry-run=client -f "$file" &> /dev/null; then
-            print_status "SUCCESS" "Kubernetes manifest valid: $file"
-            return 0
+            print_status "SUCCESS" "K8s manifest valid: $file"
         else
-            print_status "ERROR" "Kubernetes manifest invalid: $file"
-            return 1
+            print_status "ERROR" "K8s manifest invalid: $file"
         fi
     else
-        print_status "WARNING" "kubectl not available, skipping K8s validation for $file"
-        return 0
+        print_status "WARNING" "kubectl not available — skipping K8s dry-run for $file"
     fi
 }
 
+echo ""
 echo "📁 Checking directory structure..."
-
-# Check main directories
-check_directory "terraform" "Terraform directory"
-check_directory "kubernetes" "Kubernetes directory"
-check_directory "docker" "Docker directory"
-check_directory "scripts" "Scripts directory"
-check_directory "ansible" "Ansible directory"
-
-# Check Kubernetes subdirectories
-check_directory "kubernetes/namespaces" "Kubernetes namespaces directory"
-check_directory "kubernetes/databases" "Kubernetes databases directory"
-check_directory "kubernetes/messaging" "Kubernetes messaging directory"
-check_directory "kubernetes/services" "Kubernetes services directory"
-check_directory "kubernetes/ingress" "Kubernetes ingress directory"
-check_directory "kubernetes/monitoring" "Kubernetes monitoring directory"
-check_directory "kubernetes/security" "Kubernetes security directory"
+check_directory "terraform"            "Terraform directory"
+check_directory "kubernetes"           "Kubernetes directory"
+check_directory "docker"               "Docker directory"
+check_directory "scripts"              "Scripts directory"
+check_directory "ansible"              "Ansible directory"
+check_directory "kubernetes/namespaces"  "K8s namespaces"
+check_directory "kubernetes/databases"   "K8s databases"
+check_directory "kubernetes/messaging"   "K8s messaging"
+check_directory "kubernetes/services"    "K8s services"
+check_directory "kubernetes/ingress"     "K8s ingress"
+check_directory "kubernetes/monitoring"  "K8s monitoring"
+check_directory "kubernetes/security"    "K8s security"
 
 echo ""
 echo "📄 Checking essential files..."
-
-# Check main configuration files
-check_file "README.md" "Main README"
-check_file "terraform/main.tf" "Terraform main configuration"
-check_file "scripts/deploy.sh" "Deployment script"
-check_file "scripts/build-images.sh" "Image build script"
-check_file "scripts/cleanup.sh" "Cleanup script"
-
-echo ""
-echo "🗄️  Checking database configurations..."
-
-# Check database manifests
-check_file "kubernetes/databases/postgresql.yaml" "PostgreSQL configuration"
-check_file "kubernetes/databases/mongodb.yaml" "MongoDB configuration"
-check_file "kubernetes/databases/redis.yaml" "Redis configuration"
-check_file "kubernetes/databases/influxdb.yaml" "InfluxDB configuration"
+check_file "README.md"                           "Main README"
+check_file "terraform/main.tf"                   "Terraform main"
+check_file "scripts/deploy.sh"                   "Deploy script"
+check_file "scripts/build-images.sh"             "Build script"
+check_file "scripts/cleanup.sh"                  "Cleanup script"
+check_file "docker/docker-compose.yml"           "Docker Compose"
+check_file "docker/.env.example"                 ".env example"
+check_file "docker/Dockerfile.backend"           "Backend Dockerfile"
+check_file "docker/Dockerfile.frontend"          "Frontend Dockerfile"
+check_file "docker/monitoring/alertmanager.yml"  "Alertmanager config"
+check_file "docker/monitoring/prometheus.yml"    "Prometheus config (docker)"
+check_file "docker/monitoring/alert.rules.yml"   "Alert rules"
 
 echo ""
-echo "📨 Checking messaging configurations..."
-
-# Check messaging manifests
-check_file "kubernetes/messaging/kafka.yaml" "Kafka configuration"
-check_file "kubernetes/messaging/rabbitmq.yaml" "RabbitMQ configuration"
-
-echo ""
-echo "🔧 Checking service configurations..."
-
-# Check core service manifests
-SERVICES=(
-    "wallet-service"
-    "payments-service"
-    "card-service"
-    "kyc-aml-service"
-    "ledger-service"
-    "api-gateway"
-    "developer-portal"
-    "auth-service"
-    "notification-service"
-    "ai-fraud-detection"
-    "ai-chatbot"
-)
-
-for service in "${SERVICES[@]}"; do
-    check_file "kubernetes/services/${service}.yaml" "${service} configuration"
+echo "🗄️  Checking database configs..."
+for db in postgresql mongodb redis influxdb; do
+    check_file "kubernetes/databases/${db}.yaml" "${db} config"
 done
 
 echo ""
-echo "📊 Checking monitoring configurations..."
-
-check_file "kubernetes/monitoring/prometheus.yaml" "Prometheus configuration"
-check_file "kubernetes/monitoring/grafana.yaml" "Grafana configuration"
-
-echo ""
-echo "🔒 Checking security configurations..."
-
-check_file "kubernetes/security/security-policies.yaml" "Security policies"
-check_file "kubernetes/ingress/ingress.yaml" "Ingress configuration"
+echo "📨 Checking messaging configs..."
+check_file "kubernetes/messaging/kafka.yaml"    "Kafka config"
+check_file "kubernetes/messaging/rabbitmq.yaml" "RabbitMQ config"
 
 echo ""
-echo "🐳 Checking Docker configurations..."
-
-# Check Docker files
-for service in "${SERVICES[@]}"; do
-    if [ "$service" = "ai-fraud-detection" ]; then
-        check_file "docker/${service}/Dockerfile" "${service} Dockerfile"
-    elif [ "$service" = "wallet-service" ] || [ "$service" = "api-gateway" ]; then
-        check_file "docker/${service}/Dockerfile" "${service} Dockerfile"
-    else
-        print_status "INFO" "Dockerfile template available for ${service}"
-    fi
+echo "🔧 Checking service configs..."
+SERVICES=(wallet-service payments-service card-service kyc-aml-service
+          ledger-service api-gateway developer-portal auth-service
+          notification-service ai-fraud-detection ai-chatbot)
+for svc in "${SERVICES[@]}"; do
+    check_file "kubernetes/services/${svc}.yaml" "$svc"
 done
+
+echo ""
+echo "📊 Checking monitoring configs..."
+check_file "kubernetes/monitoring/prometheus.yaml"   "Prometheus (K8s)"
+check_file "kubernetes/monitoring/grafana.yaml"      "Grafana (K8s)"
+check_file "kubernetes/monitoring/alertmanager.yaml" "Alertmanager (K8s)"
+
+echo ""
+echo "🔒 Checking security configs..."
+check_file "kubernetes/security/security-policies.yaml"  "Security policies"
+check_file "kubernetes/security/rbac.yaml"               "RBAC"
+check_file "kubernetes/security/network-policies.yaml"   "Network policies"
+check_file "kubernetes/ingress/ingress.yaml"             "Ingress"
 
 echo ""
 echo "✅ Validating YAML syntax..."
-
-# Validate YAML files
-find kubernetes/ -name "*.yaml" -type f | while read -r file; do
+while IFS= read -r -d '' file; do
     validate_yaml "$file"
-done
+done < <(find kubernetes/ docker/ -name "*.yaml" -o -name "*.yml" -type f -print0)
 
 echo ""
-echo "🔍 Validating Kubernetes manifests..."
-
-# Validate Kubernetes manifests
-find kubernetes/ -name "*.yaml" -type f | while read -r file; do
+echo "🔍 Validating Kubernetes manifests (dry-run)..."
+while IFS= read -r -d '' file; do
     check_k8s_manifest "$file"
-done
+done < <(find kubernetes/ -name "*.yaml" -type f -print0)
 
 echo ""
 echo "📋 Checking script permissions..."
-
-# Check script permissions
-SCRIPTS=(
-    "scripts/deploy.sh"
-    "scripts/build-images.sh"
-    "scripts/cleanup.sh"
-)
-
-for script in "${SCRIPTS[@]}"; do
+for script in scripts/deploy.sh scripts/build-images.sh scripts/cleanup.sh scripts/validate.sh; do
     if [ -x "$script" ]; then
-        print_status "SUCCESS" "Script is executable: $script"
+        print_status "SUCCESS" "Executable: $script"
     else
-        print_status "ERROR" "Script is not executable: $script"
+        print_status "WARNING" "Not executable: $script (run: chmod +x $script)"
     fi
 done
 
 echo ""
-echo "📊 Infrastructure Summary:"
-echo "  ✅ Terraform configurations for cloud resources"
-echo "  ✅ Kubernetes manifests for all components"
-echo "  ✅ Database deployments (PostgreSQL, MongoDB, Redis, InfluxDB)"
-echo "  ✅ Messaging systems (Kafka, RabbitMQ)"
-echo "  ✅ Core microservices (11 services)"
-echo "  ✅ Monitoring stack (Prometheus, Grafana)"
-echo "  ✅ Security policies and network controls"
-echo "  ✅ Docker configurations"
-echo "  ✅ Deployment and management scripts"
-echo "  ✅ Comprehensive documentation"
+echo "🔐 Checking for secrets accidentally committed..."
+if [ -f "kubernetes/secrets/secret.yaml" ]; then
+    print_status "WARNING" "kubernetes/secrets/secret.yaml exists — ensure it is in .gitignore!"
+fi
+if [ -f "docker/.env" ]; then
+    print_status "WARNING" "docker/.env exists — ensure it is in .gitignore!"
+fi
 
 echo ""
-echo "🎉 Infrastructure validation complete!"
+echo "============================================"
+echo "📊 Validation Summary"
+echo "============================================"
+echo "  Errors:   $ERRORS"
+echo "  Warnings: $WARNINGS"
 echo ""
-print_status "INFO" "Validation log saved to: ${VALIDATION_LOG}"
+if [ "$ERRORS" -eq 0 ]; then
+    print_status "SUCCESS" "All critical checks passed!"
+else
+    print_status "ERROR" "$ERRORS critical issue(s) found — fix before deploying."
+fi
 echo ""
-print_status "INFO" "To deploy the infrastructure:"
-print_status "INFO" "  1. Ensure you have a Kubernetes cluster ready"
-print_status "INFO" "  2. Run: ./scripts/deploy.sh"
-print_status "INFO" "  3. Monitor deployment: kubectl get pods --all-namespaces"
-print_status "INFO" "  4. Access services: kubectl get svc --all-namespaces"
+print_status "INFO" "Full log: $VALIDATION_LOG"
+echo ""
+print_status "INFO" "To deploy: ./scripts/deploy.sh"
+print_status "INFO" "To monitor: kubectl get pods --all-namespaces"

@@ -1,16 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: flowlet-web-frontend-service
+  name: flowlet-frontend
+  namespace: flowlet-core
   labels:
     app: flowlet
-    tier: web-frontend
+    tier: frontend
 spec:
   selector:
     app: flowlet
-    tier: web-frontend
+    tier: frontend
   ports:
-    - protocol: TCP
+    - name: http
       port: 80
       targetPort: 3000
-  type: LoadBalancer
+      protocol: TCP
+  type: ClusterIP
