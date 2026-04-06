@@ -117,7 +117,7 @@ class BehavioralProfile:
         self.device_patterns = defaultdict(list)
         self.location_patterns = defaultdict(list)
         self.time_patterns = defaultdict(list)
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(timezone.utc)
 
     def update_transaction_pattern(
         self, amount: float, merchant: str, category: str, timestamp: datetime
@@ -130,9 +130,9 @@ class BehavioralProfile:
         self.transaction_patterns["categories"].append(category)
         self.transaction_patterns["hours"].append(hour)
         self.transaction_patterns["days"].append(day_of_week)
-        cutoff = datetime.utcnow() - timedelta(days=90)
+        cutoff = datetime.now(timezone.utc) - timedelta(days=90)
         self._cleanup_old_patterns(cutoff)
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(timezone.utc)
 
     def update_login_pattern(
         self, ip_address: str, user_agent: str, location: str, timestamp: datetime
@@ -145,7 +145,7 @@ class BehavioralProfile:
         self.login_patterns["locations"].append(location)
         self.login_patterns["hours"].append(hour)
         self.login_patterns["days"].append(day_of_week)
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(timezone.utc)
 
     def _cleanup_old_patterns(self, cutoff: datetime) -> Any:
         """Remove patterns older than cutoff date."""
@@ -362,56 +362,56 @@ class FraudDetectionEngine:
             if behavioral_analysis["anomaly_score"] > 0.5:
                 fraud_signals.append(
                     FraudSignal(
-                        signal_id=f"behavioral_{int(datetime.utcnow().timestamp())}",
+                        signal_id=f"behavioral_{int(datetime.now(timezone.utc).timestamp())}",
                         signal_type="behavioral_anomaly",
                         fraud_type=FraudType.ACCOUNT_TAKEOVER,
                         risk_score=behavioral_analysis["anomaly_score"],
                         confidence=0.8,
                         description="Unusual behavioral pattern detected",
                         evidence=behavioral_analysis,
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             device_analysis = await self._analyze_device_risk(transaction_data)
             if device_analysis["risk_score"] > 0.6:
                 fraud_signals.append(
                     FraudSignal(
-                        signal_id=f"device_{int(datetime.utcnow().timestamp())}",
+                        signal_id=f"device_{int(datetime.now(timezone.utc).timestamp())}",
                         signal_type="device_risk",
                         fraud_type=FraudType.ACCOUNT_TAKEOVER,
                         risk_score=device_analysis["risk_score"],
                         confidence=0.7,
                         description="High-risk device detected",
                         evidence=device_analysis,
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             network_analysis = await self._analyze_network_risk(transaction_data)
             if network_analysis["risk_score"] > 0.5:
                 fraud_signals.append(
                     FraudSignal(
-                        signal_id=f"network_{int(datetime.utcnow().timestamp())}",
+                        signal_id=f"network_{int(datetime.now(timezone.utc).timestamp())}",
                         signal_type="network_risk",
                         fraud_type=FraudType.PAYMENT_FRAUD,
                         risk_score=network_analysis["risk_score"],
                         confidence=0.6,
                         description="Suspicious network activity detected",
                         evidence=network_analysis,
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             ml_risk_score = await self._calculate_ml_risk_score(transaction_data)
             if ml_risk_score > 0.7:
                 fraud_signals.append(
                     FraudSignal(
-                        signal_id=f"ml_model_{int(datetime.utcnow().timestamp())}",
+                        signal_id=f"ml_model_{int(datetime.now(timezone.utc).timestamp())}",
                         signal_type="ml_prediction",
                         fraud_type=FraudType.PAYMENT_FRAUD,
                         risk_score=ml_risk_score,
                         confidence=0.9,
                         description="Machine learning model flagged high risk",
                         evidence={"ml_score": ml_risk_score},
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             overall_risk_score = self._calculate_overall_risk_score(fraud_signals)
@@ -430,8 +430,8 @@ class FraudDetectionEngine:
                 behavioral_analysis=behavioral_analysis,
                 device_analysis=device_analysis,
                 network_analysis=network_analysis,
-                assessment_timestamp=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(hours=1),
+                assessment_timestamp=datetime.now(timezone.utc),
+                expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
             )
             await self._update_behavioral_profile(user_id, transaction_data)
             self._update_velocity_trackers(user_id, transaction_data)
@@ -452,21 +452,21 @@ class FraudDetectionEngine:
                 recommended_action=ActionType.REVIEW,
                 fraud_signals=[
                     FraudSignal(
-                        signal_id=f"error_{int(datetime.utcnow().timestamp())}",
+                        signal_id=f"error_{int(datetime.now(timezone.utc).timestamp())}",
                         signal_type="assessment_error",
                         fraud_type=FraudType.PAYMENT_FRAUD,
                         risk_score=0.5,
                         confidence=0.1,
                         description=f"Error in fraud assessment: {str(e)}",
                         evidence={"error": str(e)},
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 ],
                 behavioral_analysis={"error": str(e)},
                 device_analysis={"error": str(e)},
                 network_analysis={"error": str(e)},
-                assessment_timestamp=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(hours=1),
+                assessment_timestamp=datetime.now(timezone.utc),
+                expires_at=datetime.now(timezone.utc) + timedelta(hours=1),
             )
 
     async def assess_login_fraud(self, login_data: Dict[str, Any]) -> FraudAssessment:
@@ -507,8 +507,8 @@ class FraudDetectionEngine:
                 behavioral_analysis=login_analysis,
                 device_analysis=device_analysis,
                 network_analysis=network_analysis,
-                assessment_timestamp=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(minutes=30),
+                assessment_timestamp=datetime.now(timezone.utc),
+                expires_at=datetime.now(timezone.utc) + timedelta(minutes=30),
             )
             await self._update_login_profile(user_id, login_data)
             self.logger.info(
@@ -530,8 +530,8 @@ class FraudDetectionEngine:
                 behavioral_analysis={"error": str(e)},
                 device_analysis={"error": str(e)},
                 network_analysis={"error": str(e)},
-                assessment_timestamp=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(minutes=30),
+                assessment_timestamp=datetime.now(timezone.utc),
+                expires_at=datetime.now(timezone.utc) + timedelta(minutes=30),
             )
 
     async def _apply_fraud_rules(
@@ -548,14 +548,14 @@ class FraudDetectionEngine:
         if amount > large_threshold:
             signals.append(
                 FraudSignal(
-                    signal_id=f"large_tx_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"large_tx_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="large_transaction",
                     fraud_type=FraudType.PAYMENT_FRAUD,
                     risk_score=min(amount / large_threshold * 0.3, 0.8),
                     confidence=0.9,
                     description=f"Large transaction amount: ${amount:,.2f}",
                     evidence={"amount": amount, "threshold": large_threshold},
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         round_threshold = self._fraud_rules["transaction_amount"][
@@ -564,14 +564,14 @@ class FraudDetectionEngine:
         if amount >= round_threshold and amount % round_threshold == 0:
             signals.append(
                 FraudSignal(
-                    signal_id=f"round_amount_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"round_amount_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="round_amount",
                     fraud_type=FraudType.MONEY_LAUNDERING,
                     risk_score=0.3,
                     confidence=0.6,
                     description=f"Round amount transaction: ${amount:,.2f}",
                     evidence={"amount": amount},
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         if user_id:
@@ -584,14 +584,14 @@ class FraudDetectionEngine:
         if country_code in high_risk_countries:
             signals.append(
                 FraudSignal(
-                    signal_id=f"high_risk_country_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"high_risk_country_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="high_risk_geography",
                     fraud_type=FraudType.PAYMENT_FRAUD,
                     risk_score=0.6,
                     confidence=0.8,
                     description=f"Transaction from high-risk country: {country_code}",
                     evidence={"country_code": country_code},
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         return signals
@@ -610,7 +610,7 @@ class FraudDetectionEngine:
         if tx_count_24h > max_tx_per_day:
             signals.append(
                 FraudSignal(
-                    signal_id=f"velocity_count_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"velocity_count_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="velocity_count",
                     fraud_type=FraudType.PAYMENT_FRAUD,
                     risk_score=min(tx_count_24h / max_tx_per_day * 0.5, 0.9),
@@ -620,7 +620,7 @@ class FraudDetectionEngine:
                         "transaction_count_24h": tx_count_24h,
                         "threshold": max_tx_per_day,
                     },
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         total_amount_24h = (
@@ -630,7 +630,7 @@ class FraudDetectionEngine:
         if total_amount_24h > max_amount_per_day:
             signals.append(
                 FraudSignal(
-                    signal_id=f"velocity_amount_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"velocity_amount_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="velocity_amount",
                     fraud_type=FraudType.PAYMENT_FRAUD,
                     risk_score=min(total_amount_24h / max_amount_per_day * 0.4, 0.8),
@@ -640,7 +640,7 @@ class FraudDetectionEngine:
                         "total_amount_24h": total_amount_24h,
                         "threshold": max_amount_per_day,
                     },
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         return signals
@@ -653,7 +653,7 @@ class FraudDetectionEngine:
         amount = transaction_data.get("amount", 0)
         merchant = transaction_data.get("merchant", "")
         category = transaction_data.get("category", "")
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         if user_id not in self._behavioral_profiles:
             self._behavioral_profiles[user_id] = BehavioralProfile(user_id)
         profile = self._behavioral_profiles[user_id]
@@ -663,9 +663,11 @@ class FraudDetectionEngine:
         return {
             "anomaly_score": anomaly_score,
             "user_id": user_id,
-            "profile_age_days": (datetime.utcnow() - profile.last_updated).days,
+            "profile_age_days": (
+                datetime.now(timezone.utc) - profile.last_updated
+            ).days,
             "transaction_count": len(profile.transaction_patterns["amounts"]),
-            "analysis_timestamp": datetime.utcnow().isoformat(),
+            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _analyze_device_risk(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -699,7 +701,7 @@ class FraudDetectionEngine:
             "device_fingerprint": device_fingerprint,
             "user_agent": user_agent,
             "ip_address": ip_address,
-            "analysis_timestamp": datetime.utcnow().isoformat(),
+            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _analyze_network_risk(self, data: Dict[str, Any]) -> Dict[str, Any]:
@@ -729,7 +731,7 @@ class FraudDetectionEngine:
             "risk_factors": risk_factors,
             "ip_address": ip_address,
             "location": location,
-            "analysis_timestamp": datetime.utcnow().isoformat(),
+            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _calculate_ml_risk_score(self, data: Dict[str, Any]) -> float:
@@ -737,8 +739,8 @@ class FraudDetectionEngine:
         features = {
             "amount": data.get("amount", 0),
             "merchant_category": hash(data.get("category", "")) % 100,
-            "time_of_day": datetime.utcnow().hour,
-            "day_of_week": datetime.utcnow().weekday(),
+            "time_of_day": datetime.now(timezone.utc).hour,
+            "day_of_week": datetime.now(timezone.utc).weekday(),
             "user_age_days": 30,
             "transaction_count_24h": 5,
             "amount_sum_24h": 1000,
@@ -816,28 +818,28 @@ class FraudDetectionEngine:
         if user_id and self._is_new_device(user_id, device_fingerprint):
             signals.append(
                 FraudSignal(
-                    signal_id=f"ato_device_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"ato_device_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="account_takeover_device",
                     fraud_type=FraudType.ACCOUNT_TAKEOVER,
                     risk_score=0.6,
                     confidence=0.8,
                     description="Login from new/unknown device",
                     evidence={"device_fingerprint": device_fingerprint},
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         location = login_data.get("location", {})
         if user_id and await self._detect_impossible_travel(user_id, location):
             signals.append(
                 FraudSignal(
-                    signal_id=f"ato_location_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"ato_location_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="account_takeover_location",
                     fraud_type=FraudType.ACCOUNT_TAKEOVER,
                     risk_score=0.8,
                     confidence=0.9,
                     description="Impossible travel detected",
                     evidence={"location": location},
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         failed_attempts = login_data.get("recent_failed_attempts", 0)
@@ -845,14 +847,14 @@ class FraudDetectionEngine:
         if failed_attempts >= max_failed:
             signals.append(
                 FraudSignal(
-                    signal_id=f"ato_failed_{int(datetime.utcnow().timestamp())}",
+                    signal_id=f"ato_failed_{int(datetime.now(timezone.utc).timestamp())}",
                     signal_type="account_takeover_brute_force",
                     fraud_type=FraudType.ACCOUNT_TAKEOVER,
                     risk_score=min(failed_attempts / max_failed * 0.7, 0.9),
                     confidence=0.9,
                     description=f"Multiple failed login attempts: {failed_attempts}",
                     evidence={"failed_attempts": failed_attempts},
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         return signals
@@ -865,7 +867,7 @@ class FraudDetectionEngine:
         ip_address = login_data.get("ip_address", "")
         user_agent = login_data.get("user_agent", "")
         location = login_data.get("location", {})
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         if user_id not in self._behavioral_profiles:
             self._behavioral_profiles[user_id] = BehavioralProfile(user_id)
         profile = self._behavioral_profiles[user_id]
@@ -884,9 +886,11 @@ class FraudDetectionEngine:
         return {
             "anomaly_score": min(anomaly_score, 1.0),
             "user_id": user_id,
-            "profile_age_days": (datetime.utcnow() - profile.last_updated).days,
+            "profile_age_days": (
+                datetime.now(timezone.utc) - profile.last_updated
+            ).days,
             "login_count": len(profile.login_patterns["ip_addresses"]),
-            "analysis_timestamp": datetime.utcnow().isoformat(),
+            "analysis_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _update_behavioral_profile(
@@ -899,7 +903,7 @@ class FraudDetectionEngine:
         amount = transaction_data.get("amount", 0)
         merchant = transaction_data.get("merchant", "")
         category = transaction_data.get("category", "")
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         profile.update_transaction_pattern(amount, merchant, category, timestamp)
 
     async def _update_login_profile(self, user_id: str, login_data: Dict[str, Any]):
@@ -911,14 +915,14 @@ class FraudDetectionEngine:
         user_agent = login_data.get("user_agent", "")
         location = login_data.get("location", {})
         location_str = f"{location.get('city', '')}, {location.get('country', '')}"
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         profile.update_login_pattern(ip_address, user_agent, location_str, timestamp)
 
     def _update_velocity_trackers(
         self, user_id: str, transaction_data: Dict[str, Any]
     ) -> Any:
         """Update velocity tracking data."""
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         amount = transaction_data.get("amount", 0)
         self._velocity_trackers["transaction_count"][user_id].append(timestamp)
         self._velocity_trackers["transaction_amount"][user_id].append(
@@ -940,21 +944,21 @@ class FraudDetectionEngine:
         self, user_id: str, time_window: timedelta
     ) -> List[Dict[str, Any]]:
         """Get recent transactions for a user."""
-        datetime.utcnow() - time_window
+        datetime.now(timezone.utc) - time_window
         return [
             {
                 "transaction_id": "tx_001",
                 "amount": 150.0,
                 "merchant": "Amazon",
                 "category": "retail",
-                "timestamp": datetime.utcnow() - timedelta(hours=2),
+                "timestamp": datetime.now(timezone.utc) - timedelta(hours=2),
             },
             {
                 "transaction_id": "tx_002",
                 "amount": 75.5,
                 "merchant": "Starbucks",
                 "category": "food",
-                "timestamp": datetime.utcnow() - timedelta(hours=6),
+                "timestamp": datetime.now(timezone.utc) - timedelta(hours=6),
             },
         ]
 
@@ -989,5 +993,5 @@ class FraudDetectionEngine:
                 level.value: threshold
                 for level, threshold in self._risk_thresholds.items()
             },
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

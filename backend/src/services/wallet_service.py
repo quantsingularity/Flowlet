@@ -92,6 +92,15 @@ def get_account_by_id(session: Session, account_id: str) -> Account:
     return account
 
 
+def get_account_for_update(session: Session, account_id: str) -> Account:
+    """Retrieves an account with a row-level lock to prevent race conditions."""
+    stmt = select(Account).where(Account.id == account_id).with_for_update()
+    account = session.execute(stmt).scalar_one_or_none()
+    if not account:
+        raise AccountNotFound(account_id)
+    return account
+
+
 def create_wallet(session: Session, user_id: str, data: CreateWalletRequest) -> Account:
     """Creates a new wallet for a user."""
     user = session.get(User, user_id)
@@ -140,60 +149,84 @@ def process_deposit(
     session: Session, account_id: str, data: DepositFundsRequest
 ) -> Transaction:
     """Handles the deposit of funds into an account."""
-    account = get_account_by_id(session, account_id)
+    account = get_account_for_update(session, account_id)
     if account.status != AccountStatus.ACTIVE:
         raise AccountInactive(account_id)
     amount = data.amount
-    account.credit(amount)
-    transaction = Transaction(
-        user_id=account.user_id,
-        account_id=account.id,
-        transaction_type=TransactionType.CREDIT,
-        transaction_category=TransactionCategory.DEPOSIT,
-        status=TransactionStatus.COMPLETED,
-        description=data.description or f"Deposit to {account.account_name}",
-        channel=getattr(data, "channel", "api"),
-        currency=account.currency,
-        amount=amount,
-    )
-    session.add(transaction)
-    session.commit()
-    return transaction
+    try:
+        account.credit(amount)
+        transaction = Transaction(
+            user_id=account.user_id,
+            account_id=account.id,
+            transaction_type=TransactionType.CREDIT,
+            transaction_category=TransactionCategory.DEPOSIT,
+            status=TransactionStatus.COMPLETED,
+            description=data.description or f"Deposit to {account.account_name}",
+            channel=getattr(data, "channel", "api"),
+            currency=account.currency,
+            amount=amount,
+        )
+        session.add(transaction)
+        session.commit()
+        return transaction
+    except WalletServiceError:
+        session.rollback()
+        raise
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Deposit failed: {str(e)}", exc_info=True)
+        raise WalletServiceError("Deposit failed.", "DEPOSIT_ERROR", 500)
 
 
 def process_withdrawal(
     session: Session, account_id: str, data: WithdrawFundsRequest
 ) -> Transaction:
     """Handles the withdrawal of funds from an account."""
-    account = get_account_by_id(session, account_id)
+    account = get_account_for_update(session, account_id)
     if account.status != AccountStatus.ACTIVE:
         raise AccountInactive(account_id)
     amount = data.amount
     if account.balance < amount:
         raise InsufficientFunds(account_id)
-    account.debit(amount)
-    transaction = Transaction(
-        user_id=account.user_id,
-        account_id=account.id,
-        transaction_type=TransactionType.DEBIT,
-        transaction_category=TransactionCategory.WITHDRAWAL,
-        status=TransactionStatus.COMPLETED,
-        description=data.description or f"Withdrawal from {account.account_name}",
-        channel=getattr(data, "channel", "api"),
-        currency=account.currency,
-        amount=amount,
-    )
-    session.add(transaction)
-    session.commit()
-    return transaction
+    try:
+        account.debit(amount)
+        transaction = Transaction(
+            user_id=account.user_id,
+            account_id=account.id,
+            transaction_type=TransactionType.DEBIT,
+            transaction_category=TransactionCategory.WITHDRAWAL,
+            status=TransactionStatus.COMPLETED,
+            description=data.description or f"Withdrawal from {account.account_name}",
+            channel=getattr(data, "channel", "api"),
+            currency=account.currency,
+            amount=amount,
+        )
+        session.add(transaction)
+        session.commit()
+        return transaction
+    except WalletServiceError:
+        session.rollback()
+        raise
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Withdrawal failed: {str(e)}", exc_info=True)
+        raise WalletServiceError("Withdrawal failed.", "WITHDRAWAL_ERROR", 500)
 
 
 def process_transfer(
     session: Session, source_account_id: str, data: TransferFundsRequest
 ) -> tuple[Transaction, Transaction]:
     """Handles the transfer of funds between two accounts."""
-    source_account = get_account_by_id(session, source_account_id)
-    destination_account = get_account_by_id(session, data.to_account_id)
+    # Lock both accounts in a consistent order to prevent deadlocks
+    ids_sorted = sorted([source_account_id, data.to_account_id])
+    first_account = get_account_for_update(session, ids_sorted[0])
+    second_account = get_account_for_update(session, ids_sorted[1])
+
+    if first_account.id == source_account_id:
+        source_account, destination_account = first_account, second_account
+    else:
+        source_account, destination_account = second_account, first_account
+
     if (
         source_account.status != AccountStatus.ACTIVE
         or destination_account.status != AccountStatus.ACTIVE
@@ -204,39 +237,47 @@ def process_transfer(
         raise InsufficientFunds(source_account_id)
     if source_account.currency != destination_account.currency:
         raise CurrencyMismatch()
-    source_account.debit(amount)
-    destination_account.credit(amount)
     description = (
         data.description
         or f"Transfer from {source_account.account_name} to {destination_account.account_name}"
     )
-    debit_transaction = Transaction(
-        user_id=source_account.user_id,
-        account_id=source_account.id,
-        transaction_type=TransactionType.DEBIT,
-        transaction_category=TransactionCategory.TRANSFER,
-        status=TransactionStatus.COMPLETED,
-        description=description,
-        channel=getattr(data, "channel", "api"),
-        currency=source_account.currency,
-        amount=amount,
-        related_account_id=destination_account.id,
-    )
-    credit_transaction = Transaction(
-        user_id=destination_account.user_id,
-        account_id=destination_account.id,
-        transaction_type=TransactionType.CREDIT,
-        transaction_category=TransactionCategory.TRANSFER,
-        status=TransactionStatus.COMPLETED,
-        description=description,
-        channel=getattr(data, "channel", "api"),
-        currency=destination_account.currency,
-        amount=amount,
-        related_account_id=source_account.id,
-    )
-    session.add_all([debit_transaction, credit_transaction])
-    session.commit()
-    return (debit_transaction, credit_transaction)
+    try:
+        source_account.debit(amount)
+        destination_account.credit(amount)
+        debit_transaction = Transaction(
+            user_id=source_account.user_id,
+            account_id=source_account.id,
+            transaction_type=TransactionType.DEBIT,
+            transaction_category=TransactionCategory.TRANSFER,
+            status=TransactionStatus.COMPLETED,
+            description=description,
+            channel=getattr(data, "channel", "api"),
+            currency=source_account.currency,
+            amount=amount,
+            related_account_id=destination_account.id,
+        )
+        credit_transaction = Transaction(
+            user_id=destination_account.user_id,
+            account_id=destination_account.id,
+            transaction_type=TransactionType.CREDIT,
+            transaction_category=TransactionCategory.TRANSFER,
+            status=TransactionStatus.COMPLETED,
+            description=description,
+            channel=getattr(data, "channel", "api"),
+            currency=destination_account.currency,
+            amount=amount,
+            related_account_id=source_account.id,
+        )
+        session.add_all([debit_transaction, credit_transaction])
+        session.commit()
+        return (debit_transaction, credit_transaction)
+    except WalletServiceError:
+        session.rollback()
+        raise
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Transfer failed: {str(e)}", exc_info=True)
+        raise WalletServiceError("Transfer failed.", "TRANSFER_ERROR", 500)
 
 
 def get_user_accounts(session: Session, user_id: str) -> list[Account]:

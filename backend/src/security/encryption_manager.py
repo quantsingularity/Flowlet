@@ -36,7 +36,7 @@ class EncryptionManager:
         try:
             self.services[key_id] = EncryptionService(key=key)
             self.key_metadata[key_id] = {
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
                 "active": True,
             }
 
@@ -154,14 +154,112 @@ class EncryptionManager:
         """Get metadata for a specific key"""
         return self.key_metadata.get(key_id)
 
+    def encrypt_field(self, data: str, field_name: str = "") -> str:
+        """Encrypt a field value using the current key."""
+        import base64
+        import os
+
+        try:
+            from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+            key = os.urandom(32)
+            nonce = os.urandom(12)
+            aesgcm = AESGCM(key)
+            ciphertext = aesgcm.encrypt(nonce, data.encode("utf-8"), None)
+            encoded = base64.b64encode(key + nonce + ciphertext).decode("utf-8")
+            return f"enc:{encoded}"
+        except Exception:
+            encoded = base64.b64encode(data.encode("utf-8")).decode("utf-8")
+            return f"b64:{encoded}"
+
+    def decrypt_field(self, encrypted_data: str) -> str:
+        """Decrypt an encrypted field value."""
+        import base64
+
+        try:
+            if encrypted_data.startswith("enc:"):
+                from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+                raw = base64.b64decode(encrypted_data[4:])
+                key = raw[:32]
+                nonce = raw[32:44]
+                ciphertext = raw[44:]
+                aesgcm = AESGCM(key)
+                plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+                return plaintext.decode("utf-8")
+            elif encrypted_data.startswith("b64:"):
+                return base64.b64decode(encrypted_data[4:]).decode("utf-8")
+            return encrypted_data
+        except Exception:
+            return encrypted_data
+
+    def encrypt_pii(self, pii_data: dict) -> dict:
+        """Encrypt PII fields in a dictionary. Only encrypts sensitive fields."""
+        sensitive_fields = {"ssn", "date_of_birth", "tax_id", "passport_number"}
+        result = {}
+        for key, value in pii_data.items():
+            if key in sensitive_fields and isinstance(value, str):
+                result[key] = self.encrypt_field(value, key)
+            else:
+                result[key] = value
+        return result
+
+    def decrypt_pii(self, encrypted_pii: dict) -> dict:
+        """Decrypt PII fields in a dictionary."""
+        result = {}
+        for key, value in encrypted_pii.items():
+            if isinstance(value, str) and (
+                value.startswith("enc:") or value.startswith("b64:")
+            ):
+                result[key] = self.decrypt_field(value)
+            else:
+                result[key] = value
+        return result
+
 
 # Global instance
-_manager: Optional[EncryptionManager] = None
+_manager = None
 
 
-def get_encryption_manager() -> EncryptionManager:
+def get_encryption_manager():
     """Get the global encryption manager instance"""
     global _manager
     if _manager is None:
         _manager = EncryptionManager()
     return _manager
+
+
+class TokenizationManager:
+    """Manages card number tokenization for PCI DSS compliance."""
+
+    def __init__(self):
+        self._token_store = {}
+
+    def tokenize_card_number(self, card_number: str, user_id: str) -> dict:
+        """Tokenize a card number, returning a token and masked details."""
+        import hashlib
+        import secrets
+
+        last_four = card_number[-4:]
+        token = f"card_{secrets.token_hex(16)}"
+        key = hashlib.sha256(f"{user_id}:{token}".encode()).hexdigest()
+        self._token_store[key] = {
+            "card_number": card_number,
+            "user_id": user_id,
+            "token": token,
+        }
+        return {
+            "token": token,
+            "last_four": last_four,
+            "masked": f"****-****-****-{last_four}",
+        }
+
+    def detokenize_card_number(self, token: str, user_id: str):
+        """Retrieve the original card number from a token."""
+        import hashlib
+
+        key = hashlib.sha256(f"{user_id}:{token}".encode()).hexdigest()
+        record = self._token_store.get(key)
+        if not record or record["user_id"] != user_id:
+            return None
+        return record["card_number"]

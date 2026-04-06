@@ -3,11 +3,16 @@ Error handlers for Flask application
 Provides centralized error handling for common HTTP errors and exceptions
 """
 
+from datetime import datetime, timezone
 from typing import Any
 
 from flask import jsonify
-from pydantic import ValidationError
 from werkzeug.exceptions import HTTPException
+
+try:
+    from pydantic import ValidationError as PydanticValidationError
+except ImportError:
+    PydanticValidationError = None
 
 
 def register_error_handlers(app):
@@ -43,8 +48,36 @@ def register_error_handlers(app):
     @app.errorhandler(404)
     def not_found(error: Exception) -> Any:
         return (
-            jsonify({"status": "error", "message": "Not found", "error": str(error)}),
+            jsonify(
+                {
+                    "error": "Not Found",
+                    "code": "NOT_FOUND",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            ),
             404,
+        )
+
+    @app.errorhandler(405)
+    def method_not_allowed(error: Exception) -> Any:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Method not allowed",
+                    "error": str(error),
+                }
+            ),
+            405,
+        )
+
+    @app.errorhandler(429)
+    def too_many_requests(error: Exception) -> Any:
+        return (
+            jsonify(
+                {"status": "error", "message": "Too many requests", "error": str(error)}
+            ),
+            429,
         )
 
     @app.errorhandler(500)
@@ -57,21 +90,27 @@ def register_error_handlers(app):
         return jsonify({"status": "error", "message": error.description}), error.code
 
 
-def handle_validation_error(error: ValidationError):
+def handle_validation_error(error):
     """Handle Pydantic validation errors"""
-    errors = error.errors()
-    formatted_errors = []
-    for err in errors:
-        field = ".".join(str(x) for x in err["loc"])
-        formatted_errors.append({"field": field, "message": err["msg"]})
-
+    if PydanticValidationError and isinstance(error, PydanticValidationError):
+        errors = error.errors()
+        formatted_errors = []
+        for err in errors:
+            field = ".".join(str(x) for x in err["loc"])
+            formatted_errors.append({"field": field, "message": err["msg"]})
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Validation error",
+                    "errors": formatted_errors,
+                }
+            ),
+            400,
+        )
     return (
         jsonify(
-            {
-                "status": "error",
-                "message": "Validation error",
-                "errors": formatted_errors,
-            }
+            {"status": "error", "message": "Validation error", "error": str(error)}
         ),
         400,
     )

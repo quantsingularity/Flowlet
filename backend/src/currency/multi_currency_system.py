@@ -8,7 +8,14 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import numpy as np
-import redis
+
+try:
+    import redis
+
+    REDIS_AVAILABLE = True
+except ImportError:
+    redis = None
+    REDIS_AVAILABLE = False
 from sqlalchemy import Boolean, Column, DateTime, Numeric, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -279,7 +286,7 @@ class ExchangeRateService:
                 precision, rounding=ROUND_HALF_UP
             )
             conversion = CurrencyConversion(
-                conversion_id=f"conv_{datetime.now().strftime('%Y%m%d%H%M%S')}_{user_id}",
+                conversion_id=f"conv_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}_{user_id}",
                 from_currency=from_currency,
                 to_currency=to_currency,
                 from_amount=amount,
@@ -627,7 +634,7 @@ class ExchangeRateService:
                     position_record.last_updated = datetime.now(timezone.utc)
                 else:
                     position_record = FXPositionModel(
-                        id=f"{user_id}_{currency}_{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                        id=f"{user_id}_{currency}_{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
                         user_id=user_id,
                         currency=currency,
                         amount=amount,

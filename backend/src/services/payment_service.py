@@ -78,8 +78,10 @@ def process_external_payment(
                 metadata={"account_id": str(account.id), "user_id": str(user_id)},
             )
         except PaymentProcessorError as e:
+            session.rollback()
             raise e
         except Exception as e:
+            session.rollback()
             logger.error(
                 f"Unexpected error during Stripe processing: {str(e)}", exc_info=True
             )
@@ -89,28 +91,37 @@ def process_external_payment(
                 500,
             )
         if stripe_result.get("status") == "succeeded":
-            account.credit(data.amount)
-            transaction = Transaction(
-                user_id=user_id,
-                account_id=account.id,
-                transaction_type=TransactionType.CREDIT,
-                transaction_category=TransactionCategory.PAYMENT,
-                status=TransactionStatus.COMPLETED,
-                description=data.description
-                or f"External payment via {data.payment_method}",
-                channel=data.payment_method,
-                currency=data.currency,
-                amount=data.amount,
-                external_reference=stripe_result.get("id"),
-            )
-            session.add(transaction)
-            session.commit()
-            return {
-                "status": "success",
-                "transaction_id": str(transaction.id),
-                "external_reference": stripe_result.get("id"),
-                "new_balance": float(account.balance),
-            }
+            try:
+                account.credit(data.amount)
+                transaction = Transaction(
+                    user_id=user_id,
+                    account_id=account.id,
+                    transaction_type=TransactionType.CREDIT,
+                    transaction_category=TransactionCategory.PAYMENT,
+                    status=TransactionStatus.COMPLETED,
+                    description=data.description
+                    or f"External payment via {data.payment_method}",
+                    channel=data.payment_method,
+                    currency=data.currency,
+                    amount=data.amount,
+                    external_reference=stripe_result.get("id"),
+                )
+                session.add(transaction)
+                session.commit()
+                return {
+                    "status": "success",
+                    "transaction_id": str(transaction.id),
+                    "external_reference": stripe_result.get("id"),
+                    "new_balance": float(account.balance),
+                }
+            except Exception as e:
+                session.rollback()
+                logger.error(
+                    f"Failed to save payment transaction: {str(e)}", exc_info=True
+                )
+                raise PaymentServiceError(
+                    "Failed to record payment.", "RECORD_ERROR", 500
+                )
         else:
             raise PaymentProcessorError(
                 f"Payment status is {stripe_result.get('status')}",
@@ -126,7 +137,6 @@ def process_internal_transfer(
 ) -> Tuple[Transaction, Transaction]:
     """
     Handles internal transfers between two wallets.
-    Consolidates logic from wallet_mvp.py's /transfer endpoint.
     """
     from_account = session.get(Account, data.from_account_id)
     to_account = session.get(Account, data.to_account_id)
@@ -141,43 +151,51 @@ def process_internal_transfer(
     check_funds_and_limits(from_account, data.amount)
     transfer_reference = (
         data.reference
-        or f"TRF-{datetime.now().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:8]}"
+        or f"TRF-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:8]}"
     )
     description = (
         data.description
         or f"Transfer from {from_account.account_name} to {to_account.account_name}"
     )
-    from_account.debit(data.amount, description)
-    to_account.credit(data.amount, description)
-    debit_transaction = Transaction(
-        user_id=from_account.user_id,
-        account_id=from_account.id,
-        transaction_type=TransactionType.DEBIT,
-        transaction_category=TransactionCategory.TRANSFER,
-        status=TransactionStatus.COMPLETED,
-        description=f"{description} (Outgoing)",
-        reference_number=transfer_reference,
-        channel="api",
-        currency=from_account.currency,
-        amount=data.amount,
-        related_account_id=to_account.id,
-    )
-    credit_transaction = Transaction(
-        user_id=to_account.user_id,
-        account_id=to_account.id,
-        transaction_type=TransactionType.CREDIT,
-        transaction_category=TransactionCategory.TRANSFER,
-        status=TransactionStatus.COMPLETED,
-        description=f"{description} (Incoming)",
-        reference_number=transfer_reference,
-        channel="api",
-        currency=to_account.currency,
-        amount=data.amount,
-        related_account_id=from_account.id,
-    )
-    session.add_all([debit_transaction, credit_transaction])
-    session.commit()
-    return (debit_transaction, credit_transaction)
+    try:
+        from_account.debit(data.amount, description)
+        to_account.credit(data.amount, description)
+        debit_transaction = Transaction(
+            user_id=from_account.user_id,
+            account_id=from_account.id,
+            transaction_type=TransactionType.DEBIT,
+            transaction_category=TransactionCategory.TRANSFER,
+            status=TransactionStatus.COMPLETED,
+            description=f"{description} (Outgoing)",
+            reference_number=transfer_reference,
+            channel="api",
+            currency=from_account.currency,
+            amount=data.amount,
+            related_account_id=to_account.id,
+        )
+        credit_transaction = Transaction(
+            user_id=to_account.user_id,
+            account_id=to_account.id,
+            transaction_type=TransactionType.CREDIT,
+            transaction_category=TransactionCategory.TRANSFER,
+            status=TransactionStatus.COMPLETED,
+            description=f"{description} (Incoming)",
+            reference_number=transfer_reference,
+            channel="api",
+            currency=to_account.currency,
+            amount=data.amount,
+            related_account_id=from_account.id,
+        )
+        session.add_all([debit_transaction, credit_transaction])
+        session.commit()
+        return (debit_transaction, credit_transaction)
+    except (PaymentServiceError, PaymentProcessorError):
+        session.rollback()
+        raise
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Internal transfer failed: {str(e)}", exc_info=True)
+        raise PaymentServiceError("Internal transfer failed.", "TRANSFER_ERROR", 500)
 
 
 def get_transaction_details(
@@ -189,7 +207,8 @@ def get_transaction_details(
     transaction = session.get(Transaction, transaction_id)
     if not transaction:
         raise TransactionNotFound(transaction_id)
-    if transaction.user_id != user_id and (not session.get(User, user_id).is_admin):
+    user = session.get(User, user_id)
+    if transaction.user_id != user_id and (user is None or not user.is_admin):
         raise AccountAccessDenied()
     return transaction
 
@@ -198,8 +217,7 @@ def send_payment(
     session: Session, data: SendPaymentRequest
 ) -> Tuple[Transaction, Transaction]:
     """
-    Handles sending a payment to a recipient (by email, phone, or account number).
-    For now, we'll treat this as an internal transfer if the recipient is found.
+    Handles sending a payment to a recipient.
     """
     if data.recipient == "test_recipient@flowlet.com":
         resolved_to_account_id = "mock_resolved_account_id"
@@ -219,9 +237,13 @@ def send_payment(
     debit_transaction, credit_transaction = process_internal_transfer(
         session, internal_transfer_data
     )
-    debit_transaction.transaction_category = TransactionCategory.PAYMENT
-    session.add(debit_transaction)
-    session.commit()
+    try:
+        debit_transaction.transaction_category = TransactionCategory.PAYMENT
+        session.add(debit_transaction)
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Failed to update payment category: {str(e)}", exc_info=True)
     return (debit_transaction, credit_transaction)
 
 
@@ -231,12 +253,10 @@ def create_payment_request(
     """
     Creates a payment request.
     """
-    account = session.get(Account, data.from_account_id)
+    account = session.get(Account, data.account_id)
     if not account:
         raise SourceWalletNotFound()
-    request_reference = (
-        f"REQ-{datetime.now().strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:8]}"
-    )
+    request_reference = f"REQ-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{str(uuid.uuid4())[:8]}"
     return {
         "success": True,
         "request_reference": request_reference,

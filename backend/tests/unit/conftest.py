@@ -3,26 +3,28 @@ import tempfile
 from typing import Any
 
 import pytest
-from src.models.database import db
 
-from backend.app import create_app
-
-"\nTest configuration for the enhanced Flowlet backend\n"
+"Test configuration for the enhanced Flowlet backend"
 
 
 @pytest.fixture
 def app() -> Any:
     """Create and configure a new app instance for each test."""
-    db_fd, db_path = tempfile.mkstemp()
+    os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
+    os.environ.setdefault("JWT_SECRET_KEY", "test-jwt-secret-for-testing-only")
+
+    from app import create_app
+    from src.models.database import db
+
+    db_fd, db_path = tempfile.mkstemp(suffix=".db")
     app = create_app("testing")
     app.config.update(
         {
             "TESTING": True,
             "SQLALCHEMY_DATABASE_URI": f"sqlite:///{db_path}",
-            "SECRET_KEY": "test-secret-key",
-            "JWT_SECRET_KEY": "test-jwt-secret",
+            "SECRET_KEY": "test-secret-key-for-testing-only",
+            "JWT_SECRET_KEY": "test-jwt-secret-for-testing-only",
             "WTF_CSRF_ENABLED": False,
-            "REDIS_URL": None,
         }
     )
     with app.app_context():

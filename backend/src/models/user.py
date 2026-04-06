@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from enum import Enum as PyEnum
 from typing import Any
 
@@ -11,7 +11,7 @@ from .database import Base, db
 
 
 class UserRole(PyEnum):
-    """User roles for RBAC - Merged from both"""
+    """User roles for RBAC"""
 
     ADMIN = "admin"
     USER = "user"
@@ -21,7 +21,7 @@ class UserRole(PyEnum):
 
 
 class UserStatus(PyEnum):
-    """User account status - Merged from both"""
+    """User account status"""
 
     ACTIVE = "active"
     SUSPENDED = "suspended"
@@ -32,7 +32,7 @@ class UserStatus(PyEnum):
 
 
 class KYCStatus(PyEnum):
-    """KYC verification status - From app/models/user.py"""
+    """KYC verification status"""
 
     NOT_STARTED = "not_started"
     IN_PROGRESS = "in_progress"
@@ -130,30 +130,44 @@ class User(Base):
         return age.days > max_age_days
 
     def increment_failed_login(self) -> None:
-        """Increment failed login attempts"""
+        """Increment failed login attempts and lock if threshold exceeded"""
         self.failed_login_attempts += 1
         self.last_failed_login = datetime.now(timezone.utc)
         if self.failed_login_attempts >= 5:
             self.status = UserStatus.LOCKED
+            self.account_locked_until = datetime.now(timezone.utc) + timedelta(
+                minutes=30
+            )
 
     def reset_failed_login(self) -> None:
         """Reset failed login attempts after successful login"""
         self.failed_login_attempts = 0
         self.last_failed_login = None
+        self.account_locked_until = None
         self.last_login_at = datetime.now(timezone.utc)
         if self.status == UserStatus.LOCKED:
             self.status = UserStatus.ACTIVE
 
     def is_locked(self) -> bool:
-        """Check if account is locked"""
-        return self.status == UserStatus.LOCKED
+        """Check if account is locked, auto-unlock if lock has expired"""
+        if self.status != UserStatus.LOCKED:
+            return False
+        if (
+            self.account_locked_until
+            and datetime.now(timezone.utc) > self.account_locked_until
+        ):
+            self.status = UserStatus.ACTIVE
+            self.failed_login_attempts = 0
+            self.account_locked_until = None
+            return False
+        return True
 
     def can_login(self) -> bool:
         """Check if user can login"""
         return (
             self.is_active
             and self.status in [UserStatus.ACTIVE, UserStatus.PENDING_VERIFICATION]
-            and (not self.is_locked())
+            and not self.is_locked()
         )
 
     @property
@@ -181,7 +195,7 @@ class User(Base):
         return self.role == role
 
     def to_dict(self, include_sensitive: bool = False) -> dict:
-        """Convert to dictionary with optional sensitive data - Merged from both"""
+        """Convert to dictionary with optional sensitive data"""
         data = {
             "id": self.id,
             "email": self.email,

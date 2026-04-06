@@ -249,13 +249,13 @@ class ThreatPreventionService:
                 "192.168.1.100": {
                     "threat_type": "botnet",
                     "confidence": 0.9,
-                    "last_seen": datetime.utcnow() - timedelta(hours=2),
+                    "last_seen": datetime.now(timezone.utc) - timedelta(hours=2),
                     "source": "ThreatFeed Pro",
                 },
                 "10.0.0.50": {
                     "threat_type": "malware_c2",
                     "confidence": 0.85,
-                    "last_seen": datetime.utcnow() - timedelta(hours=6),
+                    "last_seen": datetime.now(timezone.utc) - timedelta(hours=6),
                     "source": "CyberIntel",
                 },
             },
@@ -263,13 +263,13 @@ class ThreatPreventionService:
                 "malicious-site.com": {
                     "threat_type": "phishing",
                     "confidence": 0.95,
-                    "last_seen": datetime.utcnow() - timedelta(hours=1),
+                    "last_seen": datetime.now(timezone.utc) - timedelta(hours=1),
                     "source": "PhishTank",
                 },
                 "fake-bank.net": {
                     "threat_type": "financial_fraud",
                     "confidence": 0.9,
-                    "last_seen": datetime.utcnow() - timedelta(hours=4),
+                    "last_seen": datetime.now(timezone.utc) - timedelta(hours=4),
                     "source": "FinCERT",
                 },
             },
@@ -277,7 +277,7 @@ class ThreatPreventionService:
                 "a1b2c3d4e5f6": {
                     "threat_type": "banking_trojan",
                     "confidence": 0.98,
-                    "last_seen": datetime.utcnow() - timedelta(hours=3),
+                    "last_seen": datetime.now(timezone.utc) - timedelta(hours=3),
                     "source": "MalwareDB",
                 }
             },
@@ -361,8 +361,8 @@ class ThreatPreventionService:
                 threat_indicators=threat_indicators,
                 attack_vectors=attack_vectors,
                 mitigation_recommendations=mitigation_recommendations,
-                assessment_timestamp=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(minutes=15),
+                assessment_timestamp=datetime.now(timezone.utc),
+                expires_at=datetime.now(timezone.utc) + timedelta(minutes=15),
             )
             await self._execute_response_actions(assessment, request_data)
             self.logger.info(
@@ -382,7 +382,7 @@ class ThreatPreventionService:
                 recommended_actions=[ResponseAction.LOG, ResponseAction.INVESTIGATE],
                 threat_indicators=[
                     ThreatIndicator(
-                        indicator_id=f"error_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"error_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="assessment_error",
                         threat_type=ThreatType.API_ABUSE,
                         severity=ThreatSeverity.MEDIUM,
@@ -390,13 +390,13 @@ class ThreatPreventionService:
                         description=f"Error in threat assessment: {str(e)}",
                         evidence={"error": str(e)},
                         source="threat_prevention",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 ],
                 attack_vectors=[],
                 mitigation_recommendations=["Investigate assessment error"],
-                assessment_timestamp=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(minutes=15),
+                assessment_timestamp=datetime.now(timezone.utc),
+                expires_at=datetime.now(timezone.utc) + timedelta(minutes=15),
             )
 
     async def _detect_injection_attacks(
@@ -418,7 +418,7 @@ class ThreatPreventionService:
             if sql_matches:
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"sqli_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"sqli_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="sql_injection",
                         threat_type=ThreatType.SQL_INJECTION,
                         severity=ThreatSeverity.HIGH,
@@ -426,14 +426,14 @@ class ThreatPreventionService:
                         description="SQL injection attempt detected",
                         evidence={"input": input_value[:100], "matches": sql_matches},
                         source="signature_detection",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             xss_matches = self._check_signatures(input_value, ThreatType.XSS)
             if xss_matches:
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"xss_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"xss_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="cross_site_scripting",
                         threat_type=ThreatType.XSS,
                         severity=ThreatSeverity.HIGH,
@@ -441,14 +441,14 @@ class ThreatPreventionService:
                         description="Cross-site scripting attempt detected",
                         evidence={"input": input_value[:100], "matches": xss_matches},
                         source="signature_detection",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             cmd_matches = self._check_signatures(input_value, ThreatType.MALWARE)
             if cmd_matches:
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"cmdi_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"cmdi_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="command_injection",
                         threat_type=ThreatType.MALWARE,
                         severity=ThreatSeverity.CRITICAL,
@@ -456,7 +456,7 @@ class ThreatPreventionService:
                         description="Command injection attempt detected",
                         evidence={"input": input_value[:100], "matches": cmd_matches},
                         source="signature_detection",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         return indicators
@@ -481,7 +481,7 @@ class ThreatPreventionService:
         rate_limit_key = user_id if user_id else client_ip
         if not rate_limit_key:
             return indicators
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         if request_type == "api":
             api_requests = self._rate_limiters["api_requests"][rate_limit_key]
             api_requests.append(current_time)
@@ -494,7 +494,7 @@ class ThreatPreventionService:
             if len(api_requests) > max_requests:
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"rate_limit_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"rate_limit_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="rate_limit_exceeded",
                         threat_type=ThreatType.API_ABUSE,
                         severity=ThreatSeverity.MEDIUM,
@@ -507,7 +507,7 @@ class ThreatPreventionService:
                             "user_id": user_id,
                         },
                         source="rate_limiter",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         elif request_type == "login":
@@ -522,7 +522,7 @@ class ThreatPreventionService:
             if len(login_attempts) > max_attempts:
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"login_rate_limit_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"login_rate_limit_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="login_rate_limit_exceeded",
                         threat_type=ThreatType.BRUTE_FORCE,
                         severity=ThreatSeverity.HIGH,
@@ -535,7 +535,7 @@ class ThreatPreventionService:
                             "user_id": user_id,
                         },
                         source="rate_limiter",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         return indicators
@@ -552,7 +552,7 @@ class ThreatPreventionService:
             threat_info = self._threat_intelligence["malicious_ips"][client_ip]
             indicators.append(
                 ThreatIndicator(
-                    indicator_id=f"malicious_ip_{int(datetime.utcnow().timestamp())}",
+                    indicator_id=f"malicious_ip_{int(datetime.now(timezone.utc).timestamp())}",
                     indicator_type="malicious_ip",
                     threat_type=ThreatType.MALWARE,
                     severity=ThreatSeverity.HIGH,
@@ -565,7 +565,7 @@ class ThreatPreventionService:
                         "last_seen": threat_info["last_seen"].isoformat(),
                     },
                     source="threat_intelligence",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         country_code = request_data.get("country_code", "")
@@ -575,7 +575,7 @@ class ThreatPreventionService:
         if country_code in blocked_countries:
             indicators.append(
                 ThreatIndicator(
-                    indicator_id=f"blocked_country_{int(datetime.utcnow().timestamp())}",
+                    indicator_id=f"blocked_country_{int(datetime.now(timezone.utc).timestamp())}",
                     indicator_type="blocked_geography",
                     threat_type=ThreatType.API_ABUSE,
                     severity=ThreatSeverity.MEDIUM,
@@ -583,13 +583,13 @@ class ThreatPreventionService:
                     description=f"Request from blocked country: {country_code}",
                     evidence={"country_code": country_code, "ip_address": client_ip},
                     source="geo_blocking",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         if self._is_tor_exit_node(client_ip):
             indicators.append(
                 ThreatIndicator(
-                    indicator_id=f"tor_exit_{int(datetime.utcnow().timestamp())}",
+                    indicator_id=f"tor_exit_{int(datetime.now(timezone.utc).timestamp())}",
                     indicator_type="tor_exit_node",
                     threat_type=ThreatType.API_ABUSE,
                     severity=ThreatSeverity.MEDIUM,
@@ -597,7 +597,7 @@ class ThreatPreventionService:
                     description="Request from Tor exit node",
                     evidence={"ip_address": client_ip},
                     source="tor_detection",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         return indicators
@@ -612,7 +612,7 @@ class ThreatPreventionService:
         if request_size > max_size:
             indicators.append(
                 ThreatIndicator(
-                    indicator_id=f"large_request_{int(datetime.utcnow().timestamp())}",
+                    indicator_id=f"large_request_{int(datetime.now(timezone.utc).timestamp())}",
                     indicator_type="oversized_request",
                     threat_type=ThreatType.DDoS,
                     severity=ThreatSeverity.MEDIUM,
@@ -620,14 +620,14 @@ class ThreatPreventionService:
                     description=f"Oversized request: {request_size} bytes",
                     evidence={"request_size": request_size, "max_size": max_size},
                     source="behavioral_analysis",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         user_agent = request_data.get("user_agent", "")
         if self._is_suspicious_user_agent(user_agent):
             indicators.append(
                 ThreatIndicator(
-                    indicator_id=f"suspicious_ua_{int(datetime.utcnow().timestamp())}",
+                    indicator_id=f"suspicious_ua_{int(datetime.now(timezone.utc).timestamp())}",
                     indicator_type="suspicious_user_agent",
                     threat_type=ThreatType.API_ABUSE,
                     severity=ThreatSeverity.LOW,
@@ -635,14 +635,14 @@ class ThreatPreventionService:
                     description="Suspicious user agent detected",
                     evidence={"user_agent": user_agent},
                     source="behavioral_analysis",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         request_path = request_data.get("request_path", "")
         if self._is_suspicious_path(request_path):
             indicators.append(
                 ThreatIndicator(
-                    indicator_id=f"suspicious_path_{int(datetime.utcnow().timestamp())}",
+                    indicator_id=f"suspicious_path_{int(datetime.now(timezone.utc).timestamp())}",
                     indicator_type="suspicious_request_path",
                     threat_type=ThreatType.API_ABUSE,
                     severity=ThreatSeverity.MEDIUM,
@@ -650,7 +650,7 @@ class ThreatPreventionService:
                     description="Suspicious request path detected",
                     evidence={"request_path": request_path},
                     source="behavioral_analysis",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         return indicators
@@ -671,7 +671,7 @@ class ThreatPreventionService:
             if file_ext in blocked_extensions:
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"blocked_file_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"blocked_file_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="blocked_file_type",
                         threat_type=ThreatType.MALWARE,
                         severity=ThreatSeverity.HIGH,
@@ -679,7 +679,7 @@ class ThreatPreventionService:
                         description=f"Blocked file type uploaded: {file_ext}",
                         evidence={"filename": filename, "extension": file_ext},
                         source="file_analysis",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             max_size_mb = self._security_rules["input_validation"]["max_file_size_mb"]
@@ -687,7 +687,7 @@ class ThreatPreventionService:
             if file_size > max_size_bytes:
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"oversized_file_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"oversized_file_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="oversized_file",
                         threat_type=ThreatType.DDoS,
                         severity=ThreatSeverity.MEDIUM,
@@ -699,13 +699,13 @@ class ThreatPreventionService:
                             "max_size": max_size_bytes,
                         },
                         source="file_analysis",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             if self._contains_malware_signatures(file_content):
                 indicators.append(
                     ThreatIndicator(
-                        indicator_id=f"malware_file_{int(datetime.utcnow().timestamp())}",
+                        indicator_id=f"malware_file_{int(datetime.now(timezone.utc).timestamp())}",
                         indicator_type="malware_detected",
                         threat_type=ThreatType.MALWARE,
                         severity=ThreatSeverity.CRITICAL,
@@ -713,7 +713,7 @@ class ThreatPreventionService:
                         description="Potential malware detected in uploaded file",
                         evidence={"filename": filename, "file_size": file_size},
                         source="malware_scanner",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         return indicators
@@ -863,16 +863,16 @@ class ThreatPreventionService:
         block_duration = timedelta(hours=24)
         if client_ip:
             self._blocked_entities[client_ip] = {
-                "blocked_at": datetime.utcnow(),
-                "expires_at": datetime.utcnow() + block_duration,
+                "blocked_at": datetime.now(timezone.utc),
+                "expires_at": datetime.now(timezone.utc) + block_duration,
                 "reason": f"Threat assessment: {assessment.threat_level.value}",
                 "assessment_id": assessment.assessment_id,
             }
             self.logger.warning(f"Blocked IP address: {client_ip}")
         if user_id:
             self._blocked_entities[user_id] = {
-                "blocked_at": datetime.utcnow(),
-                "expires_at": datetime.utcnow() + block_duration,
+                "blocked_at": datetime.now(timezone.utc),
+                "expires_at": datetime.now(timezone.utc) + block_duration,
                 "reason": f"Threat assessment: {assessment.threat_level.value}",
                 "assessment_id": assessment.assessment_id,
             }
@@ -974,7 +974,7 @@ class ThreatPreventionService:
         if entity_id not in self._blocked_entities:
             return False
         block_info = self._blocked_entities[entity_id]
-        if datetime.utcnow() > block_info["expires_at"]:
+        if datetime.now(timezone.utc) > block_info["expires_at"]:
             del self._blocked_entities[entity_id]
             return False
         return True
@@ -1000,5 +1000,5 @@ class ThreatPreventionService:
             ),
             "security_rules": len(self._security_rules),
             "rate_limiters": len(self._rate_limiters),
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

@@ -94,7 +94,7 @@ class MetricWindow:
     def __post_init__(self) -> Any:
         self.data_points = deque()
         self.current_value = 0.0
-        self.last_calculation = datetime.utcnow()
+        self.last_calculation = datetime.now(timezone.utc)
 
 
 class RealTimeAnalytics:
@@ -318,7 +318,7 @@ class RealTimeAnalytics:
         """Calculate real-time metrics from sliding windows."""
         while self._is_processing:
             try:
-                current_time = datetime.utcnow()
+                current_time = datetime.now(timezone.utc)
                 for window_name, window in self._metric_windows.items():
                     if current_time - window.last_calculation >= window.slide_interval:
                         await self._calculate_window_metric(
@@ -366,7 +366,7 @@ class RealTimeAnalytics:
         """Monitor metrics and trigger alerts."""
         while self._is_processing:
             try:
-                current_time = datetime.utcnow()
+                current_time = datetime.now(timezone.utc)
                 for rule_name, rule in self._alert_rules.items():
                     await self._check_alert_rule(rule_name, rule, current_time)
                 await self._cleanup_resolved_alerts(current_time)
@@ -419,14 +419,14 @@ class RealTimeAnalytics:
         data: Dict[str, Any],
     ):
         """Create a new alert."""
-        alert_id = f"{alert_type}_{int(datetime.utcnow().timestamp())}"
+        alert_id = f"{alert_type}_{int(datetime.now(timezone.utc).timestamp())}"
         alert = RealTimeAlert(
             alert_id=alert_id,
             alert_type=alert_type,
             severity=severity,
             title=title,
             message=message,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             data=data,
         )
         self._active_alerts[alert_type] = {"alert": alert, "timestamp": alert.timestamp}
@@ -580,15 +580,15 @@ class RealTimeAnalytics:
             "metric_subscribers": sum(
                 (len(subs) for subs in self._metric_subscribers.values())
             ),
-            "last_update": datetime.utcnow().isoformat(),
+            "last_update": datetime.now(timezone.utc).isoformat(),
         }
 
     async def simulate_transaction_event(self, transaction_data: Dict[str, Any]):
         """Simulate a transaction event for testing."""
         event = StreamEvent(
-            event_id=f"sim_{int(datetime.utcnow().timestamp())}",
+            event_id=f"sim_{int(datetime.now(timezone.utc).timestamp())}",
             event_type=StreamEventType.TRANSACTION,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             data=transaction_data,
             source="simulation",
             user_id=transaction_data.get("user_id"),
@@ -598,9 +598,9 @@ class RealTimeAnalytics:
     async def simulate_system_metric_event(self, metric_name: str, value: float):
         """Simulate a system metric event for testing."""
         event = StreamEvent(
-            event_id=f"sim_metric_{int(datetime.utcnow().timestamp())}",
+            event_id=f"sim_metric_{int(datetime.now(timezone.utc).timestamp())}",
             event_type=StreamEventType.SYSTEM_METRIC,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             data={"metric_name": metric_name, "value": value},
             source="simulation",
         )

@@ -96,7 +96,7 @@ class SanctionsScreeningService:
             }
 
         self.screening_id_counter += 1
-        screening_id = f"SCR-{datetime.utcnow().strftime('%Y%m%d')}-{self.screening_id_counter:06d}"
+        screening_id = f"SCR-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{self.screening_id_counter:06d}"
 
         full_name = f"{first_name} {last_name}"
         lists_to_check = lists or [SanctionsListType.OFAC, SanctionsListType.EU]
@@ -127,7 +127,7 @@ class SanctionsScreeningService:
                 result=result.value,
                 matches=matches,
                 lists_checked=[lst.value for lst in lists_to_check],
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 confidence_score=0.85 if matches else 1.0,
             )
 
@@ -173,7 +173,7 @@ class SanctionsScreeningService:
             }
 
         self.screening_id_counter += 1
-        screening_id = f"SCR-{datetime.utcnow().strftime('%Y%m%d')}-{self.screening_id_counter:06d}"
+        screening_id = f"SCR-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{self.screening_id_counter:06d}"
 
         lists_to_check = lists or [SanctionsListType.OFAC, SanctionsListType.EU]
 
@@ -201,7 +201,7 @@ class SanctionsScreeningService:
                 result=result.value,
                 matches=matches,
                 lists_checked=[lst.value for lst in lists_to_check],
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 confidence_score=0.80 if matches else 1.0,
             )
 

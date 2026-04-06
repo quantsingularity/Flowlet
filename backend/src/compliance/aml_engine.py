@@ -154,7 +154,7 @@ class AMLEngine:
         self._sanctions_lists[SanctionsListType.OFAC_SDN] = {
             "name": "OFAC Specially Designated Nationals",
             "source": "US Treasury OFAC",
-            "last_updated": datetime.utcnow(),
+            "last_updated": datetime.now(timezone.utc),
             "entries": [
                 {
                     "id": "SDN-12345",
@@ -171,7 +171,7 @@ class AMLEngine:
         self._sanctions_lists[SanctionsListType.EU_SANCTIONS] = {
             "name": "EU Consolidated Sanctions List",
             "source": "European Union",
-            "last_updated": datetime.utcnow(),
+            "last_updated": datetime.now(timezone.utc),
             "entries": [
                 {
                     "id": "EU-67890",
@@ -192,7 +192,7 @@ class AMLEngine:
             "global_peps": {
                 "name": "Global PEP Database",
                 "source": "Compliance Database",
-                "last_updated": datetime.utcnow(),
+                "last_updated": datetime.now(timezone.utc),
                 "entries": [
                     {
                         "id": "PEP-001",
@@ -298,13 +298,13 @@ class AMLEngine:
                 sanctions_matches = sanctions_result["matches"]
                 flags.append(
                     AMLFlag(
-                        flag_id=f"sanctions_{customer_id}_{int(datetime.utcnow().timestamp())}",
+                        flag_id=f"sanctions_{customer_id}_{int(datetime.now(timezone.utc).timestamp())}",
                         flag_type="sanctions_match",
                         severity=RiskLevel.CRITICAL,
                         description=f"Sanctions match found: {len(sanctions_matches)} matches",
                         details=sanctions_result,
                         source="sanctions_screening",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             pep_result = await self._screen_pep(customer_data)
@@ -312,13 +312,13 @@ class AMLEngine:
                 pep_matches = pep_result["matches"]
                 flags.append(
                     AMLFlag(
-                        flag_id=f"pep_{customer_id}_{int(datetime.utcnow().timestamp())}",
+                        flag_id=f"pep_{customer_id}_{int(datetime.now(timezone.utc).timestamp())}",
                         flag_type="pep_match",
                         severity=RiskLevel.HIGH,
                         description=f"PEP match found: {len(pep_matches)} matches",
                         details=pep_result,
                         source="pep_screening",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             adverse_media_result = await self._screen_adverse_media(customer_data)
@@ -326,13 +326,13 @@ class AMLEngine:
                 adverse_media_matches = adverse_media_result["matches"]
                 flags.append(
                     AMLFlag(
-                        flag_id=f"adverse_media_{customer_id}_{int(datetime.utcnow().timestamp())}",
+                        flag_id=f"adverse_media_{customer_id}_{int(datetime.now(timezone.utc).timestamp())}",
                         flag_type="adverse_media",
                         severity=RiskLevel.MEDIUM,
                         description=f"Adverse media found: {len(adverse_media_matches)} matches",
                         details=adverse_media_result,
                         source="adverse_media_screening",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             risk_score = self._calculate_customer_risk_score(customer_data, flags)
@@ -348,7 +348,7 @@ class AMLEngine:
                 sanctions_matches=sanctions_matches,
                 pep_matches=pep_matches,
                 adverse_media_matches=adverse_media_matches,
-                screening_timestamp=datetime.utcnow(),
+                screening_timestamp=datetime.now(timezone.utc),
                 details={
                     "screening_version": "1.0",
                     "sanctions_lists_checked": list(self._sanctions_lists.keys()),
@@ -371,19 +371,19 @@ class AMLEngine:
                 risk_level=RiskLevel.MEDIUM,
                 flags=[
                     AMLFlag(
-                        flag_id=f"error_{customer_id}_{int(datetime.utcnow().timestamp())}",
+                        flag_id=f"error_{customer_id}_{int(datetime.now(timezone.utc).timestamp())}",
                         flag_type="screening_error",
                         severity=RiskLevel.MEDIUM,
                         description=f"AML screening error: {str(e)}",
                         details={"error": str(e)},
                         source="aml_engine",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 ],
                 sanctions_matches=[],
                 pep_matches=[],
                 adverse_media_matches=[],
-                screening_timestamp=datetime.utcnow(),
+                screening_timestamp=datetime.now(timezone.utc),
                 details={"error": str(e)},
             )
 
@@ -422,7 +422,7 @@ class AMLEngine:
                 sanctions_matches=[],
                 pep_matches=[],
                 adverse_media_matches=[],
-                screening_timestamp=datetime.utcnow(),
+                screening_timestamp=datetime.now(timezone.utc),
                 details={
                     "transaction_amount": transaction_data.get("amount"),
                     "transaction_currency": transaction_data.get("currency"),
@@ -447,7 +447,7 @@ class AMLEngine:
                 sanctions_matches=[],
                 pep_matches=[],
                 adverse_media_matches=[],
-                screening_timestamp=datetime.utcnow(),
+                screening_timestamp=datetime.now(timezone.utc),
                 details={"error": str(e)},
             )
 
@@ -586,7 +586,7 @@ class AMLEngine:
         if amount >= 10000:
             flags.append(
                 AMLFlag(
-                    flag_id=f"large_amount_{int(datetime.utcnow().timestamp())}",
+                    flag_id=f"large_amount_{int(datetime.now(timezone.utc).timestamp())}",
                     flag_type="large_transaction",
                     severity=RiskLevel.MEDIUM,
                     description=f"Large transaction amount: {amount} {currency}",
@@ -597,25 +597,25 @@ class AMLEngine:
                         "reporting_required": True,
                     },
                     source="amount_analysis",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         if amount % 1000 == 0 and amount >= 5000:
             flags.append(
                 AMLFlag(
-                    flag_id=f"round_amount_{int(datetime.utcnow().timestamp())}",
+                    flag_id=f"round_amount_{int(datetime.now(timezone.utc).timestamp())}",
                     flag_type="round_amount",
                     severity=RiskLevel.LOW,
                     description=f"Round amount transaction: {amount} {currency}",
                     details={"amount": amount, "currency": currency},
                     source="amount_analysis",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         if 9000 <= amount < 10000:
             flags.append(
                 AMLFlag(
-                    flag_id=f"below_threshold_{int(datetime.utcnow().timestamp())}",
+                    flag_id=f"below_threshold_{int(datetime.now(timezone.utc).timestamp())}",
                     flag_type="below_threshold",
                     severity=RiskLevel.MEDIUM,
                     description=f"Transaction just below reporting threshold: {amount} {currency}",
@@ -626,7 +626,7 @@ class AMLEngine:
                         "potential_structuring": True,
                     },
                     source="amount_analysis",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         return flags
@@ -641,7 +641,7 @@ class AMLEngine:
         if country_code in high_risk_countries:
             flags.append(
                 AMLFlag(
-                    flag_id=f"high_risk_country_{int(datetime.utcnow().timestamp())}",
+                    flag_id=f"high_risk_country_{int(datetime.now(timezone.utc).timestamp())}",
                     flag_type="high_risk_geography",
                     severity=RiskLevel.HIGH,
                     description=f"Transaction involving high-risk country: {country_code}",
@@ -650,7 +650,7 @@ class AMLEngine:
                         "risk_factors": ["money_laundering", "terrorism_financing"],
                     },
                     source="geographic_analysis",
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                 )
             )
         return flags
@@ -668,7 +668,7 @@ class AMLEngine:
             if self._detect_structuring_pattern(recent_transactions):
                 flags.append(
                     AMLFlag(
-                        flag_id=f"structuring_{int(datetime.utcnow().timestamp())}",
+                        flag_id=f"structuring_{int(datetime.now(timezone.utc).timestamp())}",
                         flag_type="structuring",
                         severity=RiskLevel.HIGH,
                         description="Potential structuring pattern detected",
@@ -678,13 +678,13 @@ class AMLEngine:
                             "time_window": "7 days",
                         },
                         source="pattern_analysis",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
             if self._detect_rapid_movement_pattern(recent_transactions):
                 flags.append(
                     AMLFlag(
-                        flag_id=f"rapid_movement_{int(datetime.utcnow().timestamp())}",
+                        flag_id=f"rapid_movement_{int(datetime.now(timezone.utc).timestamp())}",
                         flag_type="rapid_movement",
                         severity=RiskLevel.MEDIUM,
                         description="Rapid movement of funds detected",
@@ -693,7 +693,7 @@ class AMLEngine:
                             "transaction_count": len(recent_transactions),
                         },
                         source="pattern_analysis",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         return flags
@@ -710,7 +710,7 @@ class AMLEngine:
             if sanctions_result["matches"]:
                 flags.append(
                     AMLFlag(
-                        flag_id=f"beneficiary_sanctions_{int(datetime.utcnow().timestamp())}",
+                        flag_id=f"beneficiary_sanctions_{int(datetime.now(timezone.utc).timestamp())}",
                         flag_type="counterparty_sanctions",
                         severity=RiskLevel.CRITICAL,
                         description=f"Beneficiary sanctions match: {beneficiary_name}",
@@ -719,7 +719,7 @@ class AMLEngine:
                             "matches": sanctions_result["matches"],
                         },
                         source="counterparty_screening",
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         return flags
@@ -828,20 +828,20 @@ class AMLEngine:
         self, user_id: str, time_window: timedelta
     ) -> List[Dict[str, Any]]:
         """Get recent transactions for a user."""
-        datetime.utcnow() - time_window
+        datetime.now(timezone.utc) - time_window
         return [
             {
                 "transaction_id": "tx_001",
                 "amount": 9500,
                 "currency": "USD",
-                "timestamp": datetime.utcnow() - timedelta(hours=2),
+                "timestamp": datetime.now(timezone.utc) - timedelta(hours=2),
                 "type": "transfer",
             },
             {
                 "transaction_id": "tx_002",
                 "amount": 9800,
                 "currency": "USD",
-                "timestamp": datetime.utcnow() - timedelta(hours=4),
+                "timestamp": datetime.now(timezone.utc) - timedelta(hours=4),
                 "type": "transfer",
             },
         ]
@@ -892,7 +892,7 @@ class AMLEngine:
             "monitoring_period": "30 days",
             "transaction_count": len(recent_transactions),
             "alerts": alerts,
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
     def update_sanctions_lists(
@@ -908,5 +908,5 @@ class AMLEngine:
             "sanctions_lists": len(self._sanctions_lists),
             "pep_lists": len(self._pep_lists),
             "transaction_patterns": len(self._transaction_patterns),
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

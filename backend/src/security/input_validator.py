@@ -8,9 +8,27 @@ from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, Dict, List, Union
 
-import phonenumbers
-from email_validator import EmailNotValidError, validate_email
-from phonenumbers import NumberParseException
+try:
+    import phonenumbers
+    from phonenumbers import NumberParseException
+
+    PHONENUMBERS_AVAILABLE = True
+except ImportError:
+    phonenumbers = None
+    NumberParseException = Exception
+    PHONENUMBERS_AVAILABLE = False
+
+try:
+    from email_validator import EmailNotValidError, validate_email
+
+    EMAIL_VALIDATOR_AVAILABLE = True
+except ImportError:
+    EmailNotValidError = Exception
+
+    def validate_email(email, **kw):
+        raise Exception("email_validator not installed")
+
+    EMAIL_VALIDATOR_AVAILABLE = False
 
 "\nInput Validation and Sanitization System\n"
 logger = logging.getLogger(__name__)
@@ -668,6 +686,154 @@ class InputValidator:
             "strength": strength,
             "score": score,
         }
+
+    @staticmethod
+    def validate_string(
+        value: str,
+        field_name: str,
+        min_length: int = 0,
+        max_length: int = 255,
+        allow_empty: bool = False,
+    ) -> str:
+        """Validate a string field."""
+        if not isinstance(value, str):
+            raise ValidationError(f"{field_name} must be a string", field=field_name)
+        if not allow_empty and len(value) < max(1, min_length):
+            if len(value) == 0:
+                raise ValidationError(f"{field_name} cannot be empty", field=field_name)
+            raise ValidationError(
+                f"{field_name} must be at least {min_length} characters",
+                field=field_name,
+            )
+        if len(value) > max_length:
+            raise ValidationError(
+                f"{field_name} must be at most {max_length} characters",
+                field=field_name,
+            )
+        return value
+
+    @staticmethod
+    def validate_email(email: str, field_name: str = "email") -> str:
+        """Validate email address format."""
+        import re
+
+        if not email or not isinstance(email, str):
+            raise ValidationError("Email is required", field=field_name)
+        pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        if not re.match(pattern, email.strip()):
+            raise ValidationError("Invalid email format", field=field_name)
+        return email.strip().lower()
+
+    @staticmethod
+    def validate_decimal(value, field_name: str, min_value=None, max_value=None):
+        """Validate a decimal/numeric field."""
+        from decimal import Decimal, InvalidOperation
+
+        try:
+            decimal_value = Decimal(str(value))
+        except (InvalidOperation, TypeError, ValueError):
+            raise ValidationError(
+                f"{field_name} must be a valid number", field=field_name
+            )
+        if min_value is not None and decimal_value < min_value:
+            raise ValidationError(
+                f"{field_name} must be at least {min_value}", field=field_name
+            )
+        if max_value is not None and decimal_value > max_value:
+            raise ValidationError(
+                f"{field_name} must be at most {max_value}", field=field_name
+            )
+        return decimal_value
+
+    @staticmethod
+    def validate_card_number(card_number: str, field_name: str = "card_number") -> str:
+        """Validate credit card number using Luhn algorithm."""
+        if not card_number or not isinstance(card_number, str):
+            raise ValidationError("Card number is required", field=field_name)
+        digits = card_number.replace(" ", "").replace("-", "")
+        if not digits.isdigit() or not (13 <= len(digits) <= 19):
+            raise ValidationError("Invalid card number format", field=field_name)
+        total = 0
+        for i, d in enumerate(digits[::-1]):
+            n = int(d)
+            if i % 2 == 1:
+                n *= 2
+                if n > 9:
+                    n -= 9
+            total += n
+        if total % 10 != 0:
+            raise ValidationError(
+                "Invalid card number (failed Luhn check)", field=field_name
+            )
+        return digits
+
+    @staticmethod
+    def validate_currency_code(currency: str, field_name: str = "currency") -> str:
+        """Validate ISO 4217 currency code."""
+        import re
+
+        if not currency or not isinstance(currency, str):
+            raise ValidationError("Currency code is required", field=field_name)
+        currency = currency.strip().upper()
+        if not re.match(r"^[A-Z]{3}$", currency):
+            raise ValidationError(
+                "Currency must be a 3-letter ISO 4217 code", field=field_name
+            )
+        valid_currencies = {
+            "USD",
+            "EUR",
+            "GBP",
+            "JPY",
+            "CAD",
+            "AUD",
+            "CHF",
+            "CNY",
+            "SEK",
+            "NZD",
+            "MXN",
+            "SGD",
+            "HKD",
+            "NOK",
+            "TRY",
+            "ZAR",
+            "BRL",
+            "INR",
+            "KRW",
+            "PLN",
+            "DKK",
+            "CZK",
+            "HUF",
+            "RON",
+            "BGN",
+            "HRK",
+            "ISK",
+            "RUB",
+            "UAH",
+            "AED",
+            "SAR",
+            "ILS",
+            "THB",
+            "IDR",
+            "MYR",
+            "PHP",
+            "VND",
+            "PKR",
+            "BDT",
+            "NGN",
+            "KES",
+            "GHS",
+            "ZMW",
+            "UGX",
+            "TZS",
+            "EGP",
+            "MAD",
+            "TND",
+        }
+        if currency not in valid_currencies:
+            raise ValidationError(
+                f"Unsupported currency code: {currency}", field=field_name
+            )
+        return currency
 
 
 input_validator = InputValidator()

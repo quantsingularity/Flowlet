@@ -65,7 +65,7 @@ class MetricsService:
             metric = Metric(
                 name=metric_name,
                 value=value,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 tags=tags or {},
                 unit="count",
             )
@@ -91,7 +91,7 @@ class MetricsService:
             metric = Metric(
                 name=metric_name,
                 value=value,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 tags=tags or {},
             )
             self.metrics.append(metric)
@@ -116,7 +116,7 @@ class MetricsService:
             metric = Metric(
                 name=metric_name,
                 value=value,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 tags=tags or {},
             )
             self.metrics.append(metric)
@@ -142,7 +142,7 @@ class MetricsService:
             metric = Metric(
                 name=metric_name,
                 value=duration_ms,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 tags=tags or {},
                 unit="ms",
             )

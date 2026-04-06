@@ -2,7 +2,14 @@ import logging
 from typing import Any
 
 from flask import Blueprint, g, jsonify, request
-from pydantic import ValidationError
+
+try:
+    from pydantic import ValidationError
+except ImportError:
+
+    class ValidationError(Exception):
+        pass
+
 
 from ..models.audit_log import AuditEventType, AuditSeverity
 from ..models.database import db

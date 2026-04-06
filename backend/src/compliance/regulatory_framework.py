@@ -62,7 +62,7 @@ class ComplianceRule:
     def is_applicable(self, entity_type: str, current_date: datetime = None) -> bool:
         """Check if rule is applicable to entity type and current date."""
         if current_date is None:
-            current_date = datetime.utcnow()
+            current_date = datetime.now(timezone.utc)
         if entity_type not in self.applicable_entities:
             return False
         if current_date < self.effective_date:
@@ -550,7 +550,7 @@ class RegulatoryFramework:
     ) -> List[ComplianceRule]:
         """Get all applicable rules for a jurisdiction and entity type."""
         if current_date is None:
-            current_date = datetime.utcnow()
+            current_date = datetime.now(timezone.utc)
         applicable_rules = []
         for rule in self._rules.values():
             if (

@@ -3,7 +3,14 @@ from functools import wraps
 from typing import Any
 
 from flask import Blueprint, g, jsonify, request
-from pydantic import ValidationError
+
+try:
+    from pydantic import ValidationError
+except ImportError:
+
+    class ValidationError(Exception):
+        pass
+
 
 from ..models.account import Account
 from ..models.audit_log import AuditEventType, AuditSeverity

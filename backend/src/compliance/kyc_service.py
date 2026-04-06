@@ -404,7 +404,7 @@ class KYCService:
             compliance_flags = self._check_compliance_flags(
                 customer_data, risk_assessment
             )
-            expiry_date = datetime.utcnow() + timedelta(days=365)
+            expiry_date = datetime.now(timezone.utc) + timedelta(days=365)
             result = KYCResult(
                 customer_id=customer_id,
                 verification_level=verification_level,
@@ -415,7 +415,7 @@ class KYCService:
                 third_party_checks=third_party_checks,
                 risk_assessment=risk_assessment,
                 compliance_flags=compliance_flags,
-                verification_timestamp=datetime.utcnow(),
+                verification_timestamp=datetime.now(timezone.utc),
                 expiry_date=expiry_date,
             )
             self.logger.info(
@@ -436,7 +436,7 @@ class KYCService:
                 third_party_checks=[],
                 risk_assessment={"error": str(e)},
                 compliance_flags=["verification_error"],
-                verification_timestamp=datetime.utcnow(),
+                verification_timestamp=datetime.now(timezone.utc),
             )
 
     async def _verify_documents(
@@ -464,7 +464,7 @@ class KYCService:
                         confidence_score=0.0,
                         extracted_data={},
                         verification_details={"error": str(e)},
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         return verifications
@@ -505,7 +505,7 @@ class KYCService:
                 "security_check_results": security_check_results,
                 "ocr_confidence": extracted_data.get("ocr_confidence", 0.0),
             },
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             expiry_date=self._parse_document_expiry(extracted_data.get("expiry_date")),
         )
 
@@ -515,7 +515,7 @@ class KYCService:
         """Extract data from document image using OCR."""
         extracted_data = {
             "ocr_confidence": 0.85,
-            "extraction_timestamp": datetime.utcnow().isoformat(),
+            "extraction_timestamp": datetime.now(timezone.utc).isoformat(),
         }
         if document_type == DocumentType.PASSPORT:
             extracted_data.update(
@@ -577,12 +577,12 @@ class KYCService:
                 validation_results["field_validations"][field] = "valid"
         if "expiry_date" in extracted_data:
             expiry_date = self._parse_document_expiry(extracted_data["expiry_date"])
-            if expiry_date and expiry_date < datetime.utcnow():
+            if expiry_date and expiry_date < datetime.now(timezone.utc):
                 validation_results["field_validations"]["expiry_date"] = "expired"
                 validation_results["overall_validity"] = False
         if "date_of_birth" in extracted_data:
             dob = self._parse_date(extracted_data["date_of_birth"])
-            if dob and dob > datetime.utcnow():
+            if dob and dob > datetime.now(timezone.utc):
                 validation_results["field_validations"][
                     "date_of_birth"
                 ] = "invalid_future_date"
@@ -628,7 +628,7 @@ class KYCService:
     ) -> BiometricVerification:
         """Verify a single biometric."""
         verification_id = biometric.get(
-            "verification_id", f"bio_{int(datetime.utcnow().timestamp())}"
+            "verification_id", f"bio_{int(datetime.now(timezone.utc).timestamp())}"
         )
         biometric_type = biometric.get("biometric_type", "face")
         biometric.get("data", "")
@@ -646,7 +646,7 @@ class KYCService:
                 "processing_time_ms": 1250,
                 "quality_score": 0.88,
             },
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     async def _perform_third_party_checks(
@@ -668,7 +668,7 @@ class KYCService:
                         "check_type": check_type,
                         "status": "failed",
                         "error": str(e),
-                        "timestamp": datetime.utcnow().isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 )
         return checks
@@ -691,7 +691,7 @@ class KYCService:
                     "disposable": False,
                     "role_account": False,
                 },
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         elif check_type == "phone_verification":
             phone = customer_data.get("phone", "")
@@ -706,7 +706,7 @@ class KYCService:
                     "carrier": "Mobile Carrier",
                     "line_type": "mobile",
                 },
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         elif check_type == "address_verification":
             address = customer_data.get("address", "")
@@ -720,7 +720,7 @@ class KYCService:
                     "valid": True,
                     "standardized_address": "123 Main St, Anytown, CA 12345, US",
                 },
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         elif check_type == "credit_check":
             return {
@@ -733,13 +733,13 @@ class KYCService:
                     "identity_confirmed": True,
                     "address_confirmed": True,
                 },
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         else:
             return {
                 "check_type": check_type,
                 "status": "not_supported",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     async def _assess_customer_risk(
@@ -759,7 +759,7 @@ class KYCService:
                 risk_score += 0.2
             if (
                 doc_verification.expiry_date
-                and doc_verification.expiry_date < datetime.utcnow()
+                and doc_verification.expiry_date < datetime.now(timezone.utc)
             ):
                 risk_factors.append("expired_document")
                 risk_score += 0.4
@@ -778,7 +778,7 @@ class KYCService:
                 "high" if risk_score > 0.7 else "medium" if risk_score > 0.4 else "low"
             ),
             "risk_factors": risk_factors,
-            "assessment_timestamp": datetime.utcnow().isoformat(),
+            "assessment_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _calculate_overall_confidence(
@@ -938,5 +938,5 @@ class KYCService:
                 level.value: threshold
                 for level, threshold in self._confidence_thresholds.items()
             },
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

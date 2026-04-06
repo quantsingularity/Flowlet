@@ -72,9 +72,9 @@ class Dashboard:
 
     def __post_init__(self) -> Any:
         if self.created_at is None:
-            self.created_at = datetime.utcnow()
+            self.created_at = datetime.now(timezone.utc)
         if self.updated_at is None:
-            self.updated_at = datetime.utcnow()
+            self.updated_at = datetime.now(timezone.utc)
 
 
 class DashboardService:
@@ -151,7 +151,7 @@ class DashboardService:
         return {
             "dashboard": asdict(dashboard),
             "widget_data": widget_data,
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
     async def _get_widget_data(self, widget: Widget) -> Dict[str, Any]:
@@ -159,7 +159,7 @@ class DashboardService:
         cache_key = f"{widget.id}_{hash(str(widget.filters))}"
         if cache_key in self._widget_cache:
             cached_data, cache_time = self._widget_cache[cache_key]
-            if datetime.utcnow() - cache_time < timedelta(
+            if datetime.now(timezone.utc) - cache_time < timedelta(
                 seconds=widget.refresh_interval.value
             ):
                 return cached_data
@@ -177,12 +177,12 @@ class DashboardService:
             data = await self._get_alerts_data(widget)
         else:
             raise ValueError(f"Unknown data source: {widget.data_source}")
-        self._widget_cache[cache_key] = (data, datetime.utcnow())
+        self._widget_cache[cache_key] = (data, datetime.now(timezone.utc))
         return data
 
     async def _get_transaction_summary_data(self, widget: Widget) -> Dict[str, Any]:
         """Get transaction summary data for widgets."""
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=1)
         if "time_range" in widget.filters:
             time_range = widget.filters["time_range"]
@@ -260,7 +260,7 @@ class DashboardService:
 
     async def _get_risk_metrics_data(self, widget: Widget) -> Dict[str, Any]:
         """Get risk metrics data for widgets."""
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=1)
         high_risk_count = (
             self.db.query(func.count(TransactionAnalytics.id))
@@ -324,7 +324,7 @@ class DashboardService:
 
     async def _get_performance_metrics_data(self, widget: Widget) -> Dict[str, Any]:
         """Get performance metrics data for widgets."""
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(hours=1)
         performance_data = (
             self.db.query(PerformanceMetrics)
@@ -386,7 +386,7 @@ class DashboardService:
 
     async def _get_revenue_metrics_data(self, widget: Widget) -> Dict[str, Any]:
         """Get revenue metrics data for widgets."""
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=30)
         transactions = (
             self.db.query(TransactionAnalytics)
@@ -443,7 +443,7 @@ class DashboardService:
             alert
             for alert in active_alerts
             if alert.last_triggered
-            and alert.last_triggered > datetime.utcnow() - timedelta(hours=24)
+            and alert.last_triggered > datetime.now(timezone.utc) - timedelta(hours=24)
         ]
         if widget.type == WidgetType.ALERT_LIST:
             alerts_data = []
@@ -654,7 +654,7 @@ class DashboardService:
                 ]
                 for key in cache_keys_to_remove:
                     del self._widget_cache[key]
-                dashboard.updated_at = datetime.utcnow()
+                dashboard.updated_at = datetime.now(timezone.utc)
                 return True
         return False
 

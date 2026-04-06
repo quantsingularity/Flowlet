@@ -46,7 +46,7 @@ class ETLJob:
 
     def __post_init__(self) -> Any:
         if self.last_run is None:
-            self.last_run = datetime.utcnow()
+            self.last_run = datetime.now(timezone.utc)
 
 
 @dataclass
@@ -216,7 +216,7 @@ class DataWarehouse:
         try:
             self.logger.info(f"Starting ETL job: {job.name}")
             job.status = ETLJobStatus.RUNNING
-            job.last_run = datetime.utcnow()
+            job.last_run = datetime.now(timezone.utc)
             if job.source_type == DataSourceType.TRANSACTIONAL_DB:
                 result = await self._run_transactional_etl(job)
             elif job.source_type == DataSourceType.EXTERNAL_API:
@@ -246,7 +246,7 @@ class DataWarehouse:
 
     async def _run_transactional_etl(self, job: ETLJob) -> Dict[str, Any]:
         """Run ETL for transactional database sources."""
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         source_config = job.source_config
         source_config.get("incremental_column", "created_at")
         batch_size = source_config.get("batch_size", 10000)
@@ -261,8 +261,8 @@ class DataWarehouse:
             )
         else:
             records_processed = 0
-        execution_time = (datetime.utcnow() - start_time).total_seconds()
-        self._update_last_processed_timestamp(job.id, datetime.utcnow())
+        execution_time = (datetime.now(timezone.utc) - start_time).total_seconds()
+        self._update_last_processed_timestamp(job.id, datetime.now(timezone.utc))
         return {
             "records_processed": records_processed,
             "execution_time": execution_time,
@@ -328,7 +328,7 @@ class DataWarehouse:
         users = result.fetchall()
         records_processed = 0
         for user in users:
-            account_age_days = (datetime.utcnow() - user.created_at).days
+            account_age_days = (datetime.now(timezone.utc) - user.created_at).days
             overall_risk_score = self._calculate_customer_risk_score(user)
             churn_probability = self._calculate_churn_probability(user)
             predicted_ltv = self._calculate_predicted_ltv(user)
@@ -349,7 +349,7 @@ class DataWarehouse:
                 existing_record.lifecycle_stage = lifecycle_stage
                 existing_record.last_login = user.last_login
                 existing_record.kyc_status = user.kyc_status
-                existing_record.updated_at = datetime.utcnow()
+                existing_record.updated_at = datetime.now(timezone.utc)
             else:
                 analytics_record = CustomerAnalytics(
                     user_id=user.user_id,
@@ -385,7 +385,7 @@ class DataWarehouse:
         """Validate data quality for a specific table."""
         quality_results = {
             "table_name": table_name,
-            "validation_timestamp": datetime.utcnow().isoformat(),
+            "validation_timestamp": datetime.now(timezone.utc).isoformat(),
             "rules_passed": 0,
             "rules_failed": 0,
             "warnings": 0,
@@ -506,13 +506,13 @@ class DataWarehouse:
             .first()
         )
         if last_transaction:
-            return (datetime.utcnow() - last_transaction.transaction_date).days
+            return (datetime.now(timezone.utc) - last_transaction.transaction_date).days
         return None
 
     def _calculate_customer_risk_score(self, user: Any) -> float:
         """Calculate overall risk score for a customer."""
         risk_score = 0.1
-        account_age_days = (datetime.utcnow() - user.created_at).days
+        account_age_days = (datetime.now(timezone.utc) - user.created_at).days
         if account_age_days < 30:
             risk_score += 0.3
         elif account_age_days < 90:
@@ -527,7 +527,7 @@ class DataWarehouse:
         """Calculate churn probability for a customer."""
         base_churn = 0.1
         if user.last_login:
-            days_since_login = (datetime.utcnow() - user.last_login).days
+            days_since_login = (datetime.now(timezone.utc) - user.last_login).days
             if days_since_login > 30:
                 base_churn += 0.3
             elif days_since_login > 7:
@@ -554,12 +554,14 @@ class DataWarehouse:
 
     def _determine_lifecycle_stage(self, user: Any) -> str:
         """Determine customer lifecycle stage."""
-        account_age_days = (datetime.utcnow() - user.created_at).days
+        account_age_days = (datetime.now(timezone.utc) - user.created_at).days
         if user.total_transactions == 0:
             return "new"
         elif account_age_days < 30:
             return "new"
-        elif user.last_login and (datetime.utcnow() - user.last_login).days > 90:
+        elif (
+            user.last_login and (datetime.now(timezone.utc) - user.last_login).days > 90
+        ):
             return "dormant"
         elif user.total_transactions > 10:
             return "active"
@@ -572,7 +574,7 @@ class DataWarehouse:
         result = self.db.execute(query, {"job_id": job_id}).fetchone()
         if result:
             return result.last_processed
-        return datetime.utcnow() - timedelta(hours=1)
+        return datetime.now(timezone.utc) - timedelta(hours=1)
 
     def _update_last_processed_timestamp(self, job_id: str, timestamp: datetime) -> Any:
         """Update the last processed timestamp for an ETL job."""
@@ -610,7 +612,7 @@ class DataWarehouse:
             except Exception as e:
                 results[job_id] = {"status": "failed", "error": str(e)}
         return {
-            "refresh_timestamp": datetime.utcnow().isoformat(),
+            "refresh_timestamp": datetime.now(timezone.utc).isoformat(),
             "job_results": results,
         }
 
@@ -621,7 +623,7 @@ class DataWarehouse:
             return {
                 "mart_name": mart_name,
                 "status": "created",
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
             self.logger.error(f"Error creating data mart {mart_name}: {str(e)}")
@@ -634,7 +636,7 @@ class DataWarehouse:
             "source_tables": [],
             "target_tables": [],
             "etl_jobs": [],
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }
         for job_id, job in self._etl_jobs.items():
             if job.target_table == table_name:

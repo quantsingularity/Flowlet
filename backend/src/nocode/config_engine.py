@@ -670,7 +670,7 @@ class ConfigurationEngine:
             raise ValueError(f"Validation errors: {validation_errors}")
         old_values = copy.deepcopy(instance.values)
         instance.values.update(values)
-        instance.updated_at = datetime.utcnow()
+        instance.updated_at = datetime.now(timezone.utc)
         self._notify_change_listeners(
             instance_id, "updated", instance.values, old_values
         )
@@ -892,5 +892,5 @@ class ConfigurationEngine:
             "change_listeners": sum(
                 (len(listeners) for listeners in self._change_listeners.values())
             ),
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

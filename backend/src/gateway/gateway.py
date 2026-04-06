@@ -10,9 +10,22 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import wraps
 from typing import Any
 
-import aiohttp
+try:
+    import aiohttp
+
+    AIOHTTP_AVAILABLE = True
+except ImportError:
+    aiohttp = None
+    AIOHTTP_AVAILABLE = False
 import psutil
-import redis
+
+try:
+    import redis
+
+    REDIS_AVAILABLE = True
+except ImportError:
+    redis = None
+    REDIS_AVAILABLE = False
 from flask import g, jsonify, request
 
 

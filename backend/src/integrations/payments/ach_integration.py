@@ -74,7 +74,7 @@ class ACHIntegration:
         if amount <= 0:
             raise ValueError("Amount must be greater than zero")
 
-        transaction_id = f"ACH-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        transaction_id = f"ACH-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
         try:
             if self.mock_mode:
@@ -87,9 +87,9 @@ class ACHIntegration:
                     "type": ACHTransactionType.DEBIT.value,
                     "account_holder": account_holder_name,
                     "description": description,
-                    "created_at": datetime.utcnow().isoformat(),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
                     "estimated_completion": (
-                        datetime.utcnow() + timedelta(days=3)
+                        datetime.now(timezone.utc) + timedelta(days=3)
                     ).isoformat(),
                 }
             else:
@@ -130,7 +130,7 @@ class ACHIntegration:
         if amount <= 0:
             raise ValueError("Amount must be greater than zero")
 
-        transaction_id = f"ACH-{datetime.utcnow().strftime('%Y%m%d%H%M%S')}"
+        transaction_id = f"ACH-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
 
         try:
             if self.mock_mode:
@@ -143,9 +143,9 @@ class ACHIntegration:
                     "type": ACHTransactionType.CREDIT.value,
                     "account_holder": account_holder_name,
                     "description": description,
-                    "created_at": datetime.utcnow().isoformat(),
+                    "created_at": datetime.now(timezone.utc).isoformat(),
                     "estimated_completion": (
-                        datetime.utcnow() + timedelta(days=2)
+                        datetime.now(timezone.utc) + timedelta(days=2)
                     ).isoformat(),
                 }
             else:
@@ -174,7 +174,7 @@ class ACHIntegration:
                 return {
                     "transaction_id": transaction_id,
                     "status": ACHStatus.COMPLETED.value,
-                    "updated_at": datetime.utcnow().isoformat(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
                 }
             else:
                 # Real status check would go here

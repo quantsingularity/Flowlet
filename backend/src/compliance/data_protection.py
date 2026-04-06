@@ -495,7 +495,7 @@ class DataProtectionService:
                     ).get(purpose_enum)
                     if retention_period:
                         expiry_date = processing_datetime + retention_period
-                        if datetime.utcnow() > expiry_date:
+                        if datetime.now(timezone.utc) > expiry_date:
                             issues.append(
                                 {
                                     "type": "retention_period_exceeded",
@@ -579,10 +579,10 @@ class DataProtectionService:
             data_categories=data_categories,
             legal_basis=legal_basis,
             consent_given=True,
-            consent_timestamp=datetime.utcnow(),
+            consent_timestamp=datetime.now(timezone.utc),
             consent_method=consent_method,
             consent_version=consent_version,
-            expiry_date=datetime.utcnow() + timedelta(days=365),
+            expiry_date=datetime.now(timezone.utc) + timedelta(days=365),
         )
         self._consent_records[consent_id] = consent_record
         self.logger.info(
@@ -595,7 +595,7 @@ class DataProtectionService:
         if consent_id in self._consent_records:
             consent_record = self._consent_records[consent_id]
             consent_record.consent_given = False
-            consent_record.withdrawal_timestamp = datetime.utcnow()
+            consent_record.withdrawal_timestamp = datetime.now(timezone.utc)
             self.logger.info(f"Consent withdrawn: {consent_id}")
             return True
         return False
@@ -623,7 +623,7 @@ class DataProtectionService:
             data_categories=data_categories,
             purpose=purpose,
             legal_basis=legal_basis,
-            processing_timestamp=datetime.utcnow(),
+            processing_timestamp=datetime.now(timezone.utc),
             retention_period=retention_period,
             data_location=data_location,
             third_party_sharing=third_party_sharing,
@@ -643,13 +643,13 @@ class DataProtectionService:
     ) -> DataSubjectRequest:
         """Handle data subject rights request."""
         request_id = str(uuid.uuid4())
-        response_deadline = datetime.utcnow() + timedelta(days=30)
+        response_deadline = datetime.now(timezone.utc) + timedelta(days=30)
         request = DataSubjectRequest(
             request_id=request_id,
             data_subject_id=data_subject_id,
             request_type=request_type,
             request_details=request_details or {},
-            request_timestamp=datetime.utcnow(),
+            request_timestamp=datetime.now(timezone.utc),
             status="pending",
             response_deadline=response_deadline,
         )
@@ -705,7 +705,7 @@ class DataProtectionService:
         }
         request.request_details["response_data"] = personal_data
         request.status = "completed"
-        request.completion_timestamp = datetime.utcnow()
+        request.completion_timestamp = datetime.now(timezone.utc)
         self.logger.info(f"Completed access request for {data_subject_id}")
 
     async def _process_erasure_request(self, request: DataSubjectRequest):
@@ -715,7 +715,7 @@ class DataProtectionService:
         if can_erase:
             await self._erase_data_subject_data(data_subject_id)
             request.status = "completed"
-            request.completion_timestamp = datetime.utcnow()
+            request.completion_timestamp = datetime.now(timezone.utc)
             self.logger.info(f"Completed erasure request for {data_subject_id}")
         else:
             request.status = "rejected"
@@ -736,7 +736,7 @@ class DataProtectionService:
         for record in processing_records:
             if record.legal_basis == LegalBasis.LEGAL_OBLIGATION:
                 expiry_date = record.processing_timestamp + record.retention_period
-                if datetime.utcnow() < expiry_date:
+                if datetime.now(timezone.utc) < expiry_date:
                     return False
         return True
 
@@ -761,22 +761,22 @@ class DataProtectionService:
     async def _process_rectification_request(self, request: DataSubjectRequest):
         """Process data rectification request."""
         request.status = "completed"
-        request.completion_timestamp = datetime.utcnow()
+        request.completion_timestamp = datetime.now(timezone.utc)
 
     async def _process_restriction_request(self, request: DataSubjectRequest):
         """Process processing restriction request."""
         request.status = "completed"
-        request.completion_timestamp = datetime.utcnow()
+        request.completion_timestamp = datetime.now(timezone.utc)
 
     async def _process_portability_request(self, request: DataSubjectRequest):
         """Process data portability request."""
         request.status = "completed"
-        request.completion_timestamp = datetime.utcnow()
+        request.completion_timestamp = datetime.now(timezone.utc)
 
     async def _process_objection_request(self, request: DataSubjectRequest):
         """Process objection to processing request."""
         request.status = "completed"
-        request.completion_timestamp = datetime.utcnow()
+        request.completion_timestamp = datetime.now(timezone.utc)
 
     async def _process_consent_withdrawal_request(self, request: DataSubjectRequest):
         """Process consent withdrawal request."""
@@ -787,9 +787,9 @@ class DataProtectionService:
                 and consent_record.consent_given
             ):
                 consent_record.consent_given = False
-                consent_record.withdrawal_timestamp = datetime.utcnow()
+                consent_record.withdrawal_timestamp = datetime.now(timezone.utc)
         request.status = "completed"
-        request.completion_timestamp = datetime.utcnow()
+        request.completion_timestamp = datetime.now(timezone.utc)
 
     async def conduct_privacy_impact_assessment(
         self, processing_description: Dict[str, Any]
@@ -841,7 +841,7 @@ class DataProtectionService:
             "risk_factors": risk_factors,
             "dpia_required": dpia_required,
             "recommendations": recommendations,
-            "assessment_timestamp": datetime.utcnow().isoformat(),
+            "assessment_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def get_consent_status(
@@ -862,7 +862,7 @@ class DataProtectionService:
         latest_consent = max(relevant_consents, key=lambda x: x.consent_timestamp)
         if (
             latest_consent.expiry_date
-            and datetime.utcnow() > latest_consent.expiry_date
+            and datetime.now(timezone.utc) > latest_consent.expiry_date
         ):
             return {
                 "consent_given": False,
@@ -899,5 +899,5 @@ class DataProtectionService:
                 ]
             ),
             "jurisdictions_supported": len(self._jurisdiction_requirements),
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

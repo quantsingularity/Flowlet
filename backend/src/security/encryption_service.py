@@ -119,7 +119,7 @@ class EncryptionService:
             key_id=key_id,
             key_type=KeyType.SYMMETRIC,
             algorithm=EncryptionAlgorithm.FERNET,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             expires_at=None,
             purpose="master_encryption",
             metadata={"is_master": True},
@@ -154,12 +154,12 @@ class EncryptionService:
         else:
             raise ValueError(f"Unsupported symmetric algorithm: {algorithm}")
         self._keys[key_id] = key
-        expires_at = datetime.utcnow() + expires_in if expires_in else None
+        expires_at = datetime.now(timezone.utc) + expires_in if expires_in else None
         self._key_metadata[key_id] = EncryptionKey(
             key_id=key_id,
             key_type=KeyType.SYMMETRIC,
             algorithm=algorithm,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             expires_at=expires_at,
             purpose=purpose,
             metadata={},
@@ -205,12 +205,12 @@ class EncryptionService:
         public_key_id = str(uuid.uuid4())
         self._keys[private_key_id] = private_pem
         self._keys[public_key_id] = public_pem
-        expires_at = datetime.utcnow() + expires_in if expires_in else None
+        expires_at = datetime.now(timezone.utc) + expires_in if expires_in else None
         self._key_metadata[private_key_id] = EncryptionKey(
             key_id=private_key_id,
             key_type=KeyType.ASYMMETRIC_PRIVATE,
             algorithm=algorithm,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             expires_at=expires_at,
             purpose=purpose,
             metadata={"public_key_id": public_key_id},
@@ -219,7 +219,7 @@ class EncryptionService:
             key_id=public_key_id,
             key_type=KeyType.ASYMMETRIC_PUBLIC,
             algorithm=algorithm,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             expires_at=expires_at,
             purpose=purpose,
             metadata={"private_key_id": private_key_id},
@@ -260,7 +260,7 @@ class EncryptionService:
             key_id=key_id,
             key_type=KeyType.DERIVED,
             algorithm=algorithm,
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             expires_at=None,
             purpose=purpose,
             metadata={"salt": base64.b64encode(salt).decode()},
@@ -288,7 +288,10 @@ class EncryptionService:
         if key_id not in self._keys:
             raise ValueError(f"Key not found: {key_id}")
         key_metadata = self._key_metadata[key_id]
-        if key_metadata.expires_at and datetime.utcnow() > key_metadata.expires_at:
+        if (
+            key_metadata.expires_at
+            and datetime.now(timezone.utc) > key_metadata.expires_at
+        ):
             raise ValueError(f"Key has expired: {key_id}")
         if algorithm is None:
             algorithm = key_metadata.algorithm
@@ -599,7 +602,7 @@ class EncryptionService:
             )
         else:
             raise ValueError(f"Cannot rotate key of type: {old_metadata.key_type}")
-        old_metadata.expires_at = datetime.utcnow()
+        old_metadata.expires_at = datetime.now(timezone.utc)
         self.logger.info(f"Rotated key {old_key_id} -> {new_key_id}")
         return new_key_id
 
@@ -652,7 +655,7 @@ class EncryptionService:
             if (
                 not include_expired
                 and key_metadata.expires_at
-                and (datetime.utcnow() > key_metadata.expires_at)
+                and (datetime.now(timezone.utc) > key_metadata.expires_at)
             ):
                 continue
             keys.append(key_metadata)
@@ -666,7 +669,7 @@ class EncryptionService:
             [
                 k
                 for k in self._key_metadata.values()
-                if not k.expires_at or datetime.utcnow() <= k.expires_at
+                if not k.expires_at or datetime.now(timezone.utc) <= k.expires_at
             ]
         )
         expired_keys = total_keys - active_keys
@@ -685,5 +688,5 @@ class EncryptionService:
             "expired_keys": expired_keys,
             "key_types": key_types,
             "algorithms": algorithms,
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

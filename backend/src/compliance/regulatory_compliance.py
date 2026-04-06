@@ -6,7 +6,13 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-import redis
+try:
+    import redis
+
+    REDIS_AVAILABLE = True
+except ImportError:
+    redis = None
+    REDIS_AVAILABLE = False
 from cryptography.fernet import Fernet
 
 logging.basicConfig(level=logging.INFO)

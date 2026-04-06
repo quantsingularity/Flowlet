@@ -5,7 +5,14 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional, Tuple
 
 import jwt
-import redis
+
+try:
+    import redis
+
+    REDIS_AVAILABLE = True
+except ImportError:
+    redis = None
+    REDIS_AVAILABLE = False
 from flask import current_app
 
 "\nJWT Token Management for Financial-Grade Security\n"

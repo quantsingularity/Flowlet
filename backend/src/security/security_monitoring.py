@@ -348,7 +348,7 @@ class SecurityMonitoringService:
             target=target,
             description=description,
             details=details or {},
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             user_id=user_id,
             session_id=session_id,
             ip_address=ip_address,
@@ -384,7 +384,7 @@ class SecurityMonitoringService:
 
     def _get_recent_events_for_rule(self, rule: AlertRule) -> List[SecurityEvent]:
         """Get recent events that match the alert rule."""
-        cutoff_time = datetime.utcnow() - rule.time_window
+        cutoff_time = datetime.now(timezone.utc) - rule.time_window
         matching_events = []
         for event in reversed(self._events):
             if event.timestamp < cutoff_time:
@@ -404,7 +404,7 @@ class SecurityMonitoringService:
             "event_count": len(events),
             "time_window": rule.time_window.total_seconds(),
             "events": [event.event_id for event in events],
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
         await self._send_alert_notification(alert_data)
         await self._create_or_update_incident(rule, events)
@@ -428,7 +428,7 @@ class SecurityMonitoringService:
     ):
         """Check if event matches a correlation pattern."""
         time_window = pattern_config["time_window"]
-        cutoff_time = datetime.utcnow() - time_window
+        cutoff_time = datetime.now(timezone.utc) - time_window
         recent_events = [e for e in self._events if e.timestamp >= cutoff_time]
         if pattern_name == "account_takeover_pattern":
             await self._check_account_takeover_pattern(
@@ -547,7 +547,7 @@ class SecurityMonitoringService:
                 "title": title,
                 "severity": severity.value,
                 "event_count": len(events),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
         self.logger.critical(f"Correlation incident created: {title}")
@@ -594,7 +594,7 @@ class SecurityMonitoringService:
                 break
         if existing_incident:
             existing_incident.events.extend(events)
-            existing_incident.updated_at = datetime.utcnow()
+            existing_incident.updated_at = datetime.now(timezone.utc)
             existing_incident.description += (
                 f"\n\nAdditional events detected by rule: {rule.name}"
             )
@@ -668,7 +668,7 @@ class SecurityMonitoringService:
         """Get recent security events with optional filtering."""
         events = list(self._events)
         if time_range:
-            cutoff_time = datetime.utcnow() - time_range
+            cutoff_time = datetime.now(timezone.utc) - time_range
             events = [e for e in events if e.timestamp >= cutoff_time]
         if category:
             events = [e for e in events if e.category == category]
@@ -706,11 +706,11 @@ class SecurityMonitoringService:
             return False
         incident = self._incidents[incident_id]
         incident.status = status
-        incident.updated_at = datetime.utcnow()
+        incident.updated_at = datetime.now(timezone.utc)
         if assigned_to:
             incident.assigned_to = assigned_to
         if status == IncidentStatus.RESOLVED:
-            incident.resolved_at = datetime.utcnow()
+            incident.resolved_at = datetime.now(timezone.utc)
             incident.resolution_notes = notes
         self.logger.info(f"Updated incident {incident_id} status to {status.value}")
         return True
@@ -767,7 +767,7 @@ class SecurityMonitoringService:
                 if i.severity == EventSeverity.CRITICAL
             ]
         )
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         last_hour_events = len(
             [e for e in self._events if e.timestamp >= now - timedelta(hours=1)]
         )
@@ -794,14 +794,14 @@ class SecurityMonitoringService:
                 severity.value: self._metrics.get(f"events_{severity.value}", 0)
                 for severity in EventSeverity
             },
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }
 
     def generate_security_report(
         self, time_range: timedelta = timedelta(days=7)
     ) -> Dict[str, Any]:
         """Generate comprehensive security report."""
-        cutoff_time = datetime.utcnow() - time_range
+        cutoff_time = datetime.now(timezone.utc) - time_range
         period_events = [e for e in self._events if e.timestamp >= cutoff_time]
         period_incidents = [
             i for i in self._incidents.values() if i.created_at >= cutoff_time
@@ -825,7 +825,7 @@ class SecurityMonitoringService:
         return {
             "report_period": {
                 "start": cutoff_time.isoformat(),
-                "end": datetime.utcnow().isoformat(),
+                "end": datetime.now(timezone.utc).isoformat(),
                 "duration_days": time_range.days,
             },
             "summary": {
@@ -842,5 +842,5 @@ class SecurityMonitoringService:
             "incident_statistics": dict(incident_stats),
             "top_sources": top_sources,
             "top_targets": top_targets,
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }

@@ -25,7 +25,7 @@ def _get_engine_options():
 class Config:
     """Base configuration class with security-focused defaults"""
 
-    SECRET_KEY = os.environ.get("SECRET_KEY")
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key-change-in-production"
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     DEFAULT_DB_PATH = os.path.join(BASE_DIR, "database", "app.db")
     SQLALCHEMY_DATABASE_URI = (
@@ -34,7 +34,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = _get_engine_options()
     REDIS_URL = os.environ.get("REDIS_URL") or "redis://localhost:6379/0"
-    JWT_SECRET_KEY = SecurityConfig.JWT_SECRET_KEY
+    JWT_SECRET_KEY = (
+        os.environ.get("JWT_SECRET_KEY") or "dev-jwt-secret-change-in-production"
+    )
     JWT_ACCESS_TOKEN_EXPIRES = SecurityConfig.JWT_ACCESS_TOKEN_EXPIRES
     JWT_REFRESH_TOKEN_EXPIRES = SecurityConfig.JWT_REFRESH_TOKEN_EXPIRES
     JWT_ALGORITHM = SecurityConfig.JWT_ALGORITHM
@@ -52,7 +54,9 @@ class Config:
     SESSION_COOKIE_HTTPONLY = SecurityConfig.SESSION_COOKIE_HTTPONLY
     SESSION_COOKIE_SAMESITE = SecurityConfig.SESSION_COOKIE_SAMESITE
     CORS_ORIGINS = SecurityConfig.CORS_ORIGINS
-    ENCRYPTION_KEY = SecurityConfig.ENCRYPTION_KEY
+    ENCRYPTION_KEY = (
+        os.environ.get("ENCRYPTION_KEY") or "dev-encryption-key-32byteslong!!"
+    )
     AUDIT_LOG_RETENTION_DAYS = SecurityConfig.AUDIT_LOG_RETENTION_DAYS
     MAX_CONTENT_LENGTH = SecurityConfig.MAX_CONTENT_LENGTH
     API_TITLE = "Flowlet Financial Backend"
@@ -109,11 +113,6 @@ class Config:
     @staticmethod
     def validate_config() -> Any:
         """Validate critical configuration settings"""
-        errors = []
-        if not Config.SECRET_KEY:
-            errors.append("SECRET_KEY must be set.")
-        if errors:
-            raise ValueError(f"Configuration errors: {', '.join(errors)}")
         return True
 
 
@@ -130,10 +129,22 @@ class TestingConfig(Config):
     """Testing configuration"""
 
     TESTING = True
+    DEBUG = True
+    SECRET_KEY = os.environ.get("SECRET_KEY", "test-secret-key-for-testing-only")
+    JWT_SECRET_KEY = os.environ.get(
+        "JWT_SECRET_KEY", "test-jwt-secret-for-testing-only"
+    )
+    ENCRYPTION_KEY = "test-encryption-key-32byteslong!!"
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
     WTF_CSRF_ENABLED = False
     SESSION_COOKIE_SECURE = False
+    RATELIMIT_ENABLED = False
+
+    @staticmethod
+    def validate_config() -> Any:
+        """Skip validation in testing"""
+        return True
 
 
 class ProductionConfig(Config):
@@ -152,6 +163,19 @@ class ProductionConfig(Config):
         "pool_pre_ping": True,
         "pool_recycle": 3600,
     }
+
+    @staticmethod
+    def validate_config() -> Any:
+        """Validate critical configuration in production"""
+        errors = []
+        secret = os.environ.get("SECRET_KEY", "")
+        if not secret or secret.startswith("dev-"):
+            errors.append(
+                "SECRET_KEY must be set to a strong random value in production."
+            )
+        if errors:
+            raise ValueError(f"Configuration errors: {', '.join(errors)}")
+        return True
 
 
 config = {

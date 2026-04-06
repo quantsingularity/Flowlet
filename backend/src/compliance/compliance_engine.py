@@ -146,7 +146,7 @@ class ComplianceEngine:
             ComplianceAssessment containing detailed compliance status
         """
         assessment_id = (
-            f"{entity_type}_{entity_id}_{int(datetime.utcnow().timestamp())}"
+            f"{entity_type}_{entity_id}_{int(datetime.now(timezone.utc).timestamp())}"
         )
         if jurisdictions is None:
             jurisdictions = [Jurisdiction.EU, Jurisdiction.US, Jurisdiction.SINGAPORE]
@@ -155,7 +155,7 @@ class ComplianceEngine:
             cached_assessment = self._compliance_cache[cache_key]
             if (
                 cached_assessment.expires_at
-                and cached_assessment.expires_at > datetime.utcnow()
+                and cached_assessment.expires_at > datetime.now(timezone.utc)
             ):
                 self.logger.debug(
                     f"Returning cached compliance assessment for {entity_id}"
@@ -183,8 +183,8 @@ class ComplianceEngine:
                 overall_status=overall_status,
                 checks=all_checks,
                 risk_score=overall_risk_score,
-                timestamp=datetime.utcnow(),
-                expires_at=datetime.utcnow() + timedelta(hours=24),
+                timestamp=datetime.now(timezone.utc),
+                expires_at=datetime.now(timezone.utc) + timedelta(hours=24),
             )
             self._compliance_cache[cache_key] = assessment
             self._active_assessments[assessment_id] = assessment
@@ -231,14 +231,14 @@ class ComplianceEngine:
                 self.logger.error(f"Error evaluating rule {rule.rule_id}: {str(e)}")
                 checks.append(
                     ComplianceCheck(
-                        check_id=f"{rule.rule_id}_{entity_id}_{int(datetime.utcnow().timestamp())}",
+                        check_id=f"{rule.rule_id}_{entity_id}_{int(datetime.now(timezone.utc).timestamp())}",
                         rule_id=rule.rule_id,
                         jurisdiction=jurisdiction,
                         status=ComplianceStatus.UNKNOWN,
                         severity=ComplianceSeverity.MEDIUM,
                         description=f"Error evaluating rule: {str(e)}",
                         details={"error": str(e)},
-                        timestamp=datetime.utcnow(),
+                        timestamp=datetime.now(timezone.utc),
                     )
                 )
         return checks
@@ -252,7 +252,9 @@ class ComplianceEngine:
         jurisdiction: Jurisdiction,
     ) -> ComplianceCheck:
         """Evaluate a specific compliance rule."""
-        check_id = f"{rule.rule_id}_{entity_id}_{int(datetime.utcnow().timestamp())}"
+        check_id = (
+            f"{rule.rule_id}_{entity_id}_{int(datetime.now(timezone.utc).timestamp())}"
+        )
         if rule.category == "aml":
             return await self._evaluate_aml_rule(
                 rule, entity_id, entity_type, entity_data, check_id
@@ -323,7 +325,7 @@ class ComplianceEngine:
                 "risk_score": aml_result.risk_score,
                 "flags": aml_result.flags,
             },
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             remediation_required=status == ComplianceStatus.NON_COMPLIANT,
         )
 
@@ -345,7 +347,7 @@ class ComplianceEngine:
                 severity=ComplianceSeverity.LOW,
                 description="KYC not applicable for this entity type",
                 details={},
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
         kyc_result = await self.kyc_service.verify_customer(entity_data)
         if kyc_result.status == "verified":
@@ -372,7 +374,7 @@ class ComplianceEngine:
                 "verification_level": kyc_result.verification_level,
                 "documents_verified": kyc_result.documents_verified,
             },
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             remediation_required=status == ComplianceStatus.NON_COMPLIANT,
         )
 
@@ -396,7 +398,7 @@ class ComplianceEngine:
             severity=ComplianceSeverity(dp_result["severity"]),
             description=dp_result["description"],
             details=dp_result["details"],
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             remediation_required=dp_result.get("remediation_required", False),
         )
 
@@ -418,7 +420,7 @@ class ComplianceEngine:
                 severity=ComplianceSeverity.LOW,
                 description="Transaction monitoring not applicable for this entity type",
                 details={},
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
         amount = entity_data.get("amount", 0)
         currency = entity_data.get("currency", "USD")
@@ -458,7 +460,7 @@ class ComplianceEngine:
                 "currency": currency,
                 "country": country,
             },
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             remediation_required=len(violations) > 0,
         )
 
@@ -482,7 +484,7 @@ class ComplianceEngine:
             severity=ComplianceSeverity(reporting_result["severity"]),
             description=reporting_result["description"],
             details=reporting_result["details"],
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             remediation_required=reporting_result.get("remediation_required", False),
         )
 
@@ -503,7 +505,7 @@ class ComplianceEngine:
             severity=ComplianceSeverity.LOW,
             description=f"Generic rule {rule.rule_id} evaluated",
             details={"rule_type": "generic"},
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
         )
 
     def _calculate_overall_status(
@@ -560,8 +562,8 @@ class ComplianceEngine:
                 "email": f"user_{entity_id}@example.com",
                 "country_code": "US",
                 "kyc_status": "pending",
-                "account_created": datetime.utcnow().isoformat(),
-                "last_login": datetime.utcnow().isoformat(),
+                "account_created": datetime.now(timezone.utc).isoformat(),
+                "last_login": datetime.now(timezone.utc).isoformat(),
             }
         elif entity_type == "transaction":
             return {
@@ -571,7 +573,7 @@ class ComplianceEngine:
                 "country_code": "US",
                 "payment_method": "card",
                 "merchant_category": "retail",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         else:
             return {"entity_id": entity_id, "entity_type": entity_type}
@@ -594,8 +596,8 @@ class ComplianceEngine:
             "entity_type": entity_type,
             "jurisdictions": jurisdictions,
             "interval": monitoring_interval,
-            "last_check": datetime.utcnow(),
-            "next_check": datetime.utcnow() + monitoring_interval,
+            "last_check": datetime.now(timezone.utc),
+            "next_check": datetime.now(timezone.utc) + monitoring_interval,
         }
         return {
             "status": "monitoring_started",
@@ -659,7 +661,9 @@ class ComplianceEngine:
             target_check.status = ComplianceStatus.COMPLIANT
         elif remediation_action == "request_documents":
             target_check.status = ComplianceStatus.PENDING_REVIEW
-            target_check.remediation_deadline = datetime.utcnow() + timedelta(days=7)
+            target_check.remediation_deadline = datetime.now(timezone.utc) + timedelta(
+                days=7
+            )
         target_assessment.overall_status = self._calculate_overall_status(
             target_assessment.checks
         )

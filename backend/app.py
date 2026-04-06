@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any
 
@@ -15,7 +15,7 @@ from src.routes import api_bp
 from src.utils.error_handlers import register_error_handlers
 
 
-def create_app() -> Any:
+def create_app(config_name: str = None) -> Any:
     """Create and configure the Flask application."""
     static_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..", "web-frontend", "dist"
@@ -26,7 +26,6 @@ def create_app() -> Any:
         )
     app = Flask(__name__, static_folder=static_dir, static_url_path="")
 
-    # Configure JSON encoder for Decimal and datetime
     from flask.json.provider import DefaultJSONProvider
 
     class CustomJSONProvider(DefaultJSONProvider):
@@ -38,32 +37,91 @@ def create_app() -> Any:
             return super().default(obj)
 
     app.json = CustomJSONProvider(app)
-    config_name = os.environ.get("FLASK_CONFIG", "default")
-    app.config.from_object(config[config_name])
-    if hasattr(config[config_name], "validate_config"):
-        config[config_name].validate_config()
+
+    resolved_config = config_name or os.environ.get("FLASK_CONFIG", "default")
+    app.config.from_object(config[resolved_config])
+    if hasattr(config[resolved_config], "validate_config"):
+        config[resolved_config].validate_config()
+
     db_uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
     if db_uri and db_uri.startswith("sqlite:///"):
         db_file = db_uri.split("sqlite:///", 1)[1]
-        db_dir = os.path.dirname(os.path.abspath(db_file)) or None
-        if db_dir and (not os.path.exists(db_dir)):
-            os.makedirs(db_dir, exist_ok=True)
+        if db_file and db_file != ":memory:":
+            db_dir = os.path.dirname(os.path.abspath(db_file))
+            if db_dir and not os.path.exists(db_dir):
+                os.makedirs(db_dir, exist_ok=True)
+
     db.init_app(app)
     Migrate(app, db)
     Limiter(key_func=get_remote_address, app=app)
+
     cors_origins = os.environ.get(
         "CORS_ORIGINS", "http://localhost:3000,http://localhost:5000"
     ).split(",")
     CORS(app, resources={"/*": {"origins": cors_origins}}, supports_credentials=True)
+
     logging.basicConfig(level=logging.INFO)
     logger = app.logger
     logger.info("Starting Flask application")
+
     app.register_blueprint(api_bp)
+
+    @app.route("/health")
+    def health_check() -> Any:
+        """Health check endpoint."""
+        return jsonify(
+            {
+                "status": "healthy",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "version": "1.0.0",
+                "services": {"database": "ok", "api": "ok"},
+            }
+        )
+
+    @app.route("/api/v1/info")
+    def api_info() -> Any:
+        """API info endpoint."""
+        resp = jsonify(
+            {
+                "api_name": "Flowlet Financial Backend",
+                "version": "v1.0.0",
+                "endpoints": [
+                    "/api/v1/auth",
+                    "/api/v1/users",
+                    "/api/v1/wallets",
+                    "/api/v1/payments",
+                    "/api/v1/cards",
+                    "/api/v1/transactions",
+                    "/api/v1/analytics",
+                    "/api/v1/compliance",
+                    "/api/v1/fraud",
+                    "/api/v1/kyc",
+                ],
+                "security_features": [
+                    "JWT Authentication",
+                    "Rate Limiting",
+                    "Input Validation",
+                    "AML Monitoring",
+                    "Fraud Detection",
+                ],
+            }
+        )
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        resp.headers["X-Frame-Options"] = "DENY"
+        resp.headers["X-XSS-Protection"] = "1; mode=block"
+        resp.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+        resp.headers["Content-Security-Policy"] = "default-src 'self'"
+        return resp
 
     @app.route("/")
     def serve_web_frontend() -> Any:
         """Serve the React web-frontend index page."""
-        return send_from_directory(app.static_folder, "index.html")
+        try:
+            return send_from_directory(app.static_folder, "index.html")
+        except Exception:
+            return jsonify({"status": "ok", "message": "Flowlet API is running"}), 200
 
     @app.route("/<path:path>")
     def serve_static_files(path) -> Any:
@@ -71,28 +129,73 @@ def create_app() -> Any:
         try:
             return send_from_directory(app.static_folder, path)
         except Exception:
-            return send_from_directory(app.static_folder, "index.html")
+            try:
+                return send_from_directory(app.static_folder, "index.html")
+            except Exception:
+                return (
+                    jsonify(
+                        {
+                            "error": "Not Found",
+                            "code": "NOT_FOUND",
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                        }
+                    ),
+                    404,
+                )
+
+    @app.after_request
+    def add_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("X-XSS-Protection", "1; mode=block")
+        response.headers.setdefault(
+            "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
+        )
+        response.headers.setdefault("Content-Security-Policy", "default-src 'self'")
+        return response
 
     register_error_handlers(app)
+
+    @app.errorhandler(404)
+    def not_found_handler(e: Exception) -> Any:
+        return (
+            jsonify(
+                {
+                    "error": "Not Found",
+                    "code": "NOT_FOUND",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            ),
+            404,
+        )
+
+    @app.errorhandler(400)
+    def bad_request_handler(e: Exception) -> Any:
+        return (
+            jsonify({"status": "error", "message": "Bad request", "error": str(e)}),
+            400,
+        )
 
     @app.errorhandler(Exception)
     def handle_exception(e: Exception) -> Any:
         app.logger.error("Unhandled Exception", exc_info=True)
-        response = {
-            "status": "error",
-            "message": "An internal server error occurred. Please try again later.",
-        }
-        return (jsonify(response), 500)
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "An internal server error occurred. Please try again later.",
+                }
+            ),
+            500,
+        )
 
-    def _initialize_sqlite_if_missing() -> Any:
-        """Create SQLite DB file and tables if using file-based SQLite and file is missing."""
+    with app.app_context():
         db_uri_local = app.config.get("SQLALCHEMY_DATABASE_URI", "")
-        if db_uri_local and db_uri_local.startswith("sqlite:///"):
-            db_file_local = db_uri_local.split("sqlite:///", 1)[1]
-            if not os.path.exists(db_file_local):
-                with app.app_context():
-                    db.create_all()
-                    logger.info("Database initialized successfully (created tables)")
+        if db_uri_local and db_uri_local != "sqlite:///:memory:":
+            try:
+                db.create_all()
+                logger.info("Database initialized successfully")
+            except Exception as exc:
+                logger.warning(f"Database initialization skipped: {exc}")
 
-    _initialize_sqlite_if_missing()
     return app

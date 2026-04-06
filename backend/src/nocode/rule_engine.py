@@ -455,7 +455,7 @@ class RuleEngine:
             data_type=data_type,
         )
         rule.conditions.append(condition)
-        rule.updated_at = datetime.utcnow()
+        rule.updated_at = datetime.now(timezone.utc)
         self.logger.info(
             f"Added condition to rule {rule_id}: {field_name} {operator.value} {value}"
         )
@@ -483,7 +483,7 @@ class RuleEngine:
             action_id=action_id, action_type=action_type, parameters=parameters or {}
         )
         rule.actions.append(action)
-        rule.updated_at = datetime.utcnow()
+        rule.updated_at = datetime.now(timezone.utc)
         self.logger.info(f"Added action to rule {rule_id}: {action_type.value}")
         return action_id
 
@@ -504,14 +504,14 @@ class RuleEngine:
         Returns:
             List of rule execution results
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         executions = []
         applicable_rules = self._get_applicable_rules(rule_category, rule_type)
         applicable_rules.sort(key=lambda x: x.priority, reverse=True)
         for rule in applicable_rules:
             if not rule.enabled:
                 continue
-            execution_start = datetime.utcnow()
+            execution_start = datetime.now(timezone.utc)
             try:
                 conditions_met = self._evaluate_conditions(rule, data)
                 executed_actions = []
@@ -525,7 +525,7 @@ class RuleEngine:
                                 f"Error executing action {action.action_id}: {str(e)}"
                             )
                 execution_time = (
-                    datetime.utcnow() - execution_start
+                    datetime.now(timezone.utc) - execution_start
                 ).total_seconds() * 1000
                 execution = RuleExecution(
                     execution_id=str(uuid.uuid4()),
@@ -541,7 +541,7 @@ class RuleEngine:
                 self._execution_stats[rule.rule_id].append(execution_time)
             except Exception as e:
                 execution_time = (
-                    datetime.utcnow() - execution_start
+                    datetime.now(timezone.utc) - execution_start
                 ).total_seconds() * 1000
                 execution = RuleExecution(
                     execution_id=str(uuid.uuid4()),
@@ -556,7 +556,7 @@ class RuleEngine:
                 executions.append(execution)
                 self._rule_executions.append(execution)
                 self.logger.error(f"Error executing rule {rule.rule_id}: {str(e)}")
-        total_time = (datetime.utcnow() - start_time).total_seconds() * 1000
+        total_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
         self.logger.info(
             f"Executed {len(applicable_rules)} rules in {total_time:.2f}ms"
         )
@@ -761,7 +761,7 @@ class RuleEngine:
         rule = self._rules.get(rule_id)
         if rule:
             rule.enabled = True
-            rule.updated_at = datetime.utcnow()
+            rule.updated_at = datetime.now(timezone.utc)
             self.logger.info(f"Enabled rule: {rule_id}")
             return True
         return False
@@ -771,7 +771,7 @@ class RuleEngine:
         rule = self._rules.get(rule_id)
         if rule:
             rule.enabled = False
-            rule.updated_at = datetime.utcnow()
+            rule.updated_at = datetime.now(timezone.utc)
             self.logger.info(f"Disabled rule: {rule_id}")
             return True
         return False
@@ -790,14 +790,14 @@ class RuleEngine:
         rule = self._rules.get(rule_id)
         if not rule:
             raise ValueError(f"Rule not found: {rule_id}")
-        execution_start = datetime.utcnow()
+        execution_start = datetime.now(timezone.utc)
         try:
             conditions_met = self._evaluate_conditions(rule, test_data)
             executed_actions = []
             if conditions_met:
                 executed_actions = [action.action_id for action in rule.actions]
             execution_time = (
-                datetime.utcnow() - execution_start
+                datetime.now(timezone.utc) - execution_start
             ).total_seconds() * 1000
             return RuleExecution(
                 execution_id=str(uuid.uuid4()),
@@ -811,7 +811,7 @@ class RuleEngine:
             )
         except Exception as e:
             execution_time = (
-                datetime.utcnow() - execution_start
+                datetime.now(timezone.utc) - execution_start
             ).total_seconds() * 1000
             return RuleExecution(
                 execution_id=str(uuid.uuid4()),
@@ -892,5 +892,5 @@ class RuleEngine:
             ),
             "registered_operators": len(self._operators),
             "registered_action_handlers": len(self._action_handlers),
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

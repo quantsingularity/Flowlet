@@ -138,7 +138,7 @@ class MetricsCalculator:
                 value=current_value,
                 previous_value=previous_value,
                 change_percentage=change_percentage,
-                calculation_timestamp=datetime.utcnow(),
+                calculation_timestamp=datetime.now(timezone.utc),
                 period_start=start_date,
                 period_end=end_date,
                 metadata={
@@ -406,7 +406,7 @@ class MetricsCalculator:
             period_delta = timedelta(days=30)
         else:
             raise ValueError(f"Unknown period type: {period_type}")
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         trend_data = []
         for i in range(periods):
             period_end = end_date - period_delta * i
@@ -765,5 +765,5 @@ class MetricsCalculator:
         return {
             "period": {"start": start_date.isoformat(), "end": end_date.isoformat()},
             "kpis": kpi_data,
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }

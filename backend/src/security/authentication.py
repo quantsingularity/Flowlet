@@ -9,8 +9,20 @@ from enum import Enum
 from io import BytesIO
 from typing import Any, Dict, List, Optional
 
-import pyotp
-import qrcode
+try:
+    import pyotp
+
+    PYOTP_AVAILABLE = True
+except ImportError:
+    pyotp = None
+    PYOTP_AVAILABLE = False
+try:
+    import qrcode
+
+    QRCODE_AVAILABLE = True
+except ImportError:
+    qrcode = None
+    QRCODE_AVAILABLE = False
 from sqlalchemy.orm import Session
 
 "\nAdvanced Authentication Service\n===============================\n\nMulti-factor authentication and advanced security features for financial applications.\n"
@@ -121,7 +133,7 @@ class AdvancedAuthenticationService:
                     status=AuthenticationStatus.BLOCKED,
                     methods_used=[],
                     risk_score=1.0,
-                    expires_at=datetime.utcnow(),
+                    expires_at=datetime.now(timezone.utc),
                 )
             risk_score = await self._assess_authentication_risk(
                 user_id, request_context or {}
@@ -142,7 +154,7 @@ class AdvancedAuthenticationService:
                         status=AuthenticationStatus.FAILED,
                         methods_used=[],
                         risk_score=risk_score,
-                        expires_at=datetime.utcnow(),
+                        expires_at=datetime.now(timezone.utc),
                     )
             if AuthenticationMethod.TOTP in required_methods:
                 totp_code = credentials.get("totp_code", "")
@@ -155,7 +167,7 @@ class AdvancedAuthenticationService:
                         status=AuthenticationStatus.FAILED,
                         methods_used=validated_methods,
                         risk_score=risk_score,
-                        expires_at=datetime.utcnow(),
+                        expires_at=datetime.now(timezone.utc),
                     )
             if AuthenticationMethod.SMS in required_methods:
                 sms_code = credentials.get("sms_code", "")
@@ -168,18 +180,18 @@ class AdvancedAuthenticationService:
                         status=AuthenticationStatus.FAILED,
                         methods_used=validated_methods,
                         risk_score=risk_score,
-                        expires_at=datetime.utcnow(),
+                        expires_at=datetime.now(timezone.utc),
                     )
             if set(validated_methods) >= set(required_methods):
                 session_duration = self._calculate_session_duration(risk_score)
-                expires_at = datetime.utcnow() + session_duration
+                expires_at = datetime.now(timezone.utc) + session_duration
                 self._active_sessions[session_id] = {
                     "user_id": user_id,
-                    "created_at": datetime.utcnow(),
+                    "created_at": datetime.now(timezone.utc),
                     "expires_at": expires_at,
                     "risk_score": risk_score,
                     "methods_used": validated_methods,
-                    "last_activity": datetime.utcnow(),
+                    "last_activity": datetime.now(timezone.utc),
                 }
                 if user_id in self._failed_attempts:
                     del self._failed_attempts[user_id]
@@ -201,7 +213,7 @@ class AdvancedAuthenticationService:
                     status=AuthenticationStatus.PENDING,
                     methods_used=validated_methods,
                     risk_score=risk_score,
-                    expires_at=datetime.utcnow() + timedelta(minutes=10),
+                    expires_at=datetime.now(timezone.utc) + timedelta(minutes=10),
                     requires_additional_auth=True,
                     next_auth_methods=remaining_methods,
                 )
@@ -213,7 +225,7 @@ class AdvancedAuthenticationService:
                 status=AuthenticationStatus.FAILED,
                 methods_used=[],
                 risk_score=1.0,
-                expires_at=datetime.utcnow(),
+                expires_at=datetime.now(timezone.utc),
             )
 
     async def _assess_authentication_risk(
@@ -276,7 +288,7 @@ class AdvancedAuthenticationService:
         code_timestamp = self._mfa_secrets.get(user_id, {}).get("sms_code_timestamp")
         if not stored_code or not code_timestamp:
             return False
-        if datetime.utcnow() - code_timestamp > timedelta(minutes=5):
+        if datetime.now(timezone.utc) - code_timestamp > timedelta(minutes=5):
             return False
         return sms_code == stored_code
 
@@ -294,8 +306,8 @@ class AdvancedAuthenticationService:
         """Record failed authentication attempt."""
         if user_id not in self._failed_attempts:
             self._failed_attempts[user_id] = []
-        self._failed_attempts[user_id].append(datetime.utcnow())
-        cutoff = datetime.utcnow() - timedelta(hours=1)
+        self._failed_attempts[user_id].append(datetime.now(timezone.utc))
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=1)
         self._failed_attempts[user_id] = [
             attempt for attempt in self._failed_attempts[user_id] if attempt > cutoff
         ]
@@ -305,8 +317,8 @@ class AdvancedAuthenticationService:
     async def _lock_account(self, user_id: str, duration: timedelta):
         """Lock user account for specified duration."""
         self._locked_accounts[user_id] = {
-            "locked_at": datetime.utcnow(),
-            "expires_at": datetime.utcnow() + duration,
+            "locked_at": datetime.now(timezone.utc),
+            "expires_at": datetime.now(timezone.utc) + duration,
             "reason": "Multiple failed authentication attempts",
         }
         self.logger.warning(f"Account locked: {user_id}")
@@ -316,7 +328,7 @@ class AdvancedAuthenticationService:
         if user_id not in self._locked_accounts:
             return False
         lock_info = self._locked_accounts[user_id]
-        if datetime.utcnow() > lock_info["expires_at"]:
+        if datetime.now(timezone.utc) > lock_info["expires_at"]:
             del self._locked_accounts[user_id]
             return False
         return True
@@ -336,7 +348,7 @@ class AdvancedAuthenticationService:
 
     def _is_unusual_time(self, user_id: str) -> bool:
         """Check if current time is unusual for user."""
-        current_hour = datetime.utcnow().hour
+        current_hour = datetime.now(timezone.utc).hour
         return current_hour < 6 or current_hour > 22
 
     def _has_totp_enabled(self, user_id: str) -> bool:
@@ -374,7 +386,7 @@ class AdvancedAuthenticationService:
         if user_id not in self._mfa_secrets:
             self._mfa_secrets[user_id] = {}
         self._mfa_secrets[user_id]["sms_code"] = code
-        self._mfa_secrets[user_id]["sms_code_timestamp"] = datetime.utcnow()
+        self._mfa_secrets[user_id]["sms_code_timestamp"] = datetime.now(timezone.utc)
         self.logger.info(f"SMS code sent to {phone_number}: {code}")
         return True
 
@@ -383,10 +395,10 @@ class AdvancedAuthenticationService:
         if session_id not in self._active_sessions:
             return None
         session = self._active_sessions[session_id]
-        if datetime.utcnow() > session["expires_at"]:
+        if datetime.now(timezone.utc) > session["expires_at"]:
             del self._active_sessions[session_id]
             return None
-        session["last_activity"] = datetime.utcnow()
+        session["last_activity"] = datetime.now(timezone.utc)
         return session
 
     def logout_session(self, session_id: str) -> bool:
@@ -432,5 +444,5 @@ class AdvancedAuthenticationService:
                 [u for u in self._mfa_secrets.values() if "totp_secret" in u]
             ),
             "users_with_failed_attempts": len(self._failed_attempts),
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }

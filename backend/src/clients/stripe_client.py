@@ -3,8 +3,27 @@ import os
 from decimal import Decimal
 from typing import Any, Dict
 
-import stripe
-from stripe import CardError, StripeError
+try:
+    import stripe
+    from stripe import CardError, StripeError
+
+    STRIPE_AVAILABLE = True
+except ImportError:
+    stripe = None
+    STRIPE_AVAILABLE = False
+
+    class CardError(Exception):
+        def __init__(
+            self, message="", param=None, code=None, http_status=None, json_body=None
+        ):
+            self.user_message = message
+            super().__init__(message)
+
+    class StripeError(Exception):
+        def __init__(self, message="", http_status=None, json_body=None):
+            self.user_message = message
+            super().__init__(message)
+
 
 from ..services.payment_service_errors import PaymentProcessorError
 
@@ -22,7 +41,8 @@ class StripeClient:
         if not self.api_key:
             logger.error("STRIPE_SECRET_KEY environment variable not set.")
             self.api_key = "sk_test_mock_key"
-        stripe.api_key = self.api_key
+        if STRIPE_AVAILABLE:
+            stripe.api_key = self.api_key
         logger.info("Stripe client initialized.")
 
     def create_charge(
@@ -71,6 +91,10 @@ class StripeClient:
                     "description": description,
                     "metadata": metadata or {},
                 }
+            if not STRIPE_AVAILABLE:
+                raise PaymentProcessorError(
+                    "Stripe library not installed", "STRIPE_NOT_AVAILABLE", 500
+                )
             charge = stripe.Charge.create(
                 amount=amount_in_smallest_unit,
                 currency=currency.lower(),

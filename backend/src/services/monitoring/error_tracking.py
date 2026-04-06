@@ -70,7 +70,7 @@ class ErrorTrackingService:
 
         try:
             self.error_id_counter += 1
-            error_id = f"ERR-{datetime.utcnow().strftime('%Y%m%d')}-{self.error_id_counter:06d}"
+            error_id = f"ERR-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{self.error_id_counter:06d}"
 
             error_type = type(exception).__name__
             message = str(exception)
@@ -85,7 +85,7 @@ class ErrorTrackingService:
                 error_type=error_type,
                 message=message,
                 stack_trace=stack_trace,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 context=context or {},
                 severity=severity,
                 user_id=user_id,
@@ -145,14 +145,14 @@ class ErrorTrackingService:
 
         try:
             self.error_id_counter += 1
-            error_id = f"ERR-{datetime.utcnow().strftime('%Y%m%d')}-{self.error_id_counter:06d}"
+            error_id = f"ERR-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{self.error_id_counter:06d}"
 
             error_event = ErrorEvent(
                 error_id=error_id,
                 error_type=error_type,
                 message=message,
                 stack_trace=stack_trace,
-                timestamp=datetime.utcnow().isoformat(),
+                timestamp=datetime.now(timezone.utc).isoformat(),
                 context=context or {},
                 severity=severity,
                 user_id=user_id,

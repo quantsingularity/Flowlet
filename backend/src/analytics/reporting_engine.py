@@ -160,7 +160,7 @@ class ReportingEngine:
                 },
                 "summary": {"total_transactions": 0, "total_volume": 0},
                 "data": [],
-                "generated_at": datetime.utcnow().isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             }
         summary = {
             "total_transactions": len(df),
@@ -198,7 +198,7 @@ class ReportingEngine:
             "summary": summary,
             "daily_trends": daily_stats.to_dict(),
             "raw_data": df.to_dict("records") if len(df) <= 1000 else [],
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
             "filters_applied": params.filters,
         }
 
@@ -211,7 +211,7 @@ class ReportingEngine:
             return {
                 "report_type": "customer_behavior",
                 "summary": {"total_customers": 0},
-                "generated_at": datetime.utcnow().isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             }
         df = pd.DataFrame(
             [
@@ -297,7 +297,7 @@ class ReportingEngine:
                 for segment, data in segments.items()
             },
             "behavior_analysis": behavior_analysis,
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_risk_assessment_report(
@@ -378,7 +378,7 @@ class ReportingEngine:
                 for t in high_risk_transactions[:100]
             ],
             "recommendations": self._generate_risk_recommendations(risk_metrics),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_compliance_report(self, params: ReportParameters) -> Dict[str, Any]:
@@ -452,7 +452,7 @@ class ReportingEngine:
             "regulatory_requirements": self._get_regulatory_requirements(
                 compliance_summary
             ),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_performance_dashboard(
@@ -473,7 +473,7 @@ class ReportingEngine:
             return {
                 "report_type": "performance_dashboard",
                 "summary": {"no_data": True},
-                "generated_at": datetime.utcnow().isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             }
         df = pd.DataFrame(
             [
@@ -524,7 +524,7 @@ class ReportingEngine:
             "system_health": system_health,
             "service_performance": service_performance,
             "alerts": self._generate_performance_alerts(service_performance),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_revenue_analysis(self, params: ReportParameters) -> Dict[str, Any]:
@@ -543,7 +543,7 @@ class ReportingEngine:
             return {
                 "report_type": "revenue_analysis",
                 "summary": {"total_revenue": 0},
-                "generated_at": datetime.utcnow().isoformat(),
+                "generated_at": datetime.now(timezone.utc).isoformat(),
             }
         total_volume = sum((float(t.amount) for t in transactions))
         estimated_revenue = total_volume * 0.029
@@ -574,7 +574,7 @@ class ReportingEngine:
             "currency_breakdown": currency_revenue,
             "daily_trends": daily_revenue,
             "growth_metrics": self._calculate_growth_metrics(daily_revenue),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_fraud_detection_report(
@@ -661,7 +661,7 @@ class ReportingEngine:
             "fraud_summary": fraud_summary,
             "fraud_patterns": fraud_patterns,
             "recommendations": self._generate_fraud_recommendations(fraud_patterns),
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_regulatory_filing(self, params: ReportParameters) -> Dict[str, Any]:
@@ -735,7 +735,7 @@ class ReportingEngine:
                     for t in sar_transactions
                 ],
             },
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_eu_regulatory_filing(
@@ -758,7 +758,7 @@ class ReportingEngine:
                 "data_breaches": 0,
                 "consent_management": "compliant",
             },
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_generic_regulatory_filing(
@@ -773,7 +773,7 @@ class ReportingEngine:
                 "end": params.end_date.isoformat(),
             },
             "summary": "Generic regulatory filing - specific requirements not implemented",
-            "generated_at": datetime.utcnow().isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_risk_recommendations(self, risk_metrics: Dict[str, Any]) -> List[str]:

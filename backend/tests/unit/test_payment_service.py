@@ -1,7 +1,6 @@
 import os
 import unittest
 from decimal import Decimal
-from typing import Any
 from unittest.mock import MagicMock, patch
 
 import stripe
@@ -18,73 +17,72 @@ from src.services.payment_service_errors import (
 
 class MockAccount:
 
-    def __init__(
-        self, id: Any, user_id: Any, balance: Any, status: Any, currency: Any
-    ) -> None:
+    def __init__(self, id, user_id, balance, status, currency):
         self.id = id
         self.user_id = user_id
         self.balance = Decimal(str(balance))
         self.status = status
         self.currency = currency
 
-    def credit(self, amount: Any) -> Any:
+    def credit(self, amount):
         self.balance += amount
 
-    def can_debit(self, amount: Any) -> Any:
+    def can_debit(self, amount):
         return self.balance >= amount
 
 
 class MockTransaction:
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.id = "mock_txn_id"
 
 
 class MockDBSession:
 
-    def __init__(self, accounts: Any = None) -> None:
+    def __init__(self, accounts=None):
         self.accounts = accounts or {}
         self.committed = False
         self.rolledback = False
 
-    def get(self, model: Any, id: Any) -> Any:
-        if model.__name__ == "Account":
+    def get(self, model, id):
+        if hasattr(model, "__name__") and model.__name__ == "Account":
+            return self.accounts.get(id)
+        elif isinstance(model, type) and model.__name__ == "Account":
             return self.accounts.get(id)
         return None
 
-    def add(self, obj: Any) -> Any:
+    def add(self, obj):
         pass
 
-    def commit(self) -> Any:
+    def commit(self):
         self.committed = True
 
-    def rollback(self) -> Any:
+    def rollback(self):
         self.rolledback = True
 
 
 class MockModels:
 
     class Account:
+        __name__ = "Account"
 
-        def __init__(
-            self, id: Any, user_id: Any, balance: Any, status: Any, currency: Any
-        ) -> None:
+        def __init__(self, id, user_id, balance, status, currency):
             self.id = id
             self.user_id = user_id
             self.balance = Decimal(str(balance))
             self.status = status
             self.currency = currency
 
-        def credit(self, amount: Any) -> Any:
+        def credit(self, amount):
             self.balance += amount
 
-        def can_debit(self, amount: Any) -> Any:
+        def can_debit(self, amount):
             return self.balance >= amount
 
     class Transaction:
 
-        def __init__(self, **kwargs) -> None:
+        def __init__(self, **kwargs):
             self.__dict__.update(kwargs)
             self.id = "mock_txn_id"
 
@@ -110,7 +108,7 @@ class MockModels:
 )
 class TestPaymentService(unittest.TestCase):
 
-    def setUp(self) -> Any:
+    def setUp(self):
         self.user_id = "user_123"
         self.account_id = "acc_456"
         self.mock_account = MockAccount(
@@ -126,12 +124,12 @@ class TestPaymentService(unittest.TestCase):
             amount=Decimal("50.00"),
             currency="USD",
             payment_method="stripe",
-            payment_details={"token": "tok_visa"},
+            metadata={"token": "tok_visa"},
             description="Test Deposit",
         )
 
     @patch("src.clients.stripe_client.stripe.Charge.create")
-    def test_process_external_payment_success(self, mock_stripe_create: Any) -> Any:
+    def test_process_external_payment_success(self, mock_stripe_create):
         mock_stripe_create.return_value = MagicMock(
             id="ch_success_123",
             status="succeeded",
@@ -147,9 +145,7 @@ class TestPaymentService(unittest.TestCase):
         mock_stripe_create.assert_called_once()
 
     @patch("src.clients.stripe_client.stripe.Charge.create")
-    def test_process_external_payment_stripe_card_error(
-        self, mock_stripe_create: Any
-    ) -> Any:
+    def test_process_external_payment_stripe_card_error(self, mock_stripe_create):
         mock_stripe_create.side_effect = stripe.error.CardError(
             message="Your card was declined.",
             param="source",
@@ -166,9 +162,7 @@ class TestPaymentService(unittest.TestCase):
         self.assertEqual(self.mock_account.balance, Decimal("100.00"))
 
     @patch("src.clients.stripe_client.stripe.Charge.create")
-    def test_process_external_payment_stripe_api_error(
-        self, mock_stripe_create: Any
-    ) -> Any:
+    def test_process_external_payment_stripe_api_error(self, mock_stripe_create):
         mock_stripe_create.side_effect = stripe.error.StripeError(
             message="Invalid API Key provided.",
             http_status=500,
@@ -182,13 +176,13 @@ class TestPaymentService(unittest.TestCase):
         self.assertTrue(self.mock_session.rolledback)
         self.assertEqual(self.mock_account.balance, Decimal("100.00"))
 
-    def test_process_external_payment_account_access_denied(self) -> Any:
+    def test_process_external_payment_account_access_denied(self):
         with self.assertRaises(AccountAccessDenied):
             process_external_payment(
                 self.mock_session, "another_user", self.payment_data
             )
 
-    def test_stripe_client_create_charge_success_mocked(self) -> Any:
+    def test_stripe_client_create_charge_success_mocked(self):
         client = StripeClient()
         data = client.create_charge(
             amount=Decimal("10.00"),

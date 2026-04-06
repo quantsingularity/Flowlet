@@ -194,7 +194,7 @@ class RateLimiter:
                             "retry_after": retry_after,
                             "current_limits": current_counts,
                             "max_limits": limits_info,
-                            "timestamp": datetime.utcnow().isoformat(),
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
                         }
                     )
                     response.status_code = 429
@@ -222,26 +222,59 @@ class RateLimiter:
 
         return decorator
 
+    def _parse_limit_string(self, limit_string: str) -> tuple:
+        """
+        Parse a rate limit string like '100 per hour' or '10 per minute'.
+        Returns: Tuple of (count, period_in_seconds)
+        """
+        parts = limit_string.lower().strip().split()
+        count = int(parts[0])
+        period_word = parts[-1].rstrip("s")
+        period_map = {"second": 1, "minute": 60, "hour": 3600, "day": 86400}
+        period_seconds = period_map.get(period_word, 60)
+        return count, period_seconds
 
-def auth_rate_limit(f: Any) -> Any:
+    def is_allowed(
+        self, limit_string: str, client_id: str, endpoint: str = ""
+    ) -> tuple:
+        """
+        Check whether a request from client_id is within the rate limit.
+        Returns: Tuple of (allowed: bool, info: dict with remaining/retry_after)
+        """
+        import time as _time
+
+        count, window_seconds = self._parse_limit_string(limit_string)
+        key = f"{client_id}:{endpoint}:{window_seconds}"
+        allowed, current, _limit = self._check_memory_limit(key, count, window_seconds)
+        remaining = max(0, count - current)
+        retry_after = window_seconds if not allowed else 0
+        return allowed, {
+            "limit": count,
+            "remaining": remaining,
+            "reset_at": _time.time() + window_seconds,
+            "retry_after": retry_after,
+        }
+
+
+def auth_rate_limit(f):
     """Rate limit for authentication endpoints"""
     limiter = RateLimiter()
     return limiter.rate_limit(minute=5, hour=20)(f)
 
 
-def transaction_rate_limit(f: Any) -> Any:
+def transaction_rate_limit(f):
     """Rate limit for transaction endpoints"""
     limiter = RateLimiter()
     return limiter.rate_limit(minute=10, hour=100, day=500)(f)
 
 
-def api_rate_limit(f: Any) -> Any:
+def api_rate_limit(f):
     """Standard rate limit for API endpoints"""
     limiter = RateLimiter()
     return limiter.rate_limit(minute=60, hour=1000)(f)
 
 
-def admin_rate_limit(f: Any) -> Any:
+def admin_rate_limit(f):
     """Rate limit for admin endpoints"""
     limiter = RateLimiter()
     return limiter.rate_limit(minute=30, hour=200)(f)

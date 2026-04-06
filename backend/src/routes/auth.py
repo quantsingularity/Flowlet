@@ -6,7 +6,14 @@ from functools import wraps
 from typing import Any
 
 import jwt
-import pyotp
+
+try:
+    import pyotp
+
+    PYOTP_AVAILABLE = True
+except ImportError:
+    pyotp = None
+    PYOTP_AVAILABLE = False
 
 try:
     import qrcode

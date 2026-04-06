@@ -1,0 +1,51 @@
+"""
+ML Fraud Detection module - re-exports from src.fraud_detection for compatibility.
+"""
+
+from src.fraud_detection import (
+    AutoencoderModel,
+    EnsembleFraudModel,
+    FeatureEngineer,
+    FraudAlert,
+    FraudDetectionError,
+    FraudDetectionService,
+    FraudExplainer,
+    FraudModelBase,
+    FraudType,
+    IsolationForestModel,
+    LightGBMFraudModel,
+    ModelNotTrainedError,
+    ModelType,
+    NeuralNetworkFraudModel,
+    OneClassSVMModel,
+    RandomForestFraudModel,
+    RealTimeFraudDetector,
+    RiskLevel,
+    TransactionFeatures,
+    XGBoostFraudModel,
+    get_fraud_service,
+)
+
+__all__ = [
+    "AutoencoderModel",
+    "EnsembleFraudModel",
+    "FeatureEngineer",
+    "FraudAlert",
+    "FraudDetectionError",
+    "FraudDetectionService",
+    "FraudExplainer",
+    "FraudModelBase",
+    "FraudType",
+    "IsolationForestModel",
+    "LightGBMFraudModel",
+    "ModelNotTrainedError",
+    "ModelType",
+    "NeuralNetworkFraudModel",
+    "OneClassSVMModel",
+    "RandomForestFraudModel",
+    "RealTimeFraudDetector",
+    "RiskLevel",
+    "TransactionFeatures",
+    "XGBoostFraudModel",
+    "get_fraud_service",
+]

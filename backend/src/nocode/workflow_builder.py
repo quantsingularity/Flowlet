@@ -629,7 +629,7 @@ class WorkflowBuilder:
             position=position or {"x": 0, "y": 0},
         )
         workflow.nodes.append(node)
-        workflow.updated_at = datetime.utcnow()
+        workflow.updated_at = datetime.now(timezone.utc)
         self.logger.info(f"Added node {name} to workflow {workflow_id}")
         return node_id
 
@@ -675,7 +675,7 @@ class WorkflowBuilder:
         workflow.connections.append(connection)
         source_node.outputs.append(connection_id)
         target_node.inputs.append(connection_id)
-        workflow.updated_at = datetime.utcnow()
+        workflow.updated_at = datetime.now(timezone.utc)
         self.logger.info(f"Connected nodes {source_node_id} -> {target_node_id}")
         return connection_id
 
@@ -701,7 +701,7 @@ class WorkflowBuilder:
             execution_id=execution_id,
             workflow_id=workflow_id,
             status=WorkflowStatus.ACTIVE,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
             started_by=started_by,
             context=context or {},
         )
@@ -735,7 +735,7 @@ class WorkflowBuilder:
             return
         execution.node_executions[node_id] = {
             "status": NodeStatus.RUNNING.value,
-            "started_at": datetime.utcnow().isoformat(),
+            "started_at": datetime.now(timezone.utc).isoformat(),
             "attempts": 1,
         }
         try:
@@ -745,7 +745,7 @@ class WorkflowBuilder:
                 execution.node_executions[node_id].update(
                     {
                         "status": NodeStatus.COMPLETED.value,
-                        "completed_at": datetime.utcnow().isoformat(),
+                        "completed_at": datetime.now(timezone.utc).isoformat(),
                         "result": result,
                     }
                 )
@@ -756,7 +756,7 @@ class WorkflowBuilder:
             execution.node_executions[node_id].update(
                 {
                     "status": NodeStatus.FAILED.value,
-                    "completed_at": datetime.utcnow().isoformat(),
+                    "completed_at": datetime.now(timezone.utc).isoformat(),
                     "error": str(e),
                 }
             )
@@ -798,7 +798,7 @@ class WorkflowBuilder:
     ) -> Dict[str, Any]:
         """Handle end node execution."""
         execution.status = WorkflowStatus.COMPLETED
-        execution.completed_at = datetime.utcnow()
+        execution.completed_at = datetime.now(timezone.utc)
         return {"status": "completed"}
 
     async def _handle_task_node(
@@ -945,5 +945,5 @@ class WorkflowBuilder:
             "workflow_categories": dict(workflow_categories),
             "execution_statuses": dict(execution_statuses),
             "registered_node_handlers": len(self._node_handlers),
-            "last_updated": datetime.utcnow().isoformat(),
+            "last_updated": datetime.now(timezone.utc).isoformat(),
         }
