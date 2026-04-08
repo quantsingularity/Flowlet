@@ -120,6 +120,7 @@ jobs:
 
     env:
       BACKEND_DIR: backend
+      PYTHONPATH: ${{ github.workspace }}/backend
 
     steps:
       - name: Checkout repository
