@@ -10,6 +10,7 @@ from unittest.mock import Mock, patch
 import psutil
 import pytest
 from app import create_app
+from src.services.cache.redis_service import RedisService
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
@@ -206,7 +207,6 @@ class TestCachePerformance:
         mock_redis_client = Mock()
         mock_redis.return_value = mock_redis_client
         mock_redis_client.get.return_value = json.dumps({"cached": "data"})
-        from src.services.cache.redis_service import RedisService
 
         cache_service = RedisService()
         hit_times = []
@@ -225,7 +225,6 @@ class TestCachePerformance:
         mock_redis.return_value = mock_redis_client
         mock_redis_client.get.return_value = None
         mock_redis_client.set.return_value = True
-        from src.services.cache.redis_service import RedisService
 
         cache_service = RedisService()
         miss_times = []
