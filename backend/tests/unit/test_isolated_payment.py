@@ -6,12 +6,21 @@ from unittest.mock import MagicMock, patch
 
 import stripe
 
-os.environ["STRIPE_SECRET_KEY"] = "sk_test_123"
+os.environ["STRIPE_SECRET_KEY"] = "sk_test_real_key_123"
+
 from src.clients.stripe_client import StripeClient
 from src.services.payment_service_errors import PaymentProcessorError
 
 
 class TestStripeClient(unittest.TestCase):
+
+    def _make_client_with_real_key(self):
+        """Create a StripeClient that won't short-circuit into mock mode."""
+        client = StripeClient()
+        client.api_key = "sk_test_real_key_123"
+        # Also set stripe.api_key so is_mock check fails
+        stripe.api_key = "sk_test_real_key_123"
+        return client
 
     @patch("stripe.Charge.create")
     def test_create_charge_success(self, mock_stripe_create: Any) -> Any:
@@ -26,7 +35,7 @@ class TestStripeClient(unittest.TestCase):
             },
         )
         mock_stripe_create.return_value = mock_charge
-        client = StripeClient()
+        client = self._make_client_with_real_key()
         result = client.create_charge(
             Decimal("10.00"), "USD", "tok_visa", "test charge"
         )
@@ -48,7 +57,7 @@ class TestStripeClient(unittest.TestCase):
             http_status=400,
             json_body={"error": {"message": "Your card was declined."}},
         )
-        client = StripeClient()
+        client = self._make_client_with_real_key()
         with self.assertRaisesRegex(
             PaymentProcessorError, "Payment failed: Your card was declined."
         ):
@@ -61,7 +70,7 @@ class TestStripeClient(unittest.TestCase):
             http_status=500,
             json_body={"error": {"message": "Invalid API Key provided."}},
         )
-        client = StripeClient()
+        client = self._make_client_with_real_key()
         with self.assertRaisesRegex(
             PaymentProcessorError, "Stripe processing error: Invalid API Key provided."
         ):

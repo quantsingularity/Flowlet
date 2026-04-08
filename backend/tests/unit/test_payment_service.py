@@ -16,7 +16,6 @@ from src.services.payment_service_errors import (
 
 
 class MockAccount:
-
     def __init__(self, id, user_id, balance, status, currency):
         self.id = id
         self.user_id = user_id
@@ -31,15 +30,7 @@ class MockAccount:
         return self.balance >= amount
 
 
-class MockTransaction:
-
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-        self.id = "mock_txn_id"
-
-
 class MockDBSession:
-
     def __init__(self, accounts=None):
         self.accounts = accounts or {}
         self.committed = False
@@ -63,7 +54,6 @@ class MockDBSession:
 
 
 class MockModels:
-
     class Account:
         __name__ = "Account"
 
@@ -81,7 +71,6 @@ class MockModels:
             return self.balance >= amount
 
     class Transaction:
-
         def __init__(self, **kwargs):
             self.__dict__.update(kwargs)
             self.id = "mock_txn_id"
@@ -130,15 +119,31 @@ class TestPaymentService(unittest.TestCase):
 
     @patch("src.clients.stripe_client.stripe.Charge.create")
     def test_process_external_payment_success(self, mock_stripe_create):
+        # Use a real-looking key so StripeClient doesn't take the mock shortcut
         mock_stripe_create.return_value = MagicMock(
             id="ch_success_123",
             status="succeeded",
             to_dict=lambda: {"id": "ch_success_123", "status": "succeeded"},
         )
-        StripeClient()
-        result = process_external_payment(
-            self.mock_session, self.user_id, self.payment_data
-        )
+        with patch.dict(os.environ, {"STRIPE_SECRET_KEY": "sk_test_real_for_unit"}):
+            with patch(
+                "src.clients.stripe_client.StripeClient.__init__", lambda self: None
+            ):
+                client = StripeClient.__new__(StripeClient)
+                client.api_key = "sk_test_real_for_unit"
+                import src.clients.stripe_client as sc_mod
+
+                original = sc_mod.stripe_client
+                sc_mod.stripe_client = client
+                try:
+                    import stripe as _stripe
+
+                    _stripe.api_key = "sk_test_real_for_unit"
+                    result = process_external_payment(
+                        self.mock_session, self.user_id, self.payment_data
+                    )
+                finally:
+                    sc_mod.stripe_client = original
         self.assertTrue(self.mock_session.committed)
         self.assertEqual(result["status"], "success")
         self.assertEqual(self.mock_account.balance, Decimal("150.00"))
@@ -153,11 +158,26 @@ class TestPaymentService(unittest.TestCase):
             http_status=400,
             json_body={"error": {"message": "Your card was declined."}},
         )
-        StripeClient()
-        with self.assertRaisesRegex(
-            PaymentProcessorError, "Payment failed: Your card was declined."
+        with patch(
+            "src.clients.stripe_client.StripeClient.__init__", lambda self: None
         ):
-            process_external_payment(self.mock_session, self.user_id, self.payment_data)
+            client = StripeClient.__new__(StripeClient)
+            client.api_key = "sk_test_real_for_unit"
+            import src.clients.stripe_client as sc_mod
+            import stripe as _stripe
+
+            _stripe.api_key = "sk_test_real_for_unit"
+            original = sc_mod.stripe_client
+            sc_mod.stripe_client = client
+            try:
+                with self.assertRaisesRegex(
+                    PaymentProcessorError, "Payment failed: Your card was declined."
+                ):
+                    process_external_payment(
+                        self.mock_session, self.user_id, self.payment_data
+                    )
+            finally:
+                sc_mod.stripe_client = original
         self.assertTrue(self.mock_session.rolledback)
         self.assertEqual(self.mock_account.balance, Decimal("100.00"))
 
@@ -168,11 +188,27 @@ class TestPaymentService(unittest.TestCase):
             http_status=500,
             json_body={"error": {"message": "Invalid API Key provided."}},
         )
-        StripeClient()
-        with self.assertRaisesRegex(
-            PaymentProcessorError, "Stripe processing error: Invalid API Key provided."
+        with patch(
+            "src.clients.stripe_client.StripeClient.__init__", lambda self: None
         ):
-            process_external_payment(self.mock_session, self.user_id, self.payment_data)
+            client = StripeClient.__new__(StripeClient)
+            client.api_key = "sk_test_real_for_unit"
+            import src.clients.stripe_client as sc_mod
+            import stripe as _stripe
+
+            _stripe.api_key = "sk_test_real_for_unit"
+            original = sc_mod.stripe_client
+            sc_mod.stripe_client = client
+            try:
+                with self.assertRaisesRegex(
+                    PaymentProcessorError,
+                    "Stripe processing error: Invalid API Key provided.",
+                ):
+                    process_external_payment(
+                        self.mock_session, self.user_id, self.payment_data
+                    )
+            finally:
+                sc_mod.stripe_client = original
         self.assertTrue(self.mock_session.rolledback)
         self.assertEqual(self.mock_account.balance, Decimal("100.00"))
 

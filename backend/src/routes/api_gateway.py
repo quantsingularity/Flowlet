@@ -5,7 +5,7 @@ from typing import Any
 from flask import Blueprint, jsonify
 
 "\nAPI Gateway Routes for Health Check and Documentation\n"
-api_gateway_bp = Blueprint("api_gateway", __name__, url_prefix="")
+api_gateway_bp = Blueprint("api_gateway", __name__, url_prefix="/gateway")
 logger = logging.getLogger(__name__)
 
 
@@ -69,6 +69,25 @@ def api_documentation() -> Any:
                     "/v1/status": "API Gateway health check",
                 },
                 "authentication": "Bearer Token (JWT) required for most endpoints.",
+            }
+        ),
+        200,
+    )
+
+
+@api_gateway_bp.route("/metrics", methods=["GET"])
+def gateway_metrics():
+    """Gateway metrics endpoint."""
+    from flask import jsonify
+
+    return (
+        jsonify(
+            {
+                "status": "ok",
+                "request_count": 0,
+                "error_rate": 0.0,
+                "avg_response_time_ms": 0.0,
+                "uptime_seconds": 0,
             }
         ),
         200,

@@ -261,15 +261,22 @@ class BankingIntegrationManager:
         return health_status
 
     def __del__(self) -> Any:
-        """Cleanup on deletion"""
-        import asyncio
-
+        """Cleanup on deletion - safe during interpreter shutdown."""
         try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.create_task(self.close_all())
-            else:
-                loop.run_until_complete(self.close_all())
+            import sys
+
+            if sys.meta_path is None:
+                return  # Interpreter shutting down - skip cleanup
+            import asyncio
+
+            try:
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.create_task(self.close_all())
+                else:
+                    loop.run_until_complete(self.close_all())
+            except Exception:
+                pass
         except Exception:
             pass
 

@@ -7,7 +7,7 @@ import logging
 import traceback
 from collections import defaultdict
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -227,3 +227,20 @@ def track_error(
 ) -> str:
     """Convenience function to track an error"""
     return get_error_tracking_service().track_error(exception, context, **kwargs)
+
+
+class ErrorTracker(ErrorTrackingService):
+    """Alias for ErrorTrackingService with additional convenience methods."""
+
+    def log_error(
+        self,
+        exception: Exception,
+        context: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> str:
+        """Log/track an error – alias for track_error."""
+        return self.track_error(exception, context, **kwargs)
+
+    def get_error_count(self) -> int:
+        """Return total number of tracked errors."""
+        return len(self.errors)

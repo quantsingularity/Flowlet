@@ -1,235 +1,142 @@
+"""
+MVP functionality tests - self-contained pytest tests using the Flask test client.
+"""
+
 import json
-import logging
-import uuid
+import time
 from typing import Any
 
-import requests
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
-logger = logging.getLogger(__name__)
-
-"""
-Simple test script for MVP functionality
-"""
-BASE_URL = "http://localhost:5001"
+def _unique():
+    return str(int(time.time() * 1000))[-8:]
 
 
-def test_health_check() -> Any:
-    """Test the health check endpoint"""
-    try:
-        response = requests.get(f"{BASE_URL}/health")
-        logger.info(f"Health Check: {response.status_code}")
-        if response.status_code == 200:
-            logger.info(json.dumps(response.json(), indent=2))
-        return response.status_code == 200
-    except Exception as e:
-        logger.info(f"Health check failed: {e}")
-        return False
+def _register_and_login(client):
+    uid = _unique()
+    user_data = {
+        "email": f"mvp{uid}@example.com",
+        "password": "MvpPassword123!",
+        "first_name": "MVP",
+        "last_name": "Test",
+    }
+    client.post(
+        "/api/v1/auth/register",
+        data=json.dumps(user_data),
+        content_type="application/json",
+    )
+    login = client.post(
+        "/api/v1/auth/login",
+        data=json.dumps(
+            {"email": user_data["email"], "password": user_data["password"]}
+        ),
+        content_type="application/json",
+    )
+    assert login.status_code == 200
+    token = login.get_json().get("access_token")
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
+    return headers
 
 
-def test_api_info() -> Any:
-    """Test the API info endpoint"""
-    try:
-        response = requests.get(f"{BASE_URL}/api/v1/info")
-        logger.info(f"API Info: {response.status_code}")
-        if response.status_code == 200:
-            data = response.json()
-            logger.info(f"API Name: {data.get('api_name')}")
-            logger.info(f"Version: {data.get('version')}")
-            logger.info(f"MVP Features: {data.get('mvp_features')}")
-        return response.status_code == 200
-    except Exception as e:
-        logger.info(f"API info failed: {e}")
-        return False
+def _create_wallet(client, headers, initial_balance=500.0):
+    resp = client.post(
+        "/api/v1/wallet/create",
+        data=json.dumps({"currency": "USD", "initial_balance": initial_balance}),
+        headers=headers,
+    )
+    assert resp.status_code == 201
+    return resp.get_json()["wallet_id"]
 
 
-def create_test_user() -> Any:
-    """Create a test user (mock function since we don't have user creation endpoint)"""
-    return str(uuid.uuid4())
+def test_health_check(client: Any) -> None:
+    response = client.get("/health")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["status"] == "healthy"
 
 
-def test_wallet_creation(user_id: Any) -> Any:
-    """Test wallet creation"""
-    try:
-        payload = {
-            "user_id": user_id,
-            "account_name": "Test Checking Account",
-            "account_type": "checking",
-            "currency": "USD",
-            "initial_deposit": "100.00",
-        }
-        response = requests.post(
-            f"{BASE_URL}/api/v1/wallet/create",
-            json=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        logger.info(f"Wallet Creation: {response.status_code}")
-        if response.status_code == 201:
-            data = response.json()
-            logger.info(f"Created wallet: {data.get('wallet', {}).get('id')}")
-            return data.get("wallet", {}).get("id")
-        else:
-            logger.info(f"Error: {response.text}")
-            return None
-    except Exception as e:
-        logger.info(f"Wallet creation failed: {e}")
-        return None
+def test_api_info(client: Any) -> None:
+    response = client.get("/api/v1/info")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "api_name" in data
+    assert "version" in data
 
 
-def test_wallet_balance(wallet_id: Any) -> Any:
-    """Test wallet balance inquiry"""
-    try:
-        response = requests.get(f"{BASE_URL}/api/v1/wallet/{wallet_id}/balance")
-        logger.info(f"Balance Inquiry: {response.status_code}")
-        if response.status_code == 200:
-            data = response.json()
-            logger.info(f"Available Balance: ${data.get('available_balance')}")
-            logger.info(f"Current Balance: ${data.get('current_balance')}")
-        else:
-            logger.info(f"Error: {response.text}")
-        return response.status_code == 200
-    except Exception as e:
-        logger.info(f"Balance inquiry failed: {e}")
-        return False
+def test_wallet_creation(client: Any) -> None:
+    headers = _register_and_login(client)
+    wallet_id = _create_wallet(client, headers, initial_balance=0)
+    assert wallet_id
 
 
-def test_deposit(wallet_id: Any, amount: Any) -> Any:
-    """Test deposit functionality"""
-    try:
-        payload = {"amount": str(amount), "description": "Test deposit"}
-        response = requests.post(
-            f"{BASE_URL}/api/v1/wallet/{wallet_id}/deposit",
-            json=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        logger.info(f"Deposit: {response.status_code}")
-        if response.status_code == 200:
-            data = response.json()
-            logger.info(f"New balance: ${data.get('new_balance')}")
-        else:
-            logger.info(f"Error: {response.text}")
-        return response.status_code == 200
-    except Exception as e:
-        logger.info(f"Deposit failed: {e}")
-        return False
+def test_wallet_balance(client: Any) -> None:
+    headers = _register_and_login(client)
+    wallet_id = _create_wallet(client, headers, initial_balance=250.0)
+    resp = client.get(f"/api/v1/wallet/{wallet_id}/balance", headers=headers)
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "balance" in data
+    assert float(data["balance"]) == 250.0
 
 
-def test_withdrawal(wallet_id: Any, amount: Any) -> Any:
-    """Test withdrawal functionality"""
-    try:
-        payload = {"amount": str(amount), "description": "Test withdrawal"}
-        response = requests.post(
-            f"{BASE_URL}/api/v1/wallet/{wallet_id}/withdraw",
-            json=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        logger.info(f"Withdrawal: {response.status_code}")
-        if response.status_code == 200:
-            data = response.json()
-            logger.info(f"New balance: ${data.get('new_balance')}")
-        else:
-            logger.info(f"Error: {response.text}")
-        return response.status_code == 200
-    except Exception as e:
-        logger.info(f"Withdrawal failed: {e}")
-        return False
+def test_deposit(client: Any) -> None:
+    headers = _register_and_login(client)
+    wallet_id = _create_wallet(client, headers, initial_balance=100.0)
+    resp = client.post(
+        f"/api/v1/wallet/{wallet_id}/deposit",
+        data=json.dumps({"amount": 50.0, "description": "Test deposit"}),
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "transaction_id" in data
+    assert float(data["new_balance"]) == 150.0
 
 
-def test_transaction_history(wallet_id: Any) -> Any:
-    """Test transaction history"""
-    try:
-        response = requests.get(f"{BASE_URL}/api/v1/wallet/{wallet_id}/transactions")
-        logger.info(f"Transaction History: {response.status_code}")
-        if response.status_code == 200:
-            data = response.json()
-            transactions = data.get("transactions", [])
-            logger.info(f"Found {len(transactions)} transactions")
-            for tx in transactions[:3]:
-                logger.info(
-                    f"  - {tx.get('transaction_type')}: ${tx.get('amount')} - {tx.get('description')}"
-                )
-        else:
-            logger.info(f"Error: {response.text}")
-        return response.status_code == 200
-    except Exception as e:
-        logger.info(f"Transaction history failed: {e}")
-        return False
+def test_withdrawal(client: Any) -> None:
+    headers = _register_and_login(client)
+    wallet_id = _create_wallet(client, headers, initial_balance=200.0)
+    resp = client.post(
+        f"/api/v1/wallet/{wallet_id}/withdraw",
+        data=json.dumps({"amount": 75.0, "description": "Test withdrawal"}),
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "transaction_id" in data
+    assert float(data["new_balance"]) == 125.0
 
 
-def test_transfer(from_wallet_id: Any, to_wallet_id: Any, amount: Any) -> Any:
-    """Test transfer between wallets"""
-    try:
-        payload = {
-            "from_wallet_id": from_wallet_id,
-            "to_wallet_id": to_wallet_id,
-            "amount": str(amount),
-            "description": "Test transfer",
-        }
-        response = requests.post(
-            f"{BASE_URL}/api/v1/payment/transfer",
-            json=payload,
-            headers={"Content-Type": "application/json"},
-        )
-        logger.info(f"Transfer: {response.status_code}")
-        if response.status_code == 200:
-            data = response.json()
-            logger.info(f"Transfer reference: {data.get('transfer_reference')}")
-            logger.info(
-                f"From wallet new balance: ${data.get('from_wallet', {}).get('new_balance')}"
-            )
-            logger.info(
-                f"To wallet new balance: ${data.get('to_wallet', {}).get('new_balance')}"
-            )
-        else:
-            logger.info(f"Error: {response.text}")
-        return response.status_code == 200
-    except Exception as e:
-        logger.info(f"Transfer failed: {e}")
-        return False
+def test_transaction_history(client: Any) -> None:
+    headers = _register_and_login(client)
+    wallet_id = _create_wallet(client, headers, initial_balance=100.0)
+    # Make a deposit so there's at least one transaction
+    client.post(
+        f"/api/v1/wallet/{wallet_id}/deposit",
+        data=json.dumps({"amount": 25.0}),
+        headers=headers,
+    )
+    resp = client.get(f"/api/v1/wallet/{wallet_id}/transactions", headers=headers)
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "transactions" in data
 
 
-def main() -> Any:
-    """Run all tests"""
-    logger.info("=== Flowlet MVP Testing ===")
-    logger.info("1. Testing Health Check...")
-    if not test_health_check():
-        logger.info("Health check failed. Is the server running?")
-        return
-    logger.info("2. Testing API Info...")
-    test_api_info()
-    logger.info("3. Creating test users...")
-    user1_id = create_test_user()
-    user2_id = create_test_user()
-    logger.info(f"User 1 ID: {user1_id}")
-    logger.info(f"User 2 ID: {user2_id}")
-    logger.info("4. Testing Wallet Creation...")
-    wallet1_id = test_wallet_creation(user1_id)
-    wallet2_id = test_wallet_creation(user2_id)
-    if not wallet1_id or not wallet2_id:
-        logger.info("Wallet creation failed. Cannot continue with tests.")
-        return
-    logger.info("5. Testing Balance Inquiry...")
-    test_wallet_balance(wallet1_id)
-    test_wallet_balance(wallet2_id)
-    logger.info("6. Testing Deposit...")
-    test_deposit(wallet1_id, 50.0)
-    test_wallet_balance(wallet1_id)
-    logger.info("7. Testing Withdrawal...")
-    test_withdrawal(wallet1_id, 25.0)
-    test_wallet_balance(wallet1_id)
-    logger.info("8. Testing Transfer...")
-    test_transfer(wallet1_id, wallet2_id, 30.0)
-    logger.info("Balances after transfer:")
-    test_wallet_balance(wallet1_id)
-    test_wallet_balance(wallet2_id)
-    logger.info("9. Testing Transaction History...")
-    test_transaction_history(wallet1_id)
-    test_transaction_history(wallet2_id)
-    logger.info("=== Testing Complete ===")
-
-
-if __name__ == "__main__":
-    main()
+def test_transfer(client: Any) -> None:
+    headers = _register_and_login(client)
+    sender_id = _create_wallet(client, headers, initial_balance=300.0)
+    receiver_id = _create_wallet(client, headers, initial_balance=100.0)
+    resp = client.post(
+        f"/api/v1/payment/{sender_id}/send",
+        data=json.dumps(
+            {
+                "amount": 50.0,
+                "recipient_wallet_id": receiver_id,
+                "description": "Test transfer",
+            }
+        ),
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "transaction_id" in data
+    assert float(data["amount"]) == 50.0

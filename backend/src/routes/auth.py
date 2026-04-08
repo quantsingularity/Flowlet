@@ -185,11 +185,11 @@ def register() -> Any:
                 ),
                 400,
             )
-        is_valid, message = InputValidator.validate_email(data["email"])
+        is_valid, message = InputValidator._validate_email_compat(data["email"])
         if not is_valid:
             return (jsonify({"error": message, "code": "INVALID_EMAIL"}), 400)
         data["email"] = message
-        is_valid, message = InputValidator.validate_password(data["password"])
+        is_valid, message = InputValidator._validate_password_compat(data["password"])
         if not is_valid:
             return (jsonify({"error": message, "code": "WEAK_PASSWORD"}), 400)
         existing_user = db.session.execute(
@@ -793,7 +793,7 @@ def change_password() -> Any:
                 ),
                 401,
             )
-        is_valid, message = InputValidator.validate_password(new_password)
+        is_valid, message = InputValidator._validate_password_compat(new_password)
         if not is_valid:
             return (jsonify({"error": message, "code": "WEAK_PASSWORD"}), 400)
         if check_password(user.password_hash, new_password):
@@ -917,7 +917,7 @@ def confirm_password_reset() -> Any:
                     ),
                     401,
                 )
-            is_valid, message = InputValidator.validate_password(new_password)
+            is_valid, message = InputValidator._validate_password_compat(new_password)
             if not is_valid:
                 return (jsonify({"error": message, "code": "WEAK_PASSWORD"}), 400)
             user.password_hash = hash_password(new_password)

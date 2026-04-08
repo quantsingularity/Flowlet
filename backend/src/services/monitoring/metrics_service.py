@@ -7,7 +7,7 @@ import logging
 import time
 from collections import defaultdict
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from threading import Lock
 from typing import Any, Dict, List, Optional
 
@@ -197,6 +197,43 @@ class MetricsService:
                 name: self.get_histogram_stats(name) for name in self.histograms.keys()
             },
         }
+
+    def increment_counter(
+        self,
+        metric_name: str,
+        value: float = 1.0,
+        tags: Optional[Dict[str, str]] = None,
+    ) -> None:
+        """Alias for increment – increment a counter metric."""
+        self.increment(metric_name, value, tags)
+
+    def record_histogram(
+        self,
+        metric_name: str,
+        value: float,
+        tags: Optional[Dict[str, str]] = None,
+    ) -> None:
+        """Alias for histogram – record a histogram value."""
+        self.histogram(metric_name, value, tags)
+
+    def set_gauge(
+        self,
+        metric_name: str,
+        value: float,
+        tags: Optional[Dict[str, str]] = None,
+    ) -> None:
+        """Alias for gauge – set a gauge metric."""
+        self.gauge(metric_name, value, tags)
+
+    def get_metrics(self) -> Dict[str, Any]:
+        """Return a flat dict of all metric names to their latest values."""
+        with self.lock:
+            result: Dict[str, Any] = {}
+            result.update(self.counters)
+            result.update(self.gauges)
+            for name, values in self.histograms.items():
+                result[name] = self.get_histogram_stats(name)
+            return result
 
     def reset(self) -> None:
         """Reset all metrics"""

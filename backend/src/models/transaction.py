@@ -71,7 +71,11 @@ class Transaction(Base):
     account_id = Column(String(36), ForeignKey("accounts.id"), nullable=False)
     card_id = Column(String(36), ForeignKey("cards.id"), nullable=True)
     user = relationship("User", backref="transactions")
-    account = relationship("Account", back_populates="transactions")
+    account = relationship(
+        "Account",
+        back_populates="transactions",
+        foreign_keys=[account_id],
+    )
     card = relationship("Card", back_populates="transactions")
     transaction_id = Column(String(50), unique=True, nullable=False, index=True)
     reference_number = Column(String(100), index=True)

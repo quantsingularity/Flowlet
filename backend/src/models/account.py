@@ -49,7 +49,12 @@ class Account(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
     user = relationship("User", back_populates="wallets")
-    transactions = relationship("Transaction", back_populates="account", lazy="dynamic")
+    transactions = relationship(
+        "Transaction",
+        back_populates="account",
+        lazy="dynamic",
+        foreign_keys="Transaction.account_id",
+    )
     cards = relationship("Card", back_populates="account", lazy="dynamic")
     account_name = Column(String(100), nullable=False)
     account_number = Column(String(20), unique=True, nullable=False, index=True)
@@ -115,6 +120,13 @@ class Account(Base):
         super().__init__(**kwargs)
         if not self.account_number:
             self.account_number = self.generate_account_number()
+        # Ensure numeric fields are never None after construction
+        if self.balance is None:
+            self.balance = Decimal("0.00000000")
+        if self.available_balance is None:
+            self.available_balance = Decimal("0.00000000")
+        if self.pending_balance is None:
+            self.pending_balance = Decimal("0.00000000")
 
     @staticmethod
     def generate_account_number() -> Any:

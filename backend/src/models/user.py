@@ -104,6 +104,7 @@ class User(Base):
     wallets = relationship(
         "Account", back_populates="user", cascade="all, delete-orphan"
     )
+    cards = relationship("Card", back_populates="user", cascade="all, delete-orphan")
     kyc_records = relationship(
         "KYCRecord", back_populates="user", cascade="all, delete-orphan"
     )

@@ -229,3 +229,55 @@ class OpenBankingBase(ABC):
         """
         Initiate payment using Open Banking PIS
         """
+
+
+from .fdx_integration import FDXIntegration
+from .manager import BankingIntegrationManager, IntegrationType
+from .open_banking_integration import OpenBankingIntegration
+from .plaid_integration import PlaidIntegration
+
+__all__ = [
+    "BankAccount",
+    "Transaction",
+    "TransactionType",
+    "TransactionStatus",
+    "PaymentRequest",
+    "BankingIntegrationBase",
+    "BankingIntegrationError",
+    "AuthenticationError",
+    "InsufficientFundsError",
+    "InvalidAccountError",
+    "TransactionLimitError",
+    "PlaidIntegration",
+    "FDXIntegration",
+    "OpenBankingIntegration",
+    "BankingIntegrationManager",
+    "IntegrationType",
+]
+
+
+class ConcreteBankingBase(BankingIntegrationBase):
+    """Concrete implementation of BankingIntegrationBase for testing."""
+
+    async def authenticate(self) -> bool:
+        return True
+
+    async def get_accounts(self, customer_id: str):
+        return []
+
+    async def get_account_balance(self, account_id: str):
+        return {"balance": 0.0, "available_balance": 0.0}
+
+    async def get_transactions(
+        self, account_id, start_date=None, end_date=None, limit=None
+    ):
+        return []
+
+    async def initiate_payment(self, payment_request) -> str:
+        return self.generate_reference_id()
+
+    async def get_payment_status(self, transaction_id: str):
+        return TransactionStatus.COMPLETED
+
+    async def cancel_payment(self, transaction_id: str) -> bool:
+        return True

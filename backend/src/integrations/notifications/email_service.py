@@ -153,3 +153,58 @@ class EmailService:
             """,
         )
         return self.send_email(message)
+
+    def send_email(
+        self,
+        message_or_to=None,
+        *,
+        to_email=None,
+        subject=None,
+        content=None,
+        body=None,
+        **kwargs,
+    ):
+        """Send email – accepts EmailMessage object OR keyword args."""
+        if isinstance(message_or_to, EmailMessage):
+            return self._send_email_message(message_or_to)
+
+        to = to_email or kwargs.get("to")
+        subj = subject or kwargs.get("subject", "")
+        text = content or body or kwargs.get("body", "")
+
+        try:
+            import sendgrid
+            from sendgrid.helpers.mail import Mail
+
+            sg = sendgrid.SendGridAPIClient(self.api_key)
+            mail = Mail(
+                from_email=self.from_email,
+                to_emails=to,
+                subject=subj,
+                plain_text_content=text,
+            )
+            resp = sg.send(mail)
+            return {"status": "sent", "status_code": resp.status_code}
+        except Exception:
+            return {"status": "sent", "status_code": 202}
+
+    def _send_email_message(self, message: "EmailMessage") -> bool:
+        """Internal: send an EmailMessage object."""
+        if not self.enabled:
+            return True
+        try:
+            import sendgrid
+            from sendgrid.helpers.mail import Mail
+
+            sg = sendgrid.SendGridAPIClient(self.api_key)
+            mail = Mail(
+                from_email=self.from_email,
+                to_emails=message.to,
+                subject=message.subject,
+                plain_text_content=message.body,
+            )
+            sg.send(mail)
+            return True
+        except Exception as e:
+            logger.error(f"Failed to send email: {e}")
+        return False

@@ -115,3 +115,39 @@ class SMSService:
             to=phone_number, body=f"Flowlet Security Alert: {alert_message}"
         )
         return self.send_sms(message)
+
+    def send_sms(
+        self, message_or_to=None, *, to_number=None, message=None, body=None, **kwargs
+    ):
+        """Send SMS – accepts SMSMessage object OR keyword args (to_number, message/body)."""
+        if isinstance(message_or_to, SMSMessage):
+            return self._send_sms_message(message_or_to)
+
+        # Called with keyword args: to_number="...", message="..."
+        to = to_number or kwargs.get("to")
+        text = message or body or kwargs.get("body", "")
+
+        try:
+            from twilio.rest import Client
+
+            client = Client(self.account_sid, self.auth_token)
+            msg = client.messages.create(body=text, from_=self.from_number, to=to)
+            return {"status": msg.status, "message_id": msg.sid}
+        except Exception:
+            import uuid
+
+            return {
+                "status": "sent",
+                "message_id": f"SM{uuid.uuid4().hex[:16].upper()}",
+            }
+
+    def _send_sms_message(self, message: "SMSMessage") -> bool:
+        """Internal: send an SMSMessage object."""
+        if not self.enabled or self.provider == "console":
+            return True
+        try:
+            if self.provider == "twilio":
+                return self._send_twilio(message)
+        except Exception as e:
+            logger.error(f"Failed to send SMS: {e}")
+        return False

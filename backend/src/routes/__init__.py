@@ -17,6 +17,7 @@ from .payment import payment_bp
 from .security import security_bp
 from .user import user_bp
 from .wallet import wallet_bp
+from .wallet_compat import wallet_compat_bp
 
 # The main API blueprint for version 1
 api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
@@ -26,6 +27,7 @@ api_bp = Blueprint("api", __name__, url_prefix="/api/v1")
 api_bp.register_blueprint(user_bp)
 api_bp.register_blueprint(auth_bp)
 api_bp.register_blueprint(wallet_bp)
+api_bp.register_blueprint(wallet_compat_bp)
 api_bp.register_blueprint(payment_bp)
 api_bp.register_blueprint(ledger_bp)
 api_bp.register_blueprint(analytics_bp)
@@ -40,3 +42,19 @@ api_bp.register_blueprint(security_bp)
 api_bp.register_blueprint(ai_service_bp)
 api_bp.register_blueprint(banking_integrations_bp)
 api_bp.register_blueprint(api_gateway_bp)
+
+
+# Alias blueprint: /payment/* → delegates to payment_bp handlers
+from flask import Blueprint as _BP
+
+from .payment import send_p2p_payment as _send_p2p
+
+payment_alias_bp = _BP("payment_alias", __name__, url_prefix="/payment")
+
+
+@payment_alias_bp.route("/<wallet_id>/send", methods=["POST"])
+def _payment_alias_send(wallet_id):
+    return _send_p2p(wallet_id)
+
+
+api_bp.register_blueprint(payment_alias_bp)

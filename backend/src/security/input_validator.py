@@ -837,3 +837,39 @@ class InputValidator:
 
 
 input_validator = InputValidator()
+
+
+# ---------------------------------------------------------------------------
+# Backward-compatibility helpers used by auth.py (old tuple-returning API)
+# ---------------------------------------------------------------------------
+
+
+def _compat_validate_email(email: str):
+    """Return (True, normalized_email) or (False, error_message)."""
+    try:
+        result = InputValidator.validate_email(email)
+        return True, result
+    except (ValidationError, Exception) as exc:
+        return False, str(exc)
+
+
+def _compat_validate_password(password: str):
+    """Return (True, password) or (False, error_message) with basic complexity rules."""
+    import re
+
+    if not password or len(password) < 8:
+        return False, "Password must be at least 8 characters long"
+    if not re.search(r"[A-Z]", password):
+        return False, "Password must contain at least one uppercase letter"
+    if not re.search(r"[a-z]", password):
+        return False, "Password must contain at least one lowercase letter"
+    if not re.search(r"\d", password):
+        return False, "Password must contain at least one digit"
+    if not re.search(r"[!@#$%^&*()_+\-=\[\]{};':\"\\|,.<>/?]", password):
+        return False, "Password must contain at least one special character"
+    return True, password
+
+
+# Patch the class so existing callers work with either the old tuple API or new string API
+InputValidator._validate_email_compat = staticmethod(_compat_validate_email)
+InputValidator._validate_password_compat = staticmethod(_compat_validate_password)

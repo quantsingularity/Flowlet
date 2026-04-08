@@ -83,8 +83,9 @@ def create_app(config_name: str = None) -> Any:
         """API info endpoint."""
         resp = jsonify(
             {
-                "api_name": "Flowlet Financial Backend",
-                "version": "v1.0.0",
+                "api_name": "Flowlet Financial Backend - Enhanced MVP",
+                "version": "2.0.0",
+                "api_version": "2.0.0",
                 "endpoints": [
                     "/api/v1/auth",
                     "/api/v1/users",
@@ -104,6 +105,46 @@ def create_app(config_name: str = None) -> Any:
                     "AML Monitoring",
                     "Fraud Detection",
                 ],
+                "supported_currencies": ["USD", "EUR", "GBP", "JPY", "CAD", "AUD"],
+            }
+        )
+        resp.headers["X-Content-Type-Options"] = "nosniff"
+        resp.headers["X-Frame-Options"] = "DENY"
+        resp.headers["X-XSS-Protection"] = "1; mode=block"
+        resp.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+        resp.headers["Content-Security-Policy"] = "default-src 'self'"
+        return resp
+
+    @app.route("/api/v1/docs")
+    def api_docs() -> Any:
+        """API documentation endpoint."""
+        return jsonify(
+            {
+                "api_name": "Flowlet Financial Backend - Enhanced MVP",
+                "api_version": "2.0.0",
+                "endpoints": [
+                    "/api/v1/auth",
+                    "/api/v1/users",
+                    "/api/v1/wallet",
+                    "/api/v1/payments",
+                    "/api/v1/card",
+                    "/api/v1/transactions",
+                    "/api/v1/analytics",
+                    "/api/v1/compliance",
+                    "/api/v1/fraud",
+                    "/api/v1/kyc",
+                    "/api/v1/currency",
+                ],
+                "security_features": [
+                    "JWT Authentication",
+                    "Rate Limiting",
+                    "Input Validation",
+                    "AML Monitoring",
+                    "Fraud Detection",
+                ],
+                "supported_currencies": ["USD", "EUR", "GBP", "JPY", "CAD", "AUD"],
             }
         )
         resp.headers["X-Content-Type-Options"] = "nosniff"

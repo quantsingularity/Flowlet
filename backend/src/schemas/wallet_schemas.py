@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, field_validator
 class DepositFundsRequest(BaseModel):
     """Schema for depositing funds into an account"""
 
-    account_id: str = Field(..., description="Account ID to deposit into")
+    account_id: Optional[str] = Field(None, description="Account ID to deposit into")
     amount: Decimal = Field(..., gt=0, description="Deposit amount")
     currency: str = Field(default="USD", min_length=3, max_length=3)
     source: Optional[str] = Field(
@@ -29,7 +29,7 @@ class DepositFundsRequest(BaseModel):
 class WithdrawFundsRequest(BaseModel):
     """Schema for withdrawing funds from an account"""
 
-    account_id: str = Field(..., description="Account ID to withdraw from")
+    account_id: Optional[str] = Field(None, description="Account ID to withdraw from")
     amount: Decimal = Field(..., gt=0, description="Withdrawal amount")
     currency: str = Field(default="USD", min_length=3, max_length=3)
     destination: Optional[str] = Field(

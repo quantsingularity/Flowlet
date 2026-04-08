@@ -173,15 +173,18 @@ def convert_funds() -> Any:
             amount, from_currency, to_currency
         )
         converted_amount = Decimal(str(conversion_result["converted_amount"]))
-        fee = Decimal(str(conversion_result["conversion_fee"]))
+        Decimal(str(conversion_result["conversion_fee"]))
         to_account_stmt = select(Account).filter_by(
             user_id=g.current_user.id, currency=to_currency
         )
         to_account = db.session.execute(to_account_stmt).scalar_one_or_none()
         if not to_account:
+            from ..models.account import AccountType
+
             to_account = Account(
                 user_id=g.current_user.id,
-                account_type="currency_exchange",
+                account_name=f"{to_currency} Exchange Wallet",
+                account_type=AccountType.SAVINGS,
                 currency=to_currency,
                 balance=Decimal("0.00"),
                 available_balance=Decimal("0.00"),
@@ -192,16 +195,23 @@ def convert_funds() -> Any:
         from_account.available_balance -= amount
         to_account.balance += converted_amount
         to_account.available_balance += converted_amount
+        from ..models.transaction import (
+            TransactionCategory,
+            TransactionStatus,
+            TransactionType,
+        )
+
         db.session.add(
             Transaction(
                 account_id=from_account.id,
                 user_id=g.current_user.id,
                 amount=amount,
                 currency=from_currency,
-                transaction_type="DEBIT",
-                status="COMPLETED",
+                transaction_type=TransactionType.DEBIT,
+                transaction_category=TransactionCategory.TRANSFER,
+                status=TransactionStatus.COMPLETED,
                 description=f"Currency conversion: {from_currency} to {to_currency}",
-                fees=fee,
+                channel="api",
             )
         )
         db.session.add(
@@ -210,10 +220,11 @@ def convert_funds() -> Any:
                 user_id=g.current_user.id,
                 amount=converted_amount,
                 currency=to_currency,
-                transaction_type="CREDIT",
-                status="COMPLETED",
+                transaction_type=TransactionType.CREDIT,
+                transaction_category=TransactionCategory.TRANSFER,
+                status=TransactionStatus.COMPLETED,
                 description=f"Currency conversion: {from_currency} to {to_currency}",
-                fees=Decimal("0.00"),
+                channel="api",
             )
         )
         db.session.commit()

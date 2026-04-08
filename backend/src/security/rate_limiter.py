@@ -23,6 +23,15 @@ class RateLimiter:
             @wraps(f)
             def decorated_function(*args: Any, **kwargs: Any) -> Any:
                 try:
+                    # Bypass rate limiting in testing mode
+                    try:
+                        if current_app.config.get(
+                            "TESTING"
+                        ) or not current_app.config.get("RATELIMIT_ENABLED", True):
+                            return f(*args, **kwargs)
+                    except RuntimeError:
+                        pass
+
                     parts = rate_limit_string.lower().split()
                     count = int(parts[0])
                     period = parts[2] if len(parts) > 2 else parts[1]

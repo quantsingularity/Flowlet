@@ -102,3 +102,96 @@ def get_transaction_details_route(transaction_id: Any) -> Any:
         return handle_wallet_service_error(e)
     except Exception as e:
         return handle_generic_exception(e)
+
+
+@payment_bp.route("/<wallet_id>/send", methods=["POST"])
+@token_required
+def send_p2p_payment(wallet_id: str) -> Any:
+    """Send a peer-to-peer payment from a wallet."""
+    from ..models.account import Account
+
+    data = request.get_json() or {}
+    recipient_wallet_id = data.get("recipient_wallet_id")
+    if not recipient_wallet_id:
+        return jsonify({"error": "recipient_wallet_id is required"}), 400
+
+    try:
+        from decimal import Decimal
+
+        amount = Decimal(str(data.get("amount", 0)))
+    except Exception:
+        return jsonify({"error": "Invalid amount"}), 400
+
+    if amount <= 0:
+        return jsonify({"error": "Amount must be positive"}), 400
+
+    sender = db.session.get(Account, wallet_id)
+    if not sender:
+        return jsonify({"error": "Sender wallet not found"}), 404
+    if sender.user_id != g.current_user.id and not g.current_user.is_admin:
+        return jsonify({"error": "Access denied"}), 403
+
+    recipient = db.session.get(Account, recipient_wallet_id)
+    if not recipient:
+        return jsonify({"error": "Recipient wallet not found"}), 404
+
+    if sender.balance < amount:
+        return jsonify({"error": "Insufficient funds"}), 400
+
+    import uuid
+
+    from ..models.transaction import (
+        Transaction,
+        TransactionCategory,
+        TransactionStatus,
+        TransactionType,
+    )
+
+    ref = f"P2P-{uuid.uuid4().hex[:12].upper()}"
+    desc = data.get("description", "P2P Payment")
+
+    sender.debit(amount)
+    recipient.credit(amount)
+
+    debit_txn = Transaction(
+        user_id=sender.user_id,
+        account_id=sender.id,
+        transaction_type=TransactionType.DEBIT,
+        transaction_category=TransactionCategory.PAYMENT,
+        status=TransactionStatus.COMPLETED,
+        amount=amount,
+        currency=sender.currency,
+        description=f"{desc} (Outgoing)",
+        reference_number=ref,
+        channel="api",
+        related_account_id=recipient.id,
+    )
+    credit_txn = Transaction(
+        user_id=recipient.user_id,
+        account_id=recipient.id,
+        transaction_type=TransactionType.CREDIT,
+        transaction_category=TransactionCategory.PAYMENT,
+        status=TransactionStatus.COMPLETED,
+        amount=amount,
+        currency=recipient.currency,
+        description=f"{desc} (Incoming)",
+        reference_number=ref,
+        channel="api",
+        related_account_id=sender.id,
+    )
+    db.session.add_all([debit_txn, credit_txn])
+    db.session.commit()
+
+    return (
+        jsonify(
+            {
+                "transaction_id": debit_txn.id,
+                "amount": float(amount),
+                "currency": sender.currency,
+                "status": "completed",
+                "reference": ref,
+                "sender_new_balance": float(sender.balance),
+            }
+        ),
+        200,
+    )

@@ -5,7 +5,7 @@ Screens individuals and entities against sanctions lists
 
 import logging
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
@@ -61,7 +61,9 @@ class SanctionsScreeningService:
         self.mock_sanctions_list = [
             "John Doe",  # Fake entries for testing
             "Jane Smith",
+            "John Smith",
             "ACME Corporation",
+            "Suspicious Entity",
         ]
 
         logger.info(
@@ -79,15 +81,6 @@ class SanctionsScreeningService:
         """
         Screen an individual against sanctions lists
 
-        Args:
-            first_name: First name
-            last_name: Last name
-            date_of_birth: Date of birth (YYYY-MM-DD)
-            nationality: Nationality code
-            lists: Specific lists to check (checks all if None)
-
-        Returns:
-            Dict containing screening results
         """
         if not self.enabled:
             return {
@@ -133,12 +126,16 @@ class SanctionsScreeningService:
 
             self.screening_history.append(record)
 
+            status = "potential_match" if matches else "clear"
+            risk_score = 0.85 if matches else 0.1
             return {
                 "screening_id": screening_id,
                 "result": result.value,
+                "status": status,
                 "matches": matches,
                 "lists_checked": [lst.value for lst in lists_to_check],
                 "timestamp": record.timestamp,
+                "risk_score": risk_score,
             }
         else:
             # Real screening would connect to actual API services
@@ -149,23 +146,29 @@ class SanctionsScreeningService:
 
     def screen_entity(
         self,
-        entity_name: str,
+        entity_name_or_data,
         jurisdiction: Optional[str] = None,
         entity_type: Optional[str] = None,
         lists: Optional[List[SanctionsListType]] = None,
     ) -> Dict[str, Any]:
         """
-        Screen an entity/organization against sanctions lists
-
-        Args:
-            entity_name: Name of the entity
-            jurisdiction: Jurisdiction/country
-            entity_type: Type of entity (company, ngo, etc.)
-            lists: Specific lists to check
-
-        Returns:
-            Dict containing screening results
+        Screen an entity/organization against sanctions lists.
+        Accepts either a plain name string or a dict with entity fields.
         """
+        if isinstance(entity_name_or_data, dict):
+            d = entity_name_or_data
+            parts = [
+                d.get("first_name", ""),
+                d.get("last_name", ""),
+                d.get("entity_name", ""),
+                d.get("name", ""),
+            ]
+            entity_name = " ".join(p for p in parts if p).strip() or "Unknown"
+            jurisdiction = jurisdiction or d.get("nationality") or d.get("country")
+            entity_type = entity_type or d.get("type") or d.get("entity_type")
+        else:
+            entity_name = entity_name_or_data
+
         if not self.enabled:
             return {
                 "result": ScreeningResult.CLEAR.value,
@@ -207,12 +210,16 @@ class SanctionsScreeningService:
 
             self.screening_history.append(record)
 
+            status = "potential_match" if matches else "clear"
+            risk_score = 0.85 if matches else 0.1
             return {
                 "screening_id": screening_id,
                 "result": result.value,
+                "status": status,
                 "matches": matches,
                 "lists_checked": [lst.value for lst in lists_to_check],
                 "timestamp": record.timestamp,
+                "risk_score": risk_score,
             }
         else:
             raise NotImplementedError(
