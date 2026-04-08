@@ -8,6 +8,7 @@ from src.fraud_detection.service import FraudDetectionService
 from src.integrations.banking.fdx_integration import FDXIntegration
 from src.integrations.banking.open_banking_integration import OpenBankingIntegration
 from src.integrations.banking.plaid_integration import PlaidIntegration
+from src.services.cache.redis_service import RedisService
 from src.services.compliance.sanctions_screening import SanctionsScreeningService
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
@@ -383,7 +384,6 @@ class TestCacheIntegration:
         mock_redis_client.get.return_value = None
         mock_redis_client.set.return_value = True
         mock_redis_client.delete.return_value = 1
-        from src.services.cache.redis_service import RedisService
 
         cache_service = RedisService()
         result = cache_service.set("test_key", "test_value", ttl=300)
