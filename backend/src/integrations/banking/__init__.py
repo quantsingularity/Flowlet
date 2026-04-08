@@ -1,3 +1,8 @@
+"""
+Banking Integration Base Classes
+Provides abstract base classes for third-party banking integrations
+"""
+
 import logging
 import uuid
 from abc import ABC, abstractmethod
@@ -6,13 +11,13 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-"\nBanking Integration Base Classes\nProvides abstract base classes for third-party banking integrations\n"
 logger = logging.getLogger(__name__)
 
 
+# -----------------------------
+# ENUMS
+# -----------------------------
 class TransactionType(Enum):
-    """Transaction types for banking operations"""
-
     CREDIT = "credit"
     DEBIT = "debit"
     TRANSFER = "transfer"
@@ -21,8 +26,6 @@ class TransactionType(Enum):
 
 
 class TransactionStatus(Enum):
-    """Transaction status enumeration"""
-
     PENDING = "pending"
     COMPLETED = "completed"
     FAILED = "failed"
@@ -30,10 +33,11 @@ class TransactionStatus(Enum):
     PROCESSING = "processing"
 
 
+# -----------------------------
+# DATA CLASSES
+# -----------------------------
 @dataclass
 class BankAccount:
-    """Bank account data structure"""
-
     account_id: str
     account_number: str
     routing_number: str
@@ -49,8 +53,6 @@ class BankAccount:
 
 @dataclass
 class Transaction:
-    """Transaction data structure"""
-
     transaction_id: str
     account_id: str
     amount: float
@@ -69,8 +71,6 @@ class Transaction:
 
 @dataclass
 class PaymentRequest:
-    """Payment request data structure"""
-
     amount: float
     currency: str
     from_account: str
@@ -81,6 +81,9 @@ class PaymentRequest:
     metadata: Optional[Dict[str, Any]] = None
 
 
+# -----------------------------
+# EXCEPTIONS
+# -----------------------------
 class BankingIntegrationError(Exception):
     """Base exception for banking integration errors"""
 
@@ -101,6 +104,9 @@ class TransactionLimitError(BankingIntegrationError):
     """Transaction limit exceeded error"""
 
 
+# -----------------------------
+# ABSTRACT BASE CLASSES
+# -----------------------------
 class BankingIntegrationBase(ABC):
     """
     Abstract base class for banking integrations
@@ -114,23 +120,15 @@ class BankingIntegrationBase(ABC):
 
     @abstractmethod
     async def authenticate(self) -> bool:
-        """
-        Authenticate with the banking service
-        Returns True if authentication successful
-        """
+        """Authenticate with the banking service"""
 
     @abstractmethod
     async def get_accounts(self, customer_id: str) -> List[BankAccount]:
-        """
-        Retrieve list of accounts for a customer
-        """
+        """Retrieve list of accounts for a customer"""
 
     @abstractmethod
     async def get_account_balance(self, account_id: str) -> Dict[str, float]:
-        """
-        Get account balance information
-        Returns dict with 'balance' and 'available_balance'
-        """
+        """Get account balance information"""
 
     @abstractmethod
     async def get_transactions(
@@ -140,29 +138,19 @@ class BankingIntegrationBase(ABC):
         end_date: Optional[datetime] = None,
         limit: Optional[int] = None,
     ) -> List[Transaction]:
-        """
-        Retrieve transaction history for an account
-        """
+        """Retrieve transaction history for an account"""
 
     @abstractmethod
     async def initiate_payment(self, payment_request: PaymentRequest) -> str:
-        """
-        Initiate a payment transaction
-        Returns transaction ID
-        """
+        """Initiate a payment transaction"""
 
     @abstractmethod
     async def get_payment_status(self, transaction_id: str) -> TransactionStatus:
-        """
-        Get status of a payment transaction
-        """
+        """Get status of a payment transaction"""
 
     @abstractmethod
     async def cancel_payment(self, transaction_id: str) -> bool:
-        """
-        Cancel a pending payment
-        Returns True if cancellation successful
-        """
+        """Cancel a pending payment"""
 
     def generate_reference_id(self) -> str:
         """Generate a unique reference ID for transactions"""
@@ -189,23 +177,15 @@ class PSD2ComplianceBase(ABC):
 
     @abstractmethod
     async def initiate_sca(self, customer_id: str, transaction_data: Dict) -> str:
-        """
-        Initiate Strong Customer Authentication
-        Returns SCA session ID
-        """
+        """Initiate Strong Customer Authentication"""
 
     @abstractmethod
     async def verify_sca(self, sca_session_id: str, auth_code: str) -> bool:
-        """
-        Verify SCA authentication code
-        """
+        """Verify SCA authentication code"""
 
     @abstractmethod
     async def get_consent(self, customer_id: str, scope: List[str]) -> str:
-        """
-        Get customer consent for data access
-        Returns consent ID
-        """
+        """Get customer consent for data access"""
 
 
 class OpenBankingBase(ABC):
@@ -218,24 +198,26 @@ class OpenBankingBase(ABC):
     async def get_account_information(
         self, consent_id: str, account_id: str
     ) -> Dict[str, Any]:
-        """
-        Get account information using Open Banking AIS
-        """
+        """Get account information using Open Banking AIS"""
 
     @abstractmethod
     async def initiate_payment_pis(
         self, consent_id: str, payment_request: PaymentRequest
     ) -> str:
-        """
-        Initiate payment using Open Banking PIS
-        """
+        """Initiate payment using Open Banking PIS"""
 
 
+# -----------------------------
+# IMPORTS FOR CONCRETE INTEGRATIONS
+# -----------------------------
 from .fdx_integration import FDXIntegration
 from .manager import BankingIntegrationManager, IntegrationType
 from .open_banking_integration import OpenBankingIntegration
 from .plaid_integration import PlaidIntegration
 
+# -----------------------------
+# PUBLIC API
+# -----------------------------
 __all__ = [
     "BankAccount",
     "Transaction",
@@ -256,6 +238,9 @@ __all__ = [
 ]
 
 
+# -----------------------------
+# OPTIONAL: Concrete class for testing
+# -----------------------------
 class ConcreteBankingBase(BankingIntegrationBase):
     """Concrete implementation of BankingIntegrationBase for testing."""
 

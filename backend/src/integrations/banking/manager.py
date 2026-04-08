@@ -6,13 +6,13 @@ from . import (
     BankAccount,
     BankingIntegrationBase,
     BankingIntegrationError,
-    FDXIntegration,
-    OpenBankingIntegration,
     PaymentRequest,
-    PlaidIntegration,
     Transaction,
     TransactionStatus,
 )
+from .fdx_integration import FDXIntegration
+from .open_banking_integration import OpenBankingIntegration
+from .plaid_integration import PlaidIntegration
 
 logger = logging.getLogger(__name__)
 
