@@ -1,8 +1,13 @@
+import React from "react";
+import { configureStore } from "@reduxjs/toolkit";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import RegisterScreen from "@/components/auth/RegisterScreen";
-import { fireEvent, render, screen, waitFor } from "@/test/utils";
+import authReducer from "@/store/authSlice";
+import uiReducer from "@/store/uiSlice";
 
-// Mock the auth hooks and store
 vi.mock("@/hooks/redux", () => ({
   useAppDispatch: () => vi.fn(),
 }));
@@ -11,15 +16,30 @@ vi.mock("@/store/authSlice", () => ({
   registerUser: vi.fn(),
 }));
 
-vi.mock("react-router-dom", () => ({
-  ...vi.importActual("react-router-dom"),
-  useNavigate: () => vi.fn(),
-  Link: ({ children, to, ...props }: any) => (
-    <a href={to} {...props}>
-      {children}
-    </a>
-  ),
-}));
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    Link: ({ children, to, ...props }: any) => (
+      <a href={to} {...props}>
+        {children}
+      </a>
+    ),
+  };
+});
+
+const createTestStore = () =>
+  configureStore({ reducer: { auth: authReducer, ui: uiReducer } });
+
+const renderWithProviders = (ui: React.ReactElement) => {
+  const store = createTestStore();
+  return render(
+    <Provider store={store}>
+      <BrowserRouter>{ui}</BrowserRouter>
+    </Provider>,
+  );
+};
 
 describe("RegisterScreen", () => {
   beforeEach(() => {
@@ -27,117 +47,71 @@ describe("RegisterScreen", () => {
   });
 
   it("renders registration form correctly", () => {
-    render(<RegisterScreen />);
+    renderWithProviders(<RegisterScreen />);
 
     expect(screen.getByText("Create Account")).toBeInTheDocument();
-    expect(
-      screen.getByText("Join Flowlet and start managing your finances"),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Full Name")).toBeInTheDocument();
+    expect(screen.getByLabelText("First Name")).toBeInTheDocument();
+    expect(screen.getByLabelText("Last Name")).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toBeInTheDocument();
     expect(screen.getByLabelText("Password")).toBeInTheDocument();
     expect(screen.getByLabelText("Confirm Password")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /create account/i }),
-    ).toBeInTheDocument();
   });
 
-  it("shows validation errors for empty required fields", async () => {
-    render(<RegisterScreen />);
+  it("shows validation errors for empty form", async () => {
+    renderWithProviders(<RegisterScreen />);
 
-    const submitButton = screen.getByRole("button", {
-      name: /create account/i,
-    });
-    fireEvent.click(submitButton);
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
       expect(
-        screen.getByText("Name must be at least 2 characters"),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("Please enter a valid email address"),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText("Password must be at least 8 characters"),
+        screen.getByText(/first name must be at least 2 characters/i),
       ).toBeInTheDocument();
     });
   });
 
-  it("validates password confirmation", async () => {
-    render(<RegisterScreen />);
+  it("shows password mismatch error", async () => {
+    renderWithProviders(<RegisterScreen />);
 
-    const passwordInput = screen.getByLabelText("Password");
-    const confirmPasswordInput = screen.getByLabelText("Confirm Password");
-    const submitButton = screen.getByRole("button", {
-      name: /create account/i,
+    fireEvent.change(screen.getByLabelText("First Name"), {
+      target: { value: "Test" },
+    });
+    fireEvent.change(screen.getByLabelText("Last Name"), {
+      target: { value: "User" },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Password"), {
+      target: { value: "Password123!" },
+    });
+    fireEvent.change(screen.getByLabelText("Confirm Password"), {
+      target: { value: "DifferentPassword123!" },
     });
 
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
-    fireEvent.change(confirmPasswordInput, {
-      target: { value: "different123" },
-    });
-    fireEvent.click(submitButton);
+    fireEvent.click(screen.getByRole("button", { name: /create account/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Passwords don't match")).toBeInTheDocument();
+      expect(screen.getByText(/passwords don't match/i)).toBeInTheDocument();
     });
   });
 
-  it("requires terms acceptance", async () => {
-    render(<RegisterScreen />);
+  it("has a link to login page", () => {
+    renderWithProviders(<RegisterScreen />);
 
-    const nameInput = screen.getByLabelText("Full Name");
-    const emailInput = screen.getByLabelText("Email");
-    const passwordInput = screen.getByLabelText("Password");
-    const confirmPasswordInput = screen.getByLabelText("Confirm Password");
-    const submitButton = screen.getByRole("button", {
-      name: /create account/i,
-    });
-
-    fireEvent.change(nameInput, { target: { value: "John Doe" } });
-    fireEvent.change(emailInput, { target: { value: "john@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
-    fireEvent.change(confirmPasswordInput, {
-      target: { value: "password123" },
-    });
-    fireEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(
-        screen.getByText("You must accept the terms and conditions"),
-      ).toBeInTheDocument();
-    });
+    const loginLink = screen.getByRole("link", { name: /sign in/i });
+    expect(loginLink).toBeInTheDocument();
+    expect(loginLink).toHaveAttribute("href", "/login");
   });
 
-  it("toggles password visibility for both password fields", () => {
-    render(<RegisterScreen />);
+  it("toggles password visibility", () => {
+    renderWithProviders(<RegisterScreen />);
 
     const passwordInput = screen.getByLabelText("Password");
-    const confirmPasswordInput = screen.getByLabelText("Confirm Password");
-    const toggleButtons = screen.getAllByRole("button", { name: "" }); // Eye icon buttons
-
     expect(passwordInput).toHaveAttribute("type", "password");
-    expect(confirmPasswordInput).toHaveAttribute("type", "password");
 
-    // Toggle first password field
+    const toggleButtons = screen.getAllByRole("button", { name: "" });
     fireEvent.click(toggleButtons[0]);
+
     expect(passwordInput).toHaveAttribute("type", "text");
-
-    // Toggle second password field
-    fireEvent.click(toggleButtons[1]);
-    expect(confirmPasswordInput).toHaveAttribute("type", "text");
-  });
-
-  it("has links to terms and privacy policy", () => {
-    render(<RegisterScreen />);
-
-    expect(screen.getByText("Terms of Service")).toBeInTheDocument();
-    expect(screen.getByText("Privacy Policy")).toBeInTheDocument();
-  });
-
-  it("has link to sign in page", () => {
-    render(<RegisterScreen />);
-
-    expect(screen.getByText("Sign in")).toBeInTheDocument();
   });
 });

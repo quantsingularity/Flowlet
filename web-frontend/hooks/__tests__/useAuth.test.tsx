@@ -1,22 +1,58 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { renderHook } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { describe, expect, it, vi } from "vitest";
+import React from "react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import { useAuth } from "@/hooks/useAuth";
 import authReducer from "@/store/authSlice";
 
-// Mock the API
-vi.mock("@/lib/api", () => ({
-  authApi: {
-    validateToken: vi.fn(),
+vi.mock("@/lib/authService", () => ({
+  authService: {
+    isAuthenticated: vi.fn(() => false),
+    getCurrentUser: vi.fn(),
+    logout: vi.fn(),
+    refreshToken: vi.fn(),
+    getCurrentUserFromStorage: vi.fn(() => null),
   },
 }));
 
-const createTestStore = (initialState = {}) => {
-  return configureStore({
-    reducer: {
-      auth: authReducer,
-    },
+vi.mock("@/lib/api", () => ({
+  ApiError: class ApiError extends Error {
+    status: number;
+    constructor(message: string, status: number) {
+      super(message);
+      this.status = status;
+    }
+  },
+  TokenManager: {
+    getAccessToken: vi.fn(() => null),
+    getRefreshToken: vi.fn(() => null),
+    clearTokens: vi.fn(),
+    isTokenExpired: vi.fn(() => true),
+    getUser: vi.fn(() => null),
+  },
+}));
+
+const mockUser = {
+  id: "1",
+  email: "test@example.com",
+  firstName: "Test",
+  lastName: "User",
+  fullName: "Test User",
+  role: "customer" as const,
+  permissions: [],
+  isEmailVerified: true,
+  isPhoneVerified: false,
+  kycStatus: "verified" as const,
+  mfaEnabled: false,
+  status: "active" as const,
+  createdAt: "2023-01-01T00:00:00Z",
+  updatedAt: "2023-01-01T00:00:00Z",
+};
+
+const createTestStore = (initialState = {}) =>
+  configureStore({
+    reducer: { auth: authReducer },
     preloadedState: {
       auth: {
         user: null,
@@ -28,20 +64,27 @@ const createTestStore = (initialState = {}) => {
       },
     },
   });
-};
 
-const wrapper = ({ children, store = createTestStore() }: any) => (
-  <Provider store={store}>{children}</Provider>
-);
+const makeWrapper =
+  (store: ReturnType<typeof createTestStore>) =>
+  ({ children }: { children: React.ReactNode }) => (
+    <Provider store={store}>{children}</Provider>
+  );
 
 describe("useAuth", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorage.clear();
   });
 
-  it("returns initial unauthenticated state", () => {
-    const { result } = renderHook(() => useAuth(), { wrapper });
+  it("returns initial unauthenticated state", async () => {
+    const store = createTestStore();
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: makeWrapper(store),
+    });
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
 
     expect(result.current.user).toBeNull();
     expect(result.current.token).toBeNull();
@@ -49,59 +92,46 @@ describe("useAuth", () => {
     expect(result.current.error).toBeNull();
   });
 
-  it("returns authenticated state when user is logged in", () => {
-    const mockUser = {
-      id: "1",
-      email: "test@example.com",
-      name: "Test User",
-      avatar: "",
-      role: "user" as const,
-      preferences: {
-        theme: "light" as const,
-        language: "en",
-        currency: "USD",
-        notifications: {
-          email: true,
-          push: true,
-          sms: false,
-          transactionAlerts: true,
-          securityAlerts: true,
-          marketingEmails: false,
-        },
-      },
-      createdAt: "2023-01-01T00:00:00Z",
-      updatedAt: "2023-01-01T00:00:00Z",
-    };
-
+  it("returns authenticated state when user is logged in", async () => {
     const store = createTestStore({
       user: mockUser,
       token: "test-token",
       isAuthenticated: true,
-      isLoading: false,
-      error: null,
     });
 
     const { result } = renderHook(() => useAuth(), {
-      wrapper: ({ children }) => wrapper({ children, store }),
+      wrapper: makeWrapper(store),
     });
 
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.user).toEqual(mockUser);
     expect(result.current.token).toBe("test-token");
-    expect(result.current.isAuthenticated).toBe(true);
   });
 
-  it("shows loading state initially", () => {
-    const { result } = renderHook(() => useAuth(), { wrapper });
+  it("exposes refreshAuthToken function", async () => {
+    const store = createTestStore();
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: makeWrapper(store),
+    });
 
-    expect(result.current.isLoading).toBe(true);
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+
+    expect(typeof result.current.refreshAuthToken).toBe("function");
   });
 
-  it("handles token validation on initialization", async () => {
-    localStorage.setItem("authToken", "stored-token");
+  it("returns loading true before initialization completes", () => {
+    const store = createTestStore();
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: makeWrapper(store),
+    });
 
-    const { result } = renderHook(() => useAuth(), { wrapper });
-
-    // Initially loading should be true
+    // On first render, initialized is false → isLoading should be true
     expect(result.current.isLoading).toBe(true);
   });
 });

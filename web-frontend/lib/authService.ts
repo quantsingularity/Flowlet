@@ -1,32 +1,8 @@
 // Authentication Service for Flowlet web-frontend
 import { ApiError, api, TokenManager } from "./api";
+import type { LoginCredentials, RegisterData, User } from "@/types";
 
-// Types
-export interface User {
-  id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-  phone_number?: string;
-  is_verified: boolean;
-  kyc_status: "pending" | "verified" | "rejected";
-  created_at: string;
-  updated_at: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface RegisterData {
-  email: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  phone_number?: string;
-}
-
+// API response shape (snake_case from backend)
 export interface AuthResponse {
   user: User;
   access_token: string;
@@ -74,9 +50,18 @@ class AuthService {
    */
   async register(userData: RegisterData): Promise<AuthResponse> {
     try {
+      // Map camelCase frontend fields to snake_case API fields
+      const apiPayload = {
+        email: userData.email,
+        password: userData.password,
+        first_name: userData.firstName,
+        last_name: userData.lastName,
+        phone_number: userData.phoneNumber,
+      };
+
       const response = await api.post<AuthResponse>(
         "/api/v1/auth/register",
-        userData,
+        apiPayload,
       );
 
       // Store tokens and user data

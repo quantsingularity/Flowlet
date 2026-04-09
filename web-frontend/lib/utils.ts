@@ -34,7 +34,10 @@ export function formatDateTime(date: string | Date): string {
 }
 
 export function generateId(): string {
-  return Math.random().toString(36).substr(2, 9);
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).substring(2, 11);
 }
 
 export function debounce<T extends (...args: any[]) => any>(
@@ -150,11 +153,20 @@ export function isValidCSRFToken(token: string): boolean {
 }
 
 export function encodeBase64(data: string): string {
-  return btoa(unescape(encodeURIComponent(data)));
+  return btoa(
+    encodeURIComponent(data).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+      String.fromCharCode(parseInt(p1, 16)),
+    ),
+  );
 }
 
 export function decodeBase64(data: string): string {
-  return decodeURIComponent(escape(atob(data)));
+  return decodeURIComponent(
+    atob(data)
+      .split("")
+      .map((c) => `%${c.charCodeAt(0).toString(16).padStart(2, "0")}`)
+      .join(""),
+  );
 }
 
 export function hashString(str: string): Promise<string> {

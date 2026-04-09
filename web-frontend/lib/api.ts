@@ -1,5 +1,6 @@
 // Improved API Client Configuration for Flowlet web-frontend
 import axios, {
+  isAxiosError,
   type AxiosInstance,
   type AxiosRequestConfig,
   type AxiosResponse,
@@ -87,14 +88,27 @@ class TokenManager {
 
   static setUser(user: any): void {
     try {
-      // Sanitize user data before storing
+      // Store essential user fields, exclude sensitive data
       const sanitizedUser = {
         id: user.id,
         email: user.email,
-        name: user.name,
+        firstName: user.firstName ?? user.first_name ?? "",
+        lastName: user.lastName ?? user.last_name ?? "",
+        fullName:
+          user.fullName ??
+          `${user.firstName ?? user.first_name ?? ""} ${user.lastName ?? user.last_name ?? ""}`.trim(),
         role: user.role,
-        permissions: user.permissions,
-        // Exclude sensitive information
+        permissions: user.permissions ?? [],
+        isEmailVerified: user.isEmailVerified ?? user.is_verified ?? false,
+        isPhoneVerified: user.isPhoneVerified ?? false,
+        kycStatus: user.kycStatus ?? user.kyc_status ?? "not_started",
+        mfaEnabled: user.mfaEnabled ?? false,
+        status: user.status ?? "active",
+        profilePicture: user.profilePicture ?? undefined,
+        createdAt:
+          user.createdAt ?? user.created_at ?? new Date().toISOString(),
+        updatedAt:
+          user.updatedAt ?? user.updated_at ?? new Date().toISOString(),
       };
       localStorage.setItem(
         TokenManager.USER_KEY,

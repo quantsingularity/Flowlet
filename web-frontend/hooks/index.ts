@@ -1,4 +1,3 @@
-import type React from "react";
 import { useEffect, useState } from "react";
 import { setOnlineStatus } from "@/store/uiSlice";
 import { useAppDispatch } from "./redux";

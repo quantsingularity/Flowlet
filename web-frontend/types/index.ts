@@ -540,3 +540,58 @@ export interface SecurityEvent extends AppEvent {
 // export * from './api'; // Removed non-existent module export
 // export * from './components'; // Removed non-existent module export
 // export * from './hooks'; // Removed non-existent module export
+
+// ============================================================================
+// Auth State (used by store/authSlice)
+// ============================================================================
+
+export interface AuthState {
+  user: User | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// ============================================================================
+// Wallet (used by store/api)
+// ============================================================================
+
+export interface Wallet extends BaseEntity {
+  userId: string;
+  balance: number;
+  currency: Currency;
+  type: "checking" | "savings" | "investment";
+  isActive: boolean;
+  accountNumber?: string;
+  routingNumber?: string;
+}
+
+// ============================================================================
+// Analytics (used by store/api)
+// ============================================================================
+
+export interface AnalyticsData {
+  totalRevenue: number;
+  totalExpenses: number;
+  netIncome: number;
+  transactionCount: number;
+  categoryBreakdown: CategorySpending[];
+  trends: SpendingTrend[];
+  period: string;
+}
+
+// ============================================================================
+// Notification (used by store/uiSlice)
+// ============================================================================
+
+export interface Notification {
+  id: string;
+  type: "info" | "success" | "warning" | "error";
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionUrl?: string;
+  actionLabel?: string;
+}

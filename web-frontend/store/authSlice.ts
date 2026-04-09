@@ -5,6 +5,7 @@ import {
 } from "@reduxjs/toolkit";
 import { ApiError } from "@/lib/api";
 import { authService } from "@/lib/authService";
+import { TokenManager } from "@/lib/api";
 import type { AuthState, LoginCredentials, RegisterData, User } from "@/types";
 
 const initialState: AuthState = {
@@ -65,7 +66,8 @@ export const validateToken = createAsyncThunk(
         throw new Error("No valid token found");
       }
       const user = await authService.getCurrentUser();
-      return { user, token: "validated" };
+      const token = TokenManager.getAccessToken();
+      return { user, token: token ?? "" };
     } catch (error: unknown) {
       return rejectWithValue(getErrorMessage(error, "Token validation failed"));
     }
@@ -157,7 +159,11 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
+        // Even if server logout fails, clear local state
         state.isLoading = false;
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
         state.error = action.payload as string;
       });
 
@@ -188,6 +194,7 @@ const authSlice = createSlice({
       })
       .addCase(refreshToken.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isAuthenticated = true;
         state.token = action.payload.token;
         state.user = action.payload.user;
         state.error = null;

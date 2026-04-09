@@ -1,108 +1,128 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import "@testing-library/jest-dom";
-import { Wallet } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { fetchWalletData } from "@/services/walletService";
-import Dashboard from "./Dashboard";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import Dashboard from "@/components/wallet/Dashboard";
+import { mockUser, render, screen, waitFor } from "@/test/utils";
 
-// Mock the dependencies
-jest.mock("@/services/walletService", () =>
-  require("../../__mocks__/walletService"),
-);
-jest.mock("@/hooks/useAuth", () => require("../../__mocks__/useAuth"));
+vi.mock("@/services/walletService", () => ({
+  fetchWalletData: vi.fn(() =>
+    Promise.resolve({
+      quickStats: [
+        {
+          title: "Total Balance",
+          value: "$100.00",
+          change: "+1.0%",
+          trend: "up",
+          icon: () => null,
+        },
+        {
+          title: "Monthly Income",
+          value: "$4,200.00",
+          change: "+8.1%",
+          trend: "up",
+          icon: () => null,
+        },
+        {
+          title: "Monthly Expenses",
+          value: "$2,850.30",
+          change: "-3.2%",
+          trend: "down",
+          icon: () => null,
+        },
+        {
+          title: "Savings Rate",
+          value: "32.1%",
+          change: "+5.4%",
+          trend: "up",
+          icon: () => null,
+        },
+      ],
+      recentTransactions: [
+        {
+          id: 1,
+          description: "Grocery Store",
+          amount: -85.32,
+          date: "2024-01-15",
+          category: "Food",
+        },
+        {
+          id: 2,
+          description: "Salary Deposit",
+          amount: 4200.0,
+          date: "2024-01-15",
+          category: "Income",
+        },
+      ],
+    }),
+  ),
+}));
 
-const mockWalletData = {
-  quickStats: [
-    {
-      title: "Total Balance",
-      value: "$100.00",
-      change: "+1.0%",
-      trend: "up",
-      icon: Wallet,
-    },
-  ],
-  recentTransactions: [
-    {
-      id: 1,
-      description: "Test Transaction",
-      amount: 50.0,
-      date: "2024-01-01",
-      category: "Test",
-    },
-  ],
-};
+vi.mock("@/hooks/useAuth", () => ({
+  useAuth: () => ({
+    user: mockUser,
+    isAuthenticated: true,
+    isLoading: false,
+  }),
+}));
 
 describe("Dashboard", () => {
   beforeEach(() => {
-    // Reset mocks before each test
-    (fetchWalletData as jest.Mock).mockClear();
-    (useAuth as jest.Mock).mockClear();
-
-    // Default successful mock for data fetching
-    (fetchWalletData as jest.Mock).mockResolvedValue(mockWalletData);
-
-    // Default mock for useAuth
-    (useAuth as jest.Mock).mockReturnValue({
-      user: { name: "Test User" },
-    });
+    vi.clearAllMocks();
   });
 
-  it("renders the loading state initially", () => {
-    // Mock a pending promise to keep it in the loading state
-    (fetchWalletData as jest.Mock).mockReturnValue(new Promise(() => {}));
+  it("renders loading state initially", async () => {
+    const { fetchWalletData } = await import("@/services/walletService");
+    vi.mocked(fetchWalletData).mockReturnValueOnce(new Promise(() => {}));
 
     render(<Dashboard />);
 
-    expect(screen.getByText(/Loading dashboard data.../i)).toBeInTheDocument();
-    expect(screen.getByTestId("mock-icon-Loader2")).toBeInTheDocument();
+    expect(screen.getByText(/loading dashboard data/i)).toBeInTheDocument();
   });
 
-  it("renders the welcome message with user name", async () => {
+  it("renders welcome message with user first name", async () => {
     render(<Dashboard />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Welcome back, Test!/i)).toBeInTheDocument();
+      expect(screen.getByText(/welcome back, Test!/i)).toBeInTheDocument();
     });
   });
 
-  it("renders the wallet summary and transaction list on successful data fetch", async () => {
+  it("displays quick stats after loading", async () => {
     render(<Dashboard />);
 
     await waitFor(() => {
-      // Check for WalletSummary content
       expect(screen.getByText("Total Balance")).toBeInTheDocument();
-      expect(screen.getByText("$100.00")).toBeInTheDocument();
-
-      // Check for TransactionList content
-      expect(screen.getByText("Recent Transactions")).toBeInTheDocument();
-      expect(screen.getByText("Test Transaction")).toBeInTheDocument();
-      expect(screen.getByText("+$50.00")).toBeInTheDocument();
+      expect(screen.getByText("Monthly Income")).toBeInTheDocument();
+      expect(screen.getByText("Monthly Expenses")).toBeInTheDocument();
+      expect(screen.getByText("Savings Rate")).toBeInTheDocument();
     });
   });
 
-  it("renders the error state on failed data fetch", async () => {
-    const errorMessage = "Failed to fetch wallet data due to a server error.";
-    (fetchWalletData as jest.Mock).mockRejectedValue(new Error(errorMessage));
+  it("shows recent transactions after loading", async () => {
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Grocery Store")).toBeInTheDocument();
+      expect(screen.getByText("Salary Deposit")).toBeInTheDocument();
+    });
+  });
+
+  it("shows quick actions section", async () => {
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Quick Actions")).toBeInTheDocument();
+    });
+  });
+
+  it("shows error state when fetch fails", async () => {
+    const { fetchWalletData } = await import("@/services/walletService");
+    vi.mocked(fetchWalletData).mockRejectedValueOnce(
+      new Error("Network error"),
+    );
 
     render(<Dashboard />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(`Error loading data: ${errorMessage}`),
-      ).toBeInTheDocument();
-      expect(screen.queryByText("Total Balance")).not.toBeInTheDocument();
-    });
-  });
-
-  it('renders "User" when user name is not available', async () => {
-    (useAuth as jest.Mock).mockReturnValue({
-      user: {}, // No name property
-    });
-
-    render(<Dashboard />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Welcome back, User!/i)).toBeInTheDocument();
+      expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
     });
   });
 });

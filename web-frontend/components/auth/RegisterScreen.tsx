@@ -23,8 +23,8 @@ import { registerUser } from "@/store/authSlice";
 
 const registerSchema = z
   .object({
-    first_name: z.string().min(2, "First name must be at least 2 characters"),
-    last_name: z.string().min(2, "Last name must be at least 2 characters"),
+    firstName: z.string().min(2, "First name must be at least 2 characters"),
+    lastName: z.string().min(2, "Last name must be at least 2 characters"),
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
@@ -61,15 +61,15 @@ const RegisterScreen: React.FC = () => {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      // Remove confirmPassword and acceptTerms from the data sent to the API
       const { confirmPassword, acceptTerms, firstName, lastName, ...rest } =
         data;
+      void confirmPassword;
+      void acceptTerms;
 
-      // Transform to API format (snake_case)
       const registerData = {
         ...rest,
-        first_name: firstName,
-        last_name: lastName,
+        firstName,
+        lastName,
       };
 
       await dispatch(registerUser(registerData)).unwrap();
@@ -91,7 +91,7 @@ const RegisterScreen: React.FC = () => {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
           <CardDescription>
-            Join Flowlet and start managing your finances
+            Sign up for your Flowlet account to get started
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,36 +102,37 @@ const RegisterScreen: React.FC = () => {
               </Alert>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="first_name">First Name</Label>
-              <Input
-                id="first_name"
-                type="text"
-                placeholder="Enter your first name"
-                {...register("first_name")}
-                className={errors.first_name ? "border-destructive" : ""}
-              />
-              {errors.first_name && (
-                <p className="text-sm text-destructive">
-                  {errors.first_name.message}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="last_name">Last Name</Label>
-              <Input
-                id="last_name"
-                type="text"
-                placeholder="Enter your last name"
-                {...register("last_name")}
-                className={errors.last_name ? "border-destructive" : ""}
-              />
-              {errors.last_name && (
-                <p className="text-sm text-destructive">
-                  {errors.last_name.message}
-                </p>
-              )}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  placeholder="First name"
+                  {...register("firstName")}
+                  className={errors.firstName ? "border-destructive" : ""}
+                />
+                {errors.firstName && (
+                  <p className="text-sm text-destructive">
+                    {errors.firstName.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder="Last name"
+                  {...register("lastName")}
+                  className={errors.lastName ? "border-destructive" : ""}
+                />
+                {errors.lastName && (
+                  <p className="text-sm text-destructive">
+                    {errors.lastName.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">

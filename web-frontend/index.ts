@@ -82,7 +82,6 @@ export * from "./components/ui/switch";
 export * from "./components/ui/table";
 export * from "./components/ui/tabs";
 export * from "./components/ui/textarea";
-export * from "./components/ui/toast";
 export * from "./components/ui/tooltip";
 // Dashboard
 export { default as Dashboard } from "./components/wallet/Dashboard";
@@ -110,7 +109,7 @@ export * from "./lib/security/csp";
 export * from "./lib/security/encryption";
 export * from "./lib/security/headers";
 export * from "./lib/security/validation";
-export { default as utils } from "./lib/utils";
+export * from "./lib/utils";
 export { default as walletService } from "./lib/walletService";
 // ============================================================================
 // Store & State Management
