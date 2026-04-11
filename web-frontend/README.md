@@ -1,88 +1,104 @@
-# Flowlet web-frontend
+# Flowlet Web Frontend
 
-The Flowlet web-frontend is a comprehensive, production-ready component library and application built for financial technology. It is developed using **React**, **TypeScript**, and modern tooling to ensure high performance, security, and maintainability.
+A modern, enterprise-grade embedded finance platform UI built with React 19, TypeScript, Redux Toolkit, and Tailwind CSS v4.
 
-## 1. Core Technologies and Dependencies
+## Directory Structure
 
-The web-frontend is built on a modern stack, leveraging key libraries for state management, UI components, and data handling.
-
-| Category             | Key Technologies                                          | Purpose                                                                     |
-| :------------------- | :-------------------------------------------------------- | :-------------------------------------------------------------------------- |
-| **Core Framework**   | `React 19`, `TypeScript`, `Vite`                          | Application foundation, type safety, and fast development environment.      |
-| **State Management** | `@reduxjs/toolkit`, `react-redux`                         | Predictable and scalable state management for the application.              |
-| **UI/Styling**       | `Tailwind CSS`, `@radix-ui/*`, `class-variance-authority` | Utility-first styling, accessible UI primitives, and component variants.    |
-| **Routing**          | `react-router-dom`                                        | Declarative routing for navigation within the single-page application.      |
-| **Form Handling**    | `react-hook-form`, `@hookform/resolvers`, `zod`           | Performant form management, validation, and schema-based data parsing.      |
-| **Data Fetching**    | `axios`                                                   | Promise-based HTTP client for API communication.                            |
-| **Security/Auth**    | `jose`, `crypto-js`, `helmet`, `js-cookie`                | Token handling, encryption, security headers, and secure cookie management. |
-| **Testing**          | `vitest`, `@testing-library/*`, `jsdom`                   | Unit and integration testing framework with DOM simulation.                 |
-| **Visualization**    | `recharts`                                                | Composable charting library for financial data visualization.               |
-
-## 2. Directory Structure
-
-The application follows a modular and feature-driven architecture for clear separation of concerns.
-
-| Directory        | Primary Function                                 | Key Contents                                                                                          |
-| :--------------- | :----------------------------------------------- | :---------------------------------------------------------------------------------------------------- |
-| **components/**  | Reusable UI and feature-specific components.     | Organized into sub-directories like `auth/`, `security/`, `compliance/`, and `ui/` (base components). |
-| **hooks/**       | Custom React hooks for reusable logic.           | Contains hooks like `useAuth`, `use-responsive`, and other utility hooks.                             |
-| **lib/**         | Utility functions and service wrappers.          | Includes API clients (`api.ts`), authentication services (`authService.ts`), and security utilities.  |
-| **store/**       | Redux store configuration and slices.            | Contains state slices for features like `auth`, `wallet`, and `transactions`.                         |
-| **types/**       | Global TypeScript type definitions.              | Centralized location for application-wide interfaces and types.                                       |
-| **assets/**      | Static assets like images and fonts.             | Visual resources used throughout the application.                                                     |
-| **tests/**       | Test files for various components and utilities. | Houses unit and integration tests.                                                                    |
-| `package.json`   | Project manifest.                                | Defines dependencies, scripts, and project metadata.                                                  |
-| `vite.config.ts` | Build configuration.                             | Configuration for the Vite development and build tool.                                                |
-
-## 3. Specialized Component and Logic Modules
-
-The `components/` and `lib/` directories are further organized to handle specific financial and technical domains.
-
-| Module                  | Location                      | Primary Function                                                         | Examples                                                   |
-| :---------------------- | :---------------------------- | :----------------------------------------------------------------------- | :--------------------------------------------------------- |
-| **Authentication**      | `components/auth/`            | User login, registration, and Multi-Factor Authentication (MFA) screens. | `LoginScreen`, `RegisterForm`, `MFAVerification`.          |
-| **UI Primitives**       | `components/ui/`              | Reusable, styled, and accessible base components.                        | `Button`, `Input`, `Card`, `AlertDialog` (using Radix UI). |
-| **Data Protection**     | `components/data-protection/` | Components related to data privacy and compliance.                       | `GDPRConsentBanner`, `DataEncryptionStatus`.               |
-| **Security**            | `components/security/`        | Components for security monitoring and settings.                         | `SecurityDashboard`, `TokenManagement`.                    |
-| **Compliance**          | `components/compliance/`      | Components for regulatory adherence features.                            | `KYCForm`, `AMLMonitoring`.                                |
-| **Wallet/Transactions** | `components/wallet/`          | Components for managing user accounts and transactions.                  | `WalletScreen`, `TransactionHistory`, `SendMoneyForm`.     |
-| **API Services**        | `lib/`                        | Wrappers for backend API calls and token management.                     | `api.ts`, `authService.ts`, `walletService.ts`.            |
-
-## 4. Development Scripts and Tooling
-
-The `package.json` defines a comprehensive set of scripts for development, testing, and quality assurance.
-
-| Script           | Command                         | Purpose                                                                    |
-| :--------------- | :------------------------------ | :------------------------------------------------------------------------- |
-| `dev`            | `vite`                          | Starts the development server with hot module replacement.                 |
-| `build`          | `tsc && vite build`             | Compiles TypeScript and builds the production-ready bundle.                |
-| `test`           | `vitest`                        | Runs all unit and integration tests.                                       |
-| `test:coverage`  | `vitest --coverage`             | Runs tests and generates a code coverage report.                           |
-| `test:security`  | `vitest run src/tests/security` | Executes security-focused tests.                                           |
-| `lint`           | `eslint . --ext ts,tsx`         | Runs ESLint for code quality and style checking.                           |
-| `lint:fix`       | `eslint . --ext ts,tsx --fix`   | Automatically fixes linting issues.                                        |
-| `type-check`     | `tsc --noEmit`                  | Performs a TypeScript type check without emitting files.                   |
-| `storybook`      | `storybook dev -p 6006`         | Starts the Storybook server for component documentation and isolation.     |
-| `security-audit` | `npm audit && npm audit fix`    | Runs a security audit on dependencies and attempts to fix vulnerabilities. |
-
-## 5. Getting Started
-
-### Prerequisites
-
-- Node.js (version 18.0.0 or higher)
-- pnpm (version 8.0.0 or higher)
-
-### Setup and Run
-
-```bash
-# Navigate to the web-frontend directory
-cd Flowlet/web-frontend
-
-# Install dependencies using pnpm
-pnpm install
-
-# Start the development server
-pnpm dev
+```
+flowlet-frontend/
+├── src/                          # All application source code
+│   ├── components/
+│   │   ├── auth/                 # Auth screens (Login, Register, etc.)
+│   │   ├── features/             # Feature-based components
+│   │   │   ├── dashboard/        # Dashboard & wallet summary
+│   │   │   ├── wallet/           # Wallet management
+│   │   │   ├── cards/            # Card issuance & management
+│   │   │   ├── transactions/     # Send/receive/history
+│   │   │   ├── analytics/        # Charts & financial insights
+│   │   │   ├── budgeting/        # Budget tracking & savings goals
+│   │   │   ├── ai/               # AI chat, fraud detection
+│   │   │   ├── security/         # Security settings & monitoring
+│   │   │   ├── settings/         # User preferences
+│   │   │   ├── compliance/       # GDPR, audit trail, PCI
+│   │   │   └── workflow/         # Workflow designer
+│   │   ├── layout/               # Header, Sidebar, Layout, ErrorBoundary
+│   │   ├── pages/
+│   │   │   └── public/           # Public-facing marketing pages
+│   │   └── ui/                   # Shadcn/Radix UI primitives
+│   ├── config/                   # App constants & configuration
+│   ├── hooks/                    # Custom React hooks
+│   ├── lib/
+│   │   ├── api/                  # API client, authService, walletService
+│   │   └── utils/                # Utilities, formatters, validation
+│   ├── services/                 # Mock/data services
+│   ├── store/                    # Redux store & slices
+│   ├── styles/                   # Global CSS (design tokens, animations)
+│   ├── tests/
+│   │   ├── unit/                 # Pure unit tests
+│   │   ├── integration/          # Integration tests
+│   │   └── components/           # Component render tests
+│   └── types/                    # TypeScript interfaces & types
+├── components/ui/                # (Legacy) Shadcn components
+├── lib/utils.ts                  # Re-exports from src/lib/utils
+├── App.tsx                       # Root component
+├── main.tsx                      # Entry point
+├── index.html                    # HTML shell with DM Sans font
+├── vite.config.ts
+├── vitest.config.ts
+└── tsconfig.json
 ```
 
-The application will typically be available at `http://localhost:5173` (or another port specified by Vite).
+## Getting Started
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start development server
+pnpm dev
+
+# Run tests
+pnpm test
+
+# Run tests with UI
+pnpm test:ui
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Type check
+pnpm type-check
+
+# Build for production
+pnpm build
+```
+
+## Demo Login
+
+| Field    | Value              |
+|----------|--------------------|
+| Email    | demo@flowlet.com   |
+| Password | demo123            |
+
+## Bug Fixes Applied
+
+1. **Missing `/forgot-password` route** — Added `ForgotPasswordScreen` and route in `AppInner.tsx`
+2. **Checkbox + react-hook-form** — Replaced `{...register()}` with `<Controller>` for Radix-based checkboxes in Login & Register
+3. **SendMoney amount coercion** — Changed `z.number()` to `z.coerce.number()` so string HTML input values parse correctly
+4. **Demo mode without backend** — `authService` now detects demo credentials and bypasses the API
+5. **Hardcoded copyright year** — Dynamic `new Date().getFullYear()` in HomePage/Footer
+6. **`WalletSummary` trend color** — Expenses "down" is now correctly contextual (not always red)
+7. **`TransactionList` missing navigation** — "View all" button now routes to `/wallet/transactions`
+8. **Dashboard quick actions** — All buttons now navigate to correct routes
+9. **`validateToken` rejected** — Logout path always clears state even when rejected
+10. **System theme media query listener** — Added listener cleanup for system theme preference changes
+11. **`rootElement` null guard** — `main.tsx` now throws clearly if `#root` is missing
+12. **Token expiry buffer** — Token considered expired 5 min before actual expiry
+
+## Architecture Decisions
+
+- **Feature-based structure** — Components organized by domain, not by type
+- **Absolute imports** — All imports use `@/` alias for clarity
+- **Demo mode** — Full UI works without a backend using demo credentials
+- **Optimistic UI** — Forms show immediate feedback without waiting for API
+- **CSS custom properties** — Design tokens in `globals.css` enable consistent theming

@@ -23,10 +23,20 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/src/*": ["./src/*"],
+      "@/components/*": ["./components/*", "./src/components/*"],
+      "@/lib/*": ["./lib/*", "./src/lib/*"],
+      "@/hooks/*": ["./hooks/*", "./src/hooks/*"],
+      "@/store/*": ["./store/*", "./src/store/*"],
+      "@/types/*": ["./types/*", "./src/types/*"]
     }
   },
-  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.d.ts", "vitest.config.ts"],
-  "exclude": ["node_modules", "dist"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "./**/*.d.ts",
+    "vitest.config.ts"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

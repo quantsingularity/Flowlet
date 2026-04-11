@@ -1,110 +1,71 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
-// Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
-  disconnect() {}
-  observe() {}
-  unobserve() {}
-  root = null;
-  rootMargin = "";
-  thresholds = [];
-  takeRecords() {
-    return [];
-  }
-};
-
-// Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
-  disconnect() {}
-  observe() {}
-  unobserve() {}
-};
-
-// Mock matchMedia
-Object.defineProperty(window, "matchMedia", {
-  writable: true,
-  value: (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false,
-  }),
-});
-
-// Mock scrollTo
-Object.defineProperty(window, "scrollTo", {
-  writable: true,
-  value: () => {},
-});
-
-// Mock localStorage using a proper Map to avoid key/method name conflicts
-const localStorageStore = new Map<string, string>();
-const localStorageMock = {
-  getItem: (key: string) => localStorageStore.get(key) ?? null,
-  setItem: (key: string, value: string) => localStorageStore.set(key, value),
-  removeItem: (key: string) => localStorageStore.delete(key),
-  clear: () => localStorageStore.clear(),
-  get length() {
-    return localStorageStore.size;
-  },
-  key: (index: number) => Array.from(localStorageStore.keys())[index] ?? null,
-};
+// Mock localStorage
+const localStorageMock = (() => {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] ?? null,
+    setItem: (key: string, value: string) => { store[key] = value; },
+    removeItem: (key: string) => { delete store[key]; },
+    clear: () => { store = {}; },
+    get length() { return Object.keys(store).length; },
+    key: (index: number) => Object.keys(store)[index] ?? null,
+  };
+})();
 
 Object.defineProperty(window, "localStorage", {
   value: localStorageMock,
   writable: true,
 });
 
-// Mock sessionStorage similarly
-const sessionStorageStore = new Map<string, string>();
-const sessionStorageMock = {
-  getItem: (key: string) => sessionStorageStore.get(key) ?? null,
-  setItem: (key: string, value: string) => sessionStorageStore.set(key, value),
-  removeItem: (key: string) => sessionStorageStore.delete(key),
-  clear: () => sessionStorageStore.clear(),
-  get length() {
-    return sessionStorageStore.size;
-  },
-  key: (index: number) => Array.from(sessionStorageStore.keys())[index] ?? null,
-};
-
-Object.defineProperty(window, "sessionStorage", {
-  value: sessionStorageMock,
+// Mock navigator.onLine
+Object.defineProperty(navigator, "onLine", {
+  value: true,
+  configurable: true,
   writable: true,
 });
 
-// Mock fetch
-global.fetch = vi.fn(() =>
-  Promise.resolve({
-    ok: true,
-    status: 200,
-    json: () => Promise.resolve({}),
-    text: () => Promise.resolve(""),
-    headers: new Headers(),
-  } as Response),
-);
-
-// Mock crypto.randomUUID for generateId
-if (!globalThis.crypto) {
-  Object.defineProperty(globalThis, "crypto", {
-    value: {
-      randomUUID: () => "00000000-0000-0000-0000-000000000000",
-      getRandomValues: (arr: Uint8Array) => {
-        for (let i = 0; i < arr.length; i++)
-          arr[i] = Math.floor(Math.random() * 256);
-        return arr;
-      },
-    },
-  });
-}
-
-// Reset mocks between tests
-beforeEach(() => {
-  localStorageStore.clear();
-  sessionStorageStore.clear();
+// Mock window.matchMedia
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: (query: string) => ({
+    matches: query.includes("dark") ? false : true,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }),
 });
+
+// Mock navigator.clipboard
+Object.defineProperty(navigator, "clipboard", {
+  value: {
+    writeText: vi.fn().mockResolvedValue(undefined),
+    readText: vi.fn().mockResolvedValue(""),
+  },
+  writable: true,
+});
+
+// Suppress expected console noise in tests
+const originalError = console.error;
+console.error = (...args: unknown[]) => {
+  if (
+    typeof args[0] === "string" &&
+    (args[0].includes("Warning: ReactDOM.render") ||
+      args[0].includes("act(") ||
+      args[0].includes("Not implemented"))
+  ) {
+    return;
+  }
+  originalError(...args);
+};
+
+// Global request animation frame mock
+globalThis.requestAnimationFrame = (callback: FrameRequestCallback) => {
+  return setTimeout(() => callback(Date.now()), 16) as unknown as number;
+};
+globalThis.cancelAnimationFrame = (id: number) => clearTimeout(id);

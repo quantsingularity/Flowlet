@@ -8,34 +8,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: "jsdom",
     globals: true,
+    environment: "jsdom",
     setupFiles: ["./test/setup.ts"],
     include: [
-      "**/__tests__/**/*.{ts,tsx}",
-      "**/*.test.{ts,tsx}",
-      "components/wallet/Dashboard.test.tsx",
-    ],
-    exclude: [
-      "node_modules/**",
-      "dist/**",
-      // Exclude compiled JS duplicates - use TS files only
-      "**/__tests__/**/*.test.js",
-      "**/*.test.js",
-      // Exclude old jest config based files
-      "jest.config.cjs",
+      "src/tests/**/*.{test,spec}.{ts,tsx}",
+      "**/__tests__/**/*.{test,spec}.{ts,tsx}",
     ],
     coverage: {
-      provider: "v8",
       reporter: ["text", "json", "html"],
       exclude: [
-        "node_modules/**",
-        "dist/**",
+        "node_modules/",
+        "dist/",
+        "src/components/ui/",
         "**/*.d.ts",
-        "**/__mocks__/**",
-        "**/types/**",
-        "**/*.config.*",
-        "test/**",
       ],
     },
   },
