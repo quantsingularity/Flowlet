@@ -41,9 +41,7 @@ interface NavGroup {
 
 const navigation: NavGroup[] = [
   {
-    items: [
-      { icon: Home, label: "Dashboard", path: "/dashboard" },
-    ],
+    items: [{ icon: Home, label: "Dashboard", path: "/dashboard" }],
   },
   {
     title: "Finance",
@@ -58,7 +56,13 @@ const navigation: NavGroup[] = [
     title: "Intelligence",
     items: [
       { icon: MessageSquare, label: "AI Assistant", path: "/chat" },
-      { icon: AlertTriangle, label: "Fraud Alerts", path: "/alerts", badge: "3", badgeVariant: "destructive" },
+      {
+        icon: AlertTriangle,
+        label: "Fraud Alerts",
+        path: "/alerts",
+        badge: "3",
+        badgeVariant: "destructive",
+      },
       { icon: Bot, label: "Fraud Detection", path: "/fraud-detection" },
     ],
   },
@@ -89,7 +93,8 @@ const SidebarContent: React.FC<{
               const Icon = item.icon;
               const isActive =
                 location.pathname === item.path ||
-                (item.path !== "/dashboard" && location.pathname.startsWith(item.path));
+                (item.path !== "/dashboard" &&
+                  location.pathname.startsWith(item.path));
 
               return (
                 <Link
@@ -103,10 +108,12 @@ const SidebarContent: React.FC<{
                       : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent",
                   )}
                 >
-                  <Icon className={cn(
-                    "h-4 w-4 shrink-0 transition-transform duration-150",
-                    isActive ? "" : "group-hover:scale-110",
-                  )} />
+                  <Icon
+                    className={cn(
+                      "h-4 w-4 shrink-0 transition-transform duration-150",
+                      isActive ? "" : "group-hover:scale-110",
+                    )}
+                  />
                   <span className="flex-1 truncate">{item.label}</span>
                   {item.badge && (
                     <Badge
@@ -150,7 +157,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isMobile, onClose }) => {
           <div className="flex items-center justify-between px-4 h-16 border-b border-sidebar-border shrink-0">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
-                <span className="text-sidebar-primary-foreground font-bold text-sm">F</span>
+                <span className="text-sidebar-primary-foreground font-bold text-sm">
+                  F
+                </span>
               </div>
               <span className="text-sidebar-foreground font-semibold text-lg tracking-tight">
                 Flowlet
@@ -192,8 +201,12 @@ const SidebarFooter: React.FC = () => (
         <Zap className="h-3.5 w-3.5 text-emerald-400" />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold text-sidebar-foreground/90">Pro Plan</p>
-        <p className="text-[10px] text-sidebar-foreground/50 truncate">All features unlocked</p>
+        <p className="text-[11px] font-semibold text-sidebar-foreground/90">
+          Pro Plan
+        </p>
+        <p className="text-[10px] text-sidebar-foreground/50 truncate">
+          All features unlocked
+        </p>
       </div>
     </div>
   </div>

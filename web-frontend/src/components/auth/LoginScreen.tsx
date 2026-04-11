@@ -65,19 +65,25 @@ const LoginScreen: React.FC = () => {
       <div className="hidden lg:flex lg:w-1/2 bg-sidebar flex-col justify-between p-12">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-sidebar-primary flex items-center justify-center">
-            <span className="text-sidebar-primary-foreground font-bold text-lg">F</span>
+            <span className="text-sidebar-primary-foreground font-bold text-lg">
+              F
+            </span>
           </div>
-          <span className="text-sidebar-foreground font-semibold text-xl tracking-tight">Flowlet</span>
+          <span className="text-sidebar-foreground font-semibold text-xl tracking-tight">
+            Flowlet
+          </span>
         </div>
 
         <div className="space-y-8">
           <div>
             <h1 className="text-4xl font-bold text-sidebar-foreground leading-tight">
-              The future of<br />
+              The future of
+              <br />
               <span className="text-sidebar-primary">embedded finance</span>
             </h1>
             <p className="text-sidebar-foreground/60 mt-4 text-lg leading-relaxed">
-              Manage wallets, cards, and payments with enterprise-grade security.
+              Manage wallets, cards, and payments with enterprise-grade
+              security.
             </p>
           </div>
 
@@ -90,7 +96,9 @@ const LoginScreen: React.FC = () => {
                 <div className="w-8 h-8 rounded-lg bg-sidebar-accent flex items-center justify-center">
                   <Icon className="h-4 w-4 text-sidebar-primary" />
                 </div>
-                <span className="text-sidebar-foreground/80 text-sm">{text}</span>
+                <span className="text-sidebar-foreground/80 text-sm">
+                  {text}
+                </span>
               </div>
             ))}
           </div>
@@ -106,14 +114,18 @@ const LoginScreen: React.FC = () => {
         <div className="w-full max-w-sm space-y-6">
           <div className="lg:hidden flex items-center gap-2 mb-8">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">F</span>
+              <span className="text-primary-foreground font-bold text-sm">
+                F
+              </span>
             </div>
             <span className="font-semibold text-lg">Flowlet</span>
           </div>
 
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Welcome back</h2>
-            <p className="text-muted-foreground text-sm mt-1">Sign in to your account to continue</p>
+            <p className="text-muted-foreground text-sm mt-1">
+              Sign in to your account to continue
+            </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -124,24 +136,37 @@ const LoginScreen: React.FC = () => {
             )}
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-sm font-medium">Email address</Label>
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email address
+              </Label>
               <Input
                 id="email"
                 type="email"
                 autoComplete="email"
                 placeholder="you@example.com"
                 {...register("email")}
-                className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
+                className={
+                  errors.email
+                    ? "border-destructive focus-visible:ring-destructive"
+                    : ""
+                }
               />
               {errors.email && (
-                <p className="text-xs text-destructive">{errors.email.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-sm font-medium">Password</Label>
-                <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </Label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-primary hover:underline"
+                >
                   Forgot password?
                 </Link>
               </div>
@@ -152,7 +177,9 @@ const LoginScreen: React.FC = () => {
                   autoComplete="current-password"
                   placeholder="Enter your password"
                   {...register("password")}
-                  className={errors.password ? "border-destructive pr-10" : "pr-10"}
+                  className={
+                    errors.password ? "border-destructive pr-10" : "pr-10"
+                  }
                 />
                 <button
                   type="button"
@@ -160,11 +187,17 @@ const LoginScreen: React.FC = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-xs text-destructive">{errors.password.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -181,7 +214,10 @@ const LoginScreen: React.FC = () => {
                   />
                 )}
               />
-              <Label htmlFor="rememberMe" className="text-sm font-normal text-muted-foreground cursor-pointer">
+              <Label
+                htmlFor="rememberMe"
+                className="text-sm font-normal text-muted-foreground cursor-pointer"
+              >
                 Remember me for 30 days
               </Label>
             </div>
@@ -200,13 +236,18 @@ const LoginScreen: React.FC = () => {
 
           <div className="text-center text-sm text-muted-foreground">
             Don't have an account?{" "}
-            <Link to="/register" className="text-primary hover:underline font-medium">
+            <Link
+              to="/register"
+              className="text-primary hover:underline font-medium"
+            >
               Create account
             </Link>
           </div>
 
           <div className="rounded-xl border border-border bg-muted/40 p-4">
-            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">Demo credentials</p>
+            <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+              Demo credentials
+            </p>
             <div className="space-y-1">
               <p className="text-xs font-mono">demo@flowlet.com</p>
               <p className="text-xs font-mono">demo123</p>

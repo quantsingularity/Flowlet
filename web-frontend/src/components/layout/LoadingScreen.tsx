@@ -4,7 +4,9 @@ interface LoadingScreenProps {
   message?: string;
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ message = "Loading..." }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({
+  message = "Loading...",
+}) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center space-y-5">

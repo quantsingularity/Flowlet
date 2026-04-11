@@ -32,11 +32,6 @@
       "@/types/*": ["./types/*", "./src/types/*"]
     }
   },
-  "include": [
-    "./**/*.ts",
-    "./**/*.tsx",
-    "./**/*.d.ts",
-    "vitest.config.ts"
-  ],
+  "include": ["./**/*.ts", "./**/*.tsx", "./**/*.d.ts", "vitest.config.ts"],
   "exclude": ["node_modules", "dist"]
 }

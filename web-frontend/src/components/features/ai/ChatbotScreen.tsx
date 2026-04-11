@@ -21,19 +21,27 @@ const SUGGESTED_PROMPTS = [
 ];
 
 const BOT_RESPONSES: Record<string, string> = {
-  default: "I can help you with account insights, spending analysis, and financial planning. What would you like to know?",
-  spending: "Based on your recent activity, you've spent $2,850 this month — about 12% less than last month. Your largest category is Housing ($1,200), followed by Food & Dining ($480).",
-  expenses: "Here are some ways to reduce expenses: 1) Your subscription services total $45/month — consider reviewing unused ones. 2) Your Food & Dining is 16% of income — cooking at home more could save ~$150/month.",
-  transactions: "Your last 5 transactions were: Coffee Shop (-$4.50), Salary Deposit (+$4,200), Netflix (-$15.99), Gas Station (-$45.20), and Grocery Store (-$92.40).",
-  savings: "Based on your income of $4,200 and expenses of $2,850, you could save $1,350/month. I recommend: Emergency Fund ($500/mo), Investment ($500/mo), and Short-term goals ($350/mo).",
+  default:
+    "I can help you with account insights, spending analysis, and financial planning. What would you like to know?",
+  spending:
+    "Based on your recent activity, you've spent $2,850 this month — about 12% less than last month. Your largest category is Housing ($1,200), followed by Food & Dining ($480).",
+  expenses:
+    "Here are some ways to reduce expenses: 1) Your subscription services total $45/month — consider reviewing unused ones. 2) Your Food & Dining is 16% of income — cooking at home more could save ~$150/month.",
+  transactions:
+    "Your last 5 transactions were: Coffee Shop (-$4.50), Salary Deposit (+$4,200), Netflix (-$15.99), Gas Station (-$45.20), and Grocery Store (-$92.40).",
+  savings:
+    "Based on your income of $4,200 and expenses of $2,850, you could save $1,350/month. I recommend: Emergency Fund ($500/mo), Investment ($500/mo), and Short-term goals ($350/mo).",
 };
 
 function getBotResponse(input: string): string {
   const lower = input.toLowerCase();
-  if (lower.includes("spend") || lower.includes("month")) return BOT_RESPONSES.spending;
-  if (lower.includes("reduc") || lower.includes("expen")) return BOT_RESPONSES.expenses;
+  if (lower.includes("spend") || lower.includes("month"))
+    return BOT_RESPONSES.spending;
+  if (lower.includes("reduc") || lower.includes("expen"))
+    return BOT_RESPONSES.expenses;
   if (lower.includes("transact")) return BOT_RESPONSES.transactions;
-  if (lower.includes("sav") || lower.includes("goal")) return BOT_RESPONSES.savings;
+  if (lower.includes("sav") || lower.includes("goal"))
+    return BOT_RESPONSES.savings;
   return BOT_RESPONSES.default;
 }
 
@@ -42,7 +50,8 @@ export default function ChatbotScreen() {
     {
       id: "1",
       role: "assistant",
-      content: "Hello! I'm your Flowlet AI assistant. I can help with spending analysis, account insights, and financial planning. How can I help you today?",
+      content:
+        "Hello! I'm your Flowlet AI assistant. I can help with spending analysis, account insights, and financial planning. How can I help you today?",
       timestamp: new Date(),
     },
   ]);
@@ -95,12 +104,14 @@ export default function ChatbotScreen() {
   };
 
   const clearChat = () => {
-    setMessages([{
-      id: Date.now().toString(),
-      role: "assistant",
-      content: "Chat cleared. How can I help you?",
-      timestamp: new Date(),
-    }]);
+    setMessages([
+      {
+        id: Date.now().toString(),
+        role: "assistant",
+        content: "Chat cleared. How can I help you?",
+        timestamp: new Date(),
+      },
+    ]);
   };
 
   return (
@@ -115,11 +126,18 @@ export default function ChatbotScreen() {
             <h1 className="text-lg font-bold">AI Assistant</h1>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <p className="text-xs text-muted-foreground">Online · Powered by Flowlet AI</p>
+              <p className="text-xs text-muted-foreground">
+                Online · Powered by Flowlet AI
+              </p>
             </div>
           </div>
         </div>
-        <Button variant="ghost" size="sm" className="gap-1.5 text-xs" onClick={clearChat}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1.5 text-xs"
+          onClick={clearChat}
+        >
           <RefreshCw className="h-3.5 w-3.5" />
           Clear
         </Button>
@@ -152,31 +170,39 @@ export default function ChatbotScreen() {
                 msg.role === "user" && "flex-row-reverse",
               )}
             >
-              <div className={cn(
-                "w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5",
-                msg.role === "assistant"
-                  ? "bg-primary/10"
-                  : "bg-muted",
-              )}>
-                {msg.role === "assistant"
-                  ? <Bot className="h-4 w-4 text-primary" />
-                  : <User className="h-3.5 w-3.5 text-muted-foreground" />
-                }
+              <div
+                className={cn(
+                  "w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5",
+                  msg.role === "assistant" ? "bg-primary/10" : "bg-muted",
+                )}
+              >
+                {msg.role === "assistant" ? (
+                  <Bot className="h-4 w-4 text-primary" />
+                ) : (
+                  <User className="h-3.5 w-3.5 text-muted-foreground" />
+                )}
               </div>
-              <div className={cn(
-                "max-w-[75%] space-y-1",
-                msg.role === "user" && "items-end flex flex-col",
-              )}>
-                <div className={cn(
-                  "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
-                  msg.role === "assistant"
-                    ? "bg-muted text-foreground rounded-tl-sm"
-                    : "bg-primary text-primary-foreground rounded-tr-sm",
-                )}>
+              <div
+                className={cn(
+                  "max-w-[75%] space-y-1",
+                  msg.role === "user" && "items-end flex flex-col",
+                )}
+              >
+                <div
+                  className={cn(
+                    "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+                    msg.role === "assistant"
+                      ? "bg-muted text-foreground rounded-tl-sm"
+                      : "bg-primary text-primary-foreground rounded-tr-sm",
+                  )}
+                >
                   {msg.content}
                 </div>
                 <p className="text-[10px] text-muted-foreground px-1">
-                  {msg.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {msg.timestamp.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </p>
               </div>
             </div>

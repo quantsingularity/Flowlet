@@ -1,4 +1,12 @@
-import { ArrowDownLeft, ArrowUpRight, Copy, Eye, EyeOff, Plus, Send } from "lucide-react";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Copy,
+  Eye,
+  EyeOff,
+  Plus,
+  Send,
+} from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,10 +34,42 @@ interface WalletScreenProps {
 const WalletScreen: React.FC<WalletScreenProps> = ({
   balance = 12345.67,
   recentTransactions = [
-    { id: "1", description: "Coffee Shop", amount: -4.5, type: "debit", date: "2025-01-14", category: "Food", status: "completed" },
-    { id: "2", description: "Salary Deposit", amount: 4200.0, type: "credit", date: "2025-01-13", category: "Income", status: "completed" },
-    { id: "3", description: "Online Purchase", amount: -75.0, type: "debit", date: "2025-01-12", category: "Shopping", status: "completed" },
-    { id: "4", description: "Gas Station", amount: -45.2, type: "debit", date: "2025-01-11", category: "Transport", status: "pending" },
+    {
+      id: "1",
+      description: "Coffee Shop",
+      amount: -4.5,
+      type: "debit",
+      date: "2025-01-14",
+      category: "Food",
+      status: "completed",
+    },
+    {
+      id: "2",
+      description: "Salary Deposit",
+      amount: 4200.0,
+      type: "credit",
+      date: "2025-01-13",
+      category: "Income",
+      status: "completed",
+    },
+    {
+      id: "3",
+      description: "Online Purchase",
+      amount: -75.0,
+      type: "debit",
+      date: "2025-01-12",
+      category: "Shopping",
+      status: "completed",
+    },
+    {
+      id: "4",
+      description: "Gas Station",
+      amount: -45.2,
+      type: "debit",
+      date: "2025-01-11",
+      category: "Transport",
+      status: "pending",
+    },
   ],
 }) => {
   const [balanceVisible, setBalanceVisible] = useState(true);
@@ -38,18 +78,23 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
   const accountNumber = "FL-4821-9034-7621";
 
   const copyAccountNumber = () => {
-    navigator.clipboard.writeText(accountNumber).then(() => {
-      toast.success("Account number copied");
-    }).catch(() => {
-      toast.error("Could not copy to clipboard");
-    });
+    navigator.clipboard
+      .writeText(accountNumber)
+      .then(() => {
+        toast.success("Account number copied");
+      })
+      .catch(() => {
+        toast.error("Could not copy to clipboard");
+      });
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Wallet</h1>
-        <p className="text-muted-foreground text-sm mt-1">Manage your funds and transactions</p>
+        <p className="text-muted-foreground text-sm mt-1">
+          Manage your funds and transactions
+        </p>
       </div>
 
       {/* Balance card */}
@@ -57,19 +102,27 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-6">
             <div>
-              <p className="text-sidebar-foreground/60 text-xs font-medium uppercase tracking-widest mb-1">Total Balance</p>
+              <p className="text-sidebar-foreground/60 text-xs font-medium uppercase tracking-widest mb-1">
+                Total Balance
+              </p>
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold tabular-nums tracking-tight">
                   {balanceVisible
-                    ? new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(balance)
-                    : "••••••"
-                  }
+                    ? new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      }).format(balance)
+                    : "••••••"}
                 </span>
                 <button
                   onClick={() => setBalanceVisible(!balanceVisible)}
                   className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
                 >
-                  {balanceVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {balanceVisible ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -79,8 +132,13 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
           </div>
 
           <div className="flex items-center gap-2 mb-6">
-            <span className="text-sidebar-foreground/50 text-xs font-mono">{accountNumber}</span>
-            <button onClick={copyAccountNumber} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors">
+            <span className="text-sidebar-foreground/50 text-xs font-mono">
+              {accountNumber}
+            </span>
+            <button
+              onClick={copyAccountNumber}
+              className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
+            >
               <Copy className="h-3 w-3" />
             </button>
           </div>
@@ -115,7 +173,9 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">This month in</p>
-                <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">$4,200</p>
+                <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                  $4,200
+                </p>
               </div>
             </div>
           </CardContent>
@@ -128,7 +188,9 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">This month out</p>
-                <p className="text-lg font-bold text-red-600 dark:text-red-400 tabular-nums">$2,850</p>
+                <p className="text-lg font-bold text-red-600 dark:text-red-400 tabular-nums">
+                  $2,850
+                </p>
               </div>
             </div>
           </CardContent>
@@ -156,30 +218,49 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
               const isIncome = tx.amount > 0;
               return (
                 <div key={tx.id} className="flex items-center gap-3 py-3">
-                  <div className={cn(
-                    "w-9 h-9 rounded-full flex items-center justify-center shrink-0",
-                    isIncome ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-slate-100 dark:bg-slate-800",
-                  )}>
-                    {isIncome
-                      ? <ArrowDownLeft className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                      : <ArrowUpRight className="h-4 w-4 text-slate-500" />
-                    }
+                  <div
+                    className={cn(
+                      "w-9 h-9 rounded-full flex items-center justify-center shrink-0",
+                      isIncome
+                        ? "bg-emerald-50 dark:bg-emerald-950/30"
+                        : "bg-slate-100 dark:bg-slate-800",
+                    )}
+                  >
+                    {isIncome ? (
+                      <ArrowDownLeft className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    ) : (
+                      <ArrowUpRight className="h-4 w-4 text-slate-500" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{tx.description}</p>
+                    <p className="text-sm font-medium truncate">
+                      {tx.description}
+                    </p>
                     <div className="flex items-center gap-1.5">
                       <span className="text-xs text-muted-foreground">
-                        {new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        {new Date(tx.date).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </span>
                       {tx.status === "pending" && (
-                        <Badge variant="secondary" className="text-[10px] h-3.5 px-1 py-0">Pending</Badge>
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] h-3.5 px-1 py-0"
+                        >
+                          Pending
+                        </Badge>
                       )}
                     </div>
                   </div>
-                  <span className={cn(
-                    "text-sm font-semibold tabular-nums",
-                    isIncome ? "text-emerald-600 dark:text-emerald-400" : "text-foreground",
-                  )}>
+                  <span
+                    className={cn(
+                      "text-sm font-semibold tabular-nums",
+                      isIncome
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-foreground",
+                    )}
+                  >
                     {isIncome ? "+" : "−"}${Math.abs(tx.amount).toFixed(2)}
                   </span>
                 </div>

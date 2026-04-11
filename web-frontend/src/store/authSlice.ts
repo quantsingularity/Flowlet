@@ -1,7 +1,16 @@
-import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { ApiError, TokenManager } from "@/src/lib/api/client";
 import { authService } from "@/src/lib/api/authService";
-import type { AuthState, LoginCredentials, RegisterData, User } from "@/src/types";
+import type {
+  AuthState,
+  LoginCredentials,
+  RegisterData,
+  User,
+} from "@/src/types";
 
 const initialState: AuthState = {
   user: null,
@@ -85,7 +94,9 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    clearError: (state) => { state.error = null; },
+    clearError: (state) => {
+      state.error = null;
+    },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) state.user = { ...state.user, ...action.payload };
     },
@@ -94,7 +105,10 @@ const authSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    const pending = (state: AuthState) => { state.isLoading = true; state.error = null; };
+    const pending = (state: AuthState) => {
+      state.isLoading = true;
+      state.error = null;
+    };
     const rejected = (state: AuthState, action: { payload: unknown }) => {
       state.isLoading = false;
       state.isAuthenticated = false;
@@ -124,7 +138,9 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, rejected)
 
-      .addCase(logoutUser.pending, (state) => { state.isLoading = true; })
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
@@ -140,7 +156,9 @@ const authSlice = createSlice({
         state.token = null;
       })
 
-      .addCase(validateToken.pending, (state) => { state.isLoading = true; })
+      .addCase(validateToken.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(validateToken.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
@@ -155,7 +173,9 @@ const authSlice = createSlice({
         state.token = null;
       })
 
-      .addCase(refreshToken.pending, (state) => { state.isLoading = true; })
+      .addCase(refreshToken.pending, (state) => {
+        state.isLoading = true;
+      })
       .addCase(refreshToken.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;

@@ -1,6 +1,14 @@
 import {
-  CreditCard, Eye, EyeOff, Globe, Lock, Plus,
-  Settings, Smartphone, Unlock, Zap,
+  CreditCard,
+  Eye,
+  EyeOff,
+  Globe,
+  Lock,
+  Plus,
+  Settings,
+  Smartphone,
+  Unlock,
+  Zap,
 } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
@@ -27,9 +35,44 @@ interface CardData {
 }
 
 const SAMPLE_CARDS: CardData[] = [
-  { id: "1", cardNumber: "**** **** **** 1234", cardType: "debit", cardBrand: "visa", holderName: "Demo User", expiryMonth: 12, expiryYear: 2028, status: "active", isVirtual: false, balance: 12345.67, lastUsed: "2025-01-14" },
-  { id: "2", cardNumber: "**** **** **** 5678", cardType: "credit", cardBrand: "mastercard", holderName: "Demo User", expiryMonth: 8, expiryYear: 2027, status: "active", isVirtual: false, creditLimit: 5000, lastUsed: "2025-01-13" },
-  { id: "3", cardNumber: "**** **** **** 9012", cardType: "credit", cardBrand: "amex", holderName: "Demo User", expiryMonth: 6, expiryYear: 2026, status: "blocked", isVirtual: true, creditLimit: 10000 },
+  {
+    id: "1",
+    cardNumber: "**** **** **** 1234",
+    cardType: "debit",
+    cardBrand: "visa",
+    holderName: "Demo User",
+    expiryMonth: 12,
+    expiryYear: 2028,
+    status: "active",
+    isVirtual: false,
+    balance: 12345.67,
+    lastUsed: "2025-01-14",
+  },
+  {
+    id: "2",
+    cardNumber: "**** **** **** 5678",
+    cardType: "credit",
+    cardBrand: "mastercard",
+    holderName: "Demo User",
+    expiryMonth: 8,
+    expiryYear: 2027,
+    status: "active",
+    isVirtual: false,
+    creditLimit: 5000,
+    lastUsed: "2025-01-13",
+  },
+  {
+    id: "3",
+    cardNumber: "**** **** **** 9012",
+    cardType: "credit",
+    cardBrand: "amex",
+    holderName: "Demo User",
+    expiryMonth: 6,
+    expiryYear: 2026,
+    status: "blocked",
+    isVirtual: true,
+    creditLimit: 10000,
+  },
 ];
 
 const brandColors: Record<string, string> = {
@@ -40,24 +83,41 @@ const brandColors: Record<string, string> = {
 };
 
 const statusConfig = {
-  active: { label: "Active", className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
-  blocked: { label: "Blocked", className: "bg-red-500/20 text-red-400 border-red-500/30" },
-  expired: { label: "Expired", className: "bg-slate-500/20 text-slate-400 border-slate-500/30" },
-  inactive: { label: "Inactive", className: "bg-amber-500/20 text-amber-400 border-amber-500/30" },
+  active: {
+    label: "Active",
+    className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+  },
+  blocked: {
+    label: "Blocked",
+    className: "bg-red-500/20 text-red-400 border-red-500/30",
+  },
+  expired: {
+    label: "Expired",
+    className: "bg-slate-500/20 text-slate-400 border-slate-500/30",
+  },
+  inactive: {
+    label: "Inactive",
+    className: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  },
 };
 
-const VisualCard: React.FC<{ card: CardData; revealed: boolean; onToggleReveal: () => void }> = ({
-  card, revealed, onToggleReveal,
-}) => {
-  const gradClass = brandColors[card.cardBrand] ?? "from-slate-700 to-slate-900";
+const VisualCard: React.FC<{
+  card: CardData;
+  revealed: boolean;
+  onToggleReveal: () => void;
+}> = ({ card, revealed, onToggleReveal }) => {
+  const gradClass =
+    brandColors[card.cardBrand] ?? "from-slate-700 to-slate-900";
   const cfg = statusConfig[card.status];
 
   return (
-    <div className={cn(
-      "relative rounded-2xl p-6 bg-gradient-to-br text-white overflow-hidden",
-      gradClass,
-      card.status === "blocked" && "opacity-75",
-    )}>
+    <div
+      className={cn(
+        "relative rounded-2xl p-6 bg-gradient-to-br text-white overflow-hidden",
+        gradClass,
+        card.status === "blocked" && "opacity-75",
+      )}
+    >
       {/* Card brand pattern */}
       <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/5 -translate-y-32 translate-x-16" />
       <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white/5 translate-y-20 -translate-x-12" />
@@ -73,7 +133,9 @@ const VisualCard: React.FC<{ card: CardData; revealed: boolean; onToggleReveal: 
             </Badge>
           </div>
           <div className="text-right">
-            <p className="text-white/60 text-xs capitalize font-medium">{card.cardBrand}</p>
+            <p className="text-white/60 text-xs capitalize font-medium">
+              {card.cardBrand}
+            </p>
           </div>
         </div>
 
@@ -82,7 +144,8 @@ const VisualCard: React.FC<{ card: CardData; revealed: boolean; onToggleReveal: 
             {revealed ? "4532 1234 5678 1234" : card.cardNumber}
           </p>
           <p className="text-white/60 text-xs">
-            Expires {String(card.expiryMonth).padStart(2, "0")}/{String(card.expiryYear).slice(-2)}
+            Expires {String(card.expiryMonth).padStart(2, "0")}/
+            {String(card.expiryYear).slice(-2)}
           </p>
         </div>
 
@@ -90,7 +153,9 @@ const VisualCard: React.FC<{ card: CardData; revealed: boolean; onToggleReveal: 
           <p className="text-sm font-medium">{card.holderName}</p>
           {card.balance !== undefined && (
             <div className="text-right">
-              <p className="text-white/60 text-[10px] uppercase tracking-wide">Balance</p>
+              <p className="text-white/60 text-[10px] uppercase tracking-wide">
+                Balance
+              </p>
               <p className="font-bold tabular-nums">
                 {revealed
                   ? `$${card.balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}`
@@ -100,8 +165,12 @@ const VisualCard: React.FC<{ card: CardData; revealed: boolean; onToggleReveal: 
           )}
           {card.creditLimit !== undefined && (
             <div className="text-right">
-              <p className="text-white/60 text-[10px] uppercase tracking-wide">Limit</p>
-              <p className="font-bold tabular-nums">${card.creditLimit.toLocaleString()}</p>
+              <p className="text-white/60 text-[10px] uppercase tracking-wide">
+                Limit
+              </p>
+              <p className="font-bold tabular-nums">
+                ${card.creditLimit.toLocaleString()}
+              </p>
             </div>
           )}
         </div>
@@ -110,11 +179,13 @@ const VisualCard: React.FC<{ card: CardData; revealed: boolean; onToggleReveal: 
   );
 };
 
-const CardsScreen: React.FC<{ cards?: CardData[] }> = ({ cards = SAMPLE_CARDS }) => {
+const CardsScreen: React.FC<{ cards?: CardData[] }> = ({
+  cards = SAMPLE_CARDS,
+}) => {
   const [revealedCards, setRevealedCards] = useState<Set<string>>(new Set());
-  const [cardStatuses, setCardStatuses] = useState<Map<string, CardData["status"]>>(
-    new Map(cards.map((c) => [c.id, c.status])),
-  );
+  const [cardStatuses, setCardStatuses] = useState<
+    Map<string, CardData["status"]>
+  >(new Map(cards.map((c) => [c.id, c.status])));
   const navigate = useNavigate();
 
   const toggleReveal = (id: string) => {
@@ -142,9 +213,15 @@ const CardsScreen: React.FC<{ cards?: CardData[] }> = ({ cards = SAMPLE_CARDS })
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Cards</h1>
-          <p className="text-muted-foreground text-sm mt-1">Manage your virtual and physical cards</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            Manage your virtual and physical cards
+          </p>
         </div>
-        <Button size="sm" className="gap-1.5" onClick={() => navigate("/cards/issue")}>
+        <Button
+          size="sm"
+          className="gap-1.5"
+          onClick={() => navigate("/cards/issue")}
+        >
           <Plus className="h-4 w-4" />
           Issue Card
         </Button>
@@ -153,14 +230,36 @@ const CardsScreen: React.FC<{ cards?: CardData[] }> = ({ cards = SAMPLE_CARDS })
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: "Total Cards", value: cards.length, icon: CreditCard, color: "text-primary bg-primary/10" },
-          { label: "Active", value: cards.filter((c) => c.status === "active").length, icon: Zap, color: "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30" },
-          { label: "Virtual", value: cards.filter((c) => c.isVirtual).length, icon: Globe, color: "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30" },
+          {
+            label: "Total Cards",
+            value: cards.length,
+            icon: CreditCard,
+            color: "text-primary bg-primary/10",
+          },
+          {
+            label: "Active",
+            value: cards.filter((c) => c.status === "active").length,
+            icon: Zap,
+            color:
+              "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30",
+          },
+          {
+            label: "Virtual",
+            value: cards.filter((c) => c.isVirtual).length,
+            icon: Globe,
+            color:
+              "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30",
+          },
         ].map(({ label, value, icon: Icon, color }) => (
           <Card key={label}>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center", color)}>
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center",
+                    color,
+                  )}
+                >
                   <Icon className="h-4 w-4" />
                 </div>
                 <div>
@@ -198,7 +297,11 @@ const CardsScreen: React.FC<{ cards?: CardData[] }> = ({ cards = SAMPLE_CARDS })
                     className="gap-1.5 text-xs"
                     onClick={() => toggleReveal(card.id)}
                   >
-                    {isRevealed ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                    {isRevealed ? (
+                      <EyeOff className="h-3.5 w-3.5" />
+                    ) : (
+                      <Eye className="h-3.5 w-3.5" />
+                    )}
                     {isRevealed ? "Hide" : "Reveal"}
                   </Button>
                   <Button
@@ -206,15 +309,23 @@ const CardsScreen: React.FC<{ cards?: CardData[] }> = ({ cards = SAMPLE_CARDS })
                     size="sm"
                     className={cn(
                       "gap-1.5 text-xs",
-                      status === "blocked" && "border-emerald-500/30 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20",
+                      status === "blocked" &&
+                        "border-emerald-500/30 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20",
                     )}
                     onClick={() => toggleBlock(card.id)}
                     disabled={status === "expired" || status === "inactive"}
                   >
-                    {status === "blocked"
-                      ? <><Unlock className="h-3.5 w-3.5" />Unblock</>
-                      : <><Lock className="h-3.5 w-3.5" />Block</>
-                    }
+                    {status === "blocked" ? (
+                      <>
+                        <Unlock className="h-3.5 w-3.5" />
+                        Unblock
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="h-3.5 w-3.5" />
+                        Block
+                      </>
+                    )}
                   </Button>
                   <Button
                     variant="outline"
@@ -226,8 +337,12 @@ const CardsScreen: React.FC<{ cards?: CardData[] }> = ({ cards = SAMPLE_CARDS })
                     Manage
                   </Button>
                   {card.isVirtual && (
-                    <Badge variant="outline" className="text-[10px] gap-1 ml-auto self-center">
-                      <Smartphone className="h-3 w-3" />Virtual
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] gap-1 ml-auto self-center"
+                    >
+                      <Smartphone className="h-3 w-3" />
+                      Virtual
                     </Badge>
                   )}
                 </div>

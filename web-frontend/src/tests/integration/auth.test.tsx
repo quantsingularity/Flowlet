@@ -21,8 +21,12 @@ vi.mock("@/src/store/authSlice", async () => {
     ...actual,
     loginUser: vi.fn().mockImplementation(() => ({
       type: "auth/login/fulfilled",
-      payload: { user: { id: "1", email: "demo@flowlet.com" }, access_token: "demo.tok.sig" },
-      unwrap: () => Promise.resolve({ user: { id: "1" }, access_token: "demo.tok.sig" }),
+      payload: {
+        user: { id: "1", email: "demo@flowlet.com" },
+        access_token: "demo.tok.sig",
+      },
+      unwrap: () =>
+        Promise.resolve({ user: { id: "1" }, access_token: "demo.tok.sig" }),
     })),
   };
 });

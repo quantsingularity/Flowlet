@@ -27,7 +27,10 @@ const registerSchema = z
     confirmPassword: z.string(),
     acceptTerms: z
       .boolean()
-      .refine((val) => val === true, "You must accept the terms and conditions"),
+      .refine(
+        (val) => val === true,
+        "You must accept the terms and conditions",
+      ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -43,7 +46,12 @@ const PasswordStrength: React.FC<{ password: string }> = ({ password }) => {
     { label: "Number", valid: /[0-9]/.test(password) },
   ];
   const strength = checks.filter((c) => c.valid).length;
-  const colors = ["bg-destructive", "bg-warning", "bg-yellow-500", "bg-success"];
+  const colors = [
+    "bg-destructive",
+    "bg-warning",
+    "bg-yellow-500",
+    "bg-success",
+  ];
 
   if (!password) return null;
 
@@ -126,7 +134,9 @@ const RegisterScreen: React.FC = () => {
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Create your account</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Create your account
+          </h2>
           <p className="text-muted-foreground text-sm mt-1">
             Get started with Flowlet — free for 30 days.
           </p>
@@ -150,7 +160,9 @@ const RegisterScreen: React.FC = () => {
                 className={errors.firstName ? "border-destructive" : ""}
               />
               {errors.firstName && (
-                <p className="text-xs text-destructive">{errors.firstName.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -163,7 +175,9 @@ const RegisterScreen: React.FC = () => {
                 className={errors.lastName ? "border-destructive" : ""}
               />
               {errors.lastName && (
-                <p className="text-xs text-destructive">{errors.lastName.message}</p>
+                <p className="text-xs text-destructive">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
           </div>
@@ -192,7 +206,9 @@ const RegisterScreen: React.FC = () => {
                 autoComplete="new-password"
                 placeholder="Create a strong password"
                 {...register("password")}
-                className={errors.password ? "border-destructive pr-10" : "pr-10"}
+                className={
+                  errors.password ? "border-destructive pr-10" : "pr-10"
+                }
               />
               <button
                 type="button"
@@ -200,12 +216,18 @@ const RegisterScreen: React.FC = () => {
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
               >
-                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             <PasswordStrength password={watchedPassword} />
             {errors.password && (
-              <p className="text-xs text-destructive">{errors.password.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -218,7 +240,9 @@ const RegisterScreen: React.FC = () => {
                 autoComplete="new-password"
                 placeholder="Repeat your password"
                 {...register("confirmPassword")}
-                className={errors.confirmPassword ? "border-destructive pr-10" : "pr-10"}
+                className={
+                  errors.confirmPassword ? "border-destructive pr-10" : "pr-10"
+                }
               />
               <button
                 type="button"
@@ -226,11 +250,17 @@ const RegisterScreen: React.FC = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex={-1}
               >
-                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -249,15 +279,24 @@ const RegisterScreen: React.FC = () => {
                   />
                 )}
               />
-              <Label htmlFor="acceptTerms" className="text-sm font-normal leading-snug cursor-pointer text-muted-foreground">
+              <Label
+                htmlFor="acceptTerms"
+                className="text-sm font-normal leading-snug cursor-pointer text-muted-foreground"
+              >
                 I agree to the{" "}
-                <Link to="/terms" className="text-primary hover:underline">Terms of Service</Link>
-                {" "}and{" "}
-                <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+                <Link to="/terms" className="text-primary hover:underline">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link to="/privacy" className="text-primary hover:underline">
+                  Privacy Policy
+                </Link>
               </Label>
             </div>
             {errors.acceptTerms && (
-              <p className="text-xs text-destructive">{errors.acceptTerms.message}</p>
+              <p className="text-xs text-destructive">
+                {errors.acceptTerms.message}
+              </p>
             )}
           </div>
 
@@ -275,7 +314,10 @@ const RegisterScreen: React.FC = () => {
 
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{" "}
-          <Link to="/login" className="text-primary hover:underline font-medium">
+          <Link
+            to="/login"
+            className="text-primary hover:underline font-medium"
+          >
             Sign in
           </Link>
         </p>

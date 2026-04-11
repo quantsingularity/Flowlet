@@ -1,4 +1,14 @@
-import { Bell, LogOut, Menu, Monitor, Moon, Search, Sun, User, X } from "lucide-react";
+import {
+  Bell,
+  LogOut,
+  Menu,
+  Monitor,
+  Moon,
+  Search,
+  Sun,
+  User,
+  X,
+} from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,9 +49,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
 
   const getThemeIcon = () => {
     switch (theme) {
-      case "light": return <Sun className="h-4 w-4" />;
-      case "dark": return <Moon className="h-4 w-4" />;
-      default: return <Monitor className="h-4 w-4" />;
+      case "light":
+        return <Sun className="h-4 w-4" />;
+      case "dark":
+        return <Moon className="h-4 w-4" />;
+      default:
+        return <Monitor className="h-4 w-4" />;
     }
   };
 
@@ -71,7 +84,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
 
           <div className="flex items-center gap-2.5 shrink-0">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">F</span>
+              <span className="text-primary-foreground font-bold text-sm">
+                F
+              </span>
             </div>
             <span className="text-lg font-semibold tracking-tight hidden sm:block">
               Flowlet
@@ -80,10 +95,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
         </div>
 
         {/* Search */}
-        <div className={cn(
-          "flex-1 max-w-sm transition-all duration-200",
-          isMobile && searchOpen ? "flex" : isMobile ? "hidden" : "flex",
-        )}>
+        <div
+          className={cn(
+            "flex-1 max-w-sm transition-all duration-200",
+            isMobile && searchOpen ? "flex" : isMobile ? "hidden" : "flex",
+          )}
+        >
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
@@ -102,7 +119,11 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
               onClick={() => setSearchOpen(!searchOpen)}
               aria-label="Search"
             >
-              {searchOpen ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+              {searchOpen ? (
+                <X className="h-4 w-4" />
+              ) : (
+                <Search className="h-4 w-4" />
+              )}
             </Button>
           )}
 
@@ -139,7 +160,9 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col gap-0.5">
                   <p className="text-sm font-semibold">{displayName}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {user?.email}
+                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -154,13 +177,16 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem onClick={() => handleThemeChange("light")}>
-                    <Sun className="mr-2 h-4 w-4" />Light
+                    <Sun className="mr-2 h-4 w-4" />
+                    Light
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
-                    <Moon className="mr-2 h-4 w-4" />Dark
+                    <Moon className="mr-2 h-4 w-4" />
+                    Dark
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleThemeChange("system")}>
-                    <Monitor className="mr-2 h-4 w-4" />System
+                    <Monitor className="mr-2 h-4 w-4" />
+                    System
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>

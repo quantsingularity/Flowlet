@@ -25,20 +25,95 @@ interface Transaction {
 }
 
 const SAMPLE: Transaction[] = [
-  { id: "1", date: "2025-01-14", description: "Coffee Shop", amount: -4.5, type: "debit", status: "completed", category: "Food & Dining" },
-  { id: "2", date: "2025-01-13", description: "Salary Deposit", amount: 4200.0, type: "credit", status: "completed", category: "Income" },
-  { id: "3", date: "2025-01-12", description: "Netflix Subscription", amount: -15.99, type: "debit", status: "completed", category: "Entertainment" },
-  { id: "4", date: "2025-01-11", description: "Gas Station", amount: -45.2, type: "debit", status: "pending", category: "Transportation" },
-  { id: "5", date: "2025-01-10", description: "Freelance Payment", amount: 850.0, type: "credit", status: "completed", category: "Income" },
-  { id: "6", date: "2025-01-09", description: "Grocery Store", amount: -92.4, type: "debit", status: "completed", category: "Food & Dining" },
-  { id: "7", date: "2025-01-08", description: "Electricity Bill", amount: -128.0, type: "debit", status: "failed", category: "Utilities" },
-  { id: "8", date: "2025-01-07", description: "Online Purchase", amount: -65.0, type: "debit", status: "completed", category: "Shopping" },
+  {
+    id: "1",
+    date: "2025-01-14",
+    description: "Coffee Shop",
+    amount: -4.5,
+    type: "debit",
+    status: "completed",
+    category: "Food & Dining",
+  },
+  {
+    id: "2",
+    date: "2025-01-13",
+    description: "Salary Deposit",
+    amount: 4200.0,
+    type: "credit",
+    status: "completed",
+    category: "Income",
+  },
+  {
+    id: "3",
+    date: "2025-01-12",
+    description: "Netflix Subscription",
+    amount: -15.99,
+    type: "debit",
+    status: "completed",
+    category: "Entertainment",
+  },
+  {
+    id: "4",
+    date: "2025-01-11",
+    description: "Gas Station",
+    amount: -45.2,
+    type: "debit",
+    status: "pending",
+    category: "Transportation",
+  },
+  {
+    id: "5",
+    date: "2025-01-10",
+    description: "Freelance Payment",
+    amount: 850.0,
+    type: "credit",
+    status: "completed",
+    category: "Income",
+  },
+  {
+    id: "6",
+    date: "2025-01-09",
+    description: "Grocery Store",
+    amount: -92.4,
+    type: "debit",
+    status: "completed",
+    category: "Food & Dining",
+  },
+  {
+    id: "7",
+    date: "2025-01-08",
+    description: "Electricity Bill",
+    amount: -128.0,
+    type: "debit",
+    status: "failed",
+    category: "Utilities",
+  },
+  {
+    id: "8",
+    date: "2025-01-07",
+    description: "Online Purchase",
+    amount: -65.0,
+    type: "debit",
+    status: "completed",
+    category: "Shopping",
+  },
 ];
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  completed: { label: "Completed", className: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400" },
-  pending: { label: "Pending", className: "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400" },
-  failed: { label: "Failed", className: "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400" },
+  completed: {
+    label: "Completed",
+    className:
+      "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400",
+  },
+  pending: {
+    label: "Pending",
+    className:
+      "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400",
+  },
+  failed: {
+    label: "Failed",
+    className: "bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400",
+  },
 };
 
 const TransactionHistory: React.FC<{ transactions?: Transaction[] }> = ({
@@ -53,14 +128,17 @@ const TransactionHistory: React.FC<{ transactions?: Transaction[] }> = ({
       const matchesSearch =
         searchTerm === "" ||
         tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (tx.category?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
-      const matchesStatus = statusFilter === "all" || tx.status === statusFilter;
+        (tx.category?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+          false);
+      const matchesStatus =
+        statusFilter === "all" || tx.status === statusFilter;
       const matchesType = typeFilter === "all" || tx.type === typeFilter;
       return matchesSearch && matchesStatus && matchesType;
     });
   }, [transactions, searchTerm, statusFilter, typeFilter]);
 
-  const hasFilters = searchTerm || statusFilter !== "all" || typeFilter !== "all";
+  const hasFilters =
+    searchTerm || statusFilter !== "all" || typeFilter !== "all";
 
   const clearFilters = () => {
     setSearchTerm("");
@@ -95,9 +173,17 @@ const TransactionHistory: React.FC<{ transactions?: Transaction[] }> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
-          <p className="text-muted-foreground text-sm mt-1">{filtered.length} transaction{filtered.length !== 1 ? "s" : ""} found</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            {filtered.length} transaction{filtered.length !== 1 ? "s" : ""}{" "}
+            found
+          </p>
         </div>
-        <Button variant="outline" size="sm" className="gap-2 self-start" onClick={downloadCSV}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 self-start"
+          onClick={downloadCSV}
+        >
           <Download className="h-4 w-4" />
           Export CSV
         </Button>
@@ -138,7 +224,12 @@ const TransactionHistory: React.FC<{ transactions?: Transaction[] }> = ({
               </SelectContent>
             </Select>
             {hasFilters && (
-              <Button variant="ghost" size="sm" className="h-9 gap-1.5 text-muted-foreground" onClick={clearFilters}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-9 gap-1.5 text-muted-foreground"
+                onClick={clearFilters}
+              >
                 <X className="h-3.5 w-3.5" />
                 Clear
               </Button>
@@ -161,36 +252,63 @@ const TransactionHistory: React.FC<{ transactions?: Transaction[] }> = ({
                 const isIncome = tx.type === "credit";
                 const cfg = statusConfig[tx.status];
                 return (
-                  <div key={tx.id} className="flex items-center gap-4 px-5 py-4 hover:bg-muted/30 transition-colors">
-                    <div className={cn(
-                      "w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold",
-                      isIncome ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
-                    )}>
+                  <div
+                    key={tx.id}
+                    className="flex items-center gap-4 px-5 py-4 hover:bg-muted/30 transition-colors"
+                  >
+                    <div
+                      className={cn(
+                        "w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-xs font-semibold",
+                        isIncome
+                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
+                      )}
+                    >
                       {isIncome ? "+" : "−"}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium truncate">{tx.description}</p>
-                        <Badge variant="secondary" className={cn("text-[10px] h-4 px-1.5 border-0 shrink-0", cfg.className)}>
+                        <p className="text-sm font-medium truncate">
+                          {tx.description}
+                        </p>
+                        <Badge
+                          variant="secondary"
+                          className={cn(
+                            "text-[10px] h-4 px-1.5 border-0 shrink-0",
+                            cfg.className,
+                          )}
+                        >
                           {cfg.label}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-xs text-muted-foreground">
-                          {new Date(tx.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                          {new Date(tx.date).toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
                         </span>
                         {tx.category && (
                           <>
-                            <span className="text-muted-foreground/40 text-xs">·</span>
-                            <span className="text-xs text-muted-foreground">{tx.category}</span>
+                            <span className="text-muted-foreground/40 text-xs">
+                              ·
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {tx.category}
+                            </span>
                           </>
                         )}
                       </div>
                     </div>
-                    <span className={cn(
-                      "text-sm font-semibold tabular-nums shrink-0",
-                      isIncome ? "text-emerald-600 dark:text-emerald-400" : "text-foreground",
-                    )}>
+                    <span
+                      className={cn(
+                        "text-sm font-semibold tabular-nums shrink-0",
+                        isIncome
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-foreground",
+                      )}
+                    >
                       {isIncome ? "+" : "−"}${Math.abs(tx.amount).toFixed(2)}
                     </span>
                   </div>

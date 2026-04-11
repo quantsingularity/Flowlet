@@ -1,13 +1,35 @@
-import { Bell, Eye, Globe, Lock, Moon, Palette, Shield, Sun, User } from "lucide-react";
+import {
+  Bell,
+  Eye,
+  Globe,
+  Lock,
+  Moon,
+  Palette,
+  Shield,
+  Sun,
+  User,
+} from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from "@/src/hooks/redux";
 import { useAuth } from "@/src/hooks/useAuth";
 import { setTheme } from "@/src/store/uiSlice";
@@ -33,31 +55,41 @@ const SettingsScreen: React.FC = () => {
   });
 
   const handleSaveProfile = () => toast.success("Profile updated successfully");
-  const handleSaveNotifications = () => toast.success("Notification preferences saved");
+  const handleSaveNotifications = () =>
+    toast.success("Notification preferences saved");
   const handleSavePrivacy = () => toast.success("Security settings updated");
 
-  const displayName = user?.fullName || `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || "User";
+  const displayName =
+    user?.fullName ||
+    `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
+    "User";
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-muted-foreground text-sm mt-1">Manage your account preferences and security</p>
+        <p className="text-muted-foreground text-sm mt-1">
+          Manage your account preferences and security
+        </p>
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4">
         <TabsList className="h-9 flex-wrap">
           <TabsTrigger value="profile" className="text-xs gap-1.5">
-            <User className="h-3 w-3" />Profile
+            <User className="h-3 w-3" />
+            Profile
           </TabsTrigger>
           <TabsTrigger value="appearance" className="text-xs gap-1.5">
-            <Palette className="h-3 w-3" />Appearance
+            <Palette className="h-3 w-3" />
+            Appearance
           </TabsTrigger>
           <TabsTrigger value="notifications" className="text-xs gap-1.5">
-            <Bell className="h-3 w-3" />Notifications
+            <Bell className="h-3 w-3" />
+            Notifications
           </TabsTrigger>
           <TabsTrigger value="security" className="text-xs gap-1.5">
-            <Shield className="h-3 w-3" />Security
+            <Shield className="h-3 w-3" />
+            Security
           </TabsTrigger>
         </TabsList>
 
@@ -66,7 +98,9 @@ const SettingsScreen: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Profile Information</CardTitle>
-              <CardDescription className="text-xs">Update your personal details</CardDescription>
+              <CardDescription className="text-xs">
+                Update your personal details
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
               <div className="flex items-center gap-4">
@@ -76,7 +110,12 @@ const SettingsScreen: React.FC = () => {
                 <div>
                   <p className="font-semibold">{displayName}</p>
                   <p className="text-sm text-muted-foreground">{user?.email}</p>
-                  <Badge variant="secondary" className="text-xs mt-1 capitalize">{user?.role ?? "customer"}</Badge>
+                  <Badge
+                    variant="secondary"
+                    className="text-xs mt-1 capitalize"
+                  >
+                    {user?.role ?? "customer"}
+                  </Badge>
                 </div>
               </div>
 
@@ -98,7 +137,11 @@ const SettingsScreen: React.FC = () => {
 
               <div className="space-y-1.5">
                 <Label>Phone Number</Label>
-                <Input type="tel" placeholder="+1 (555) 000-0000" defaultValue={user?.phoneNumber ?? ""} />
+                <Input
+                  type="tel"
+                  placeholder="+1 (555) 000-0000"
+                  defaultValue={user?.phoneNumber ?? ""}
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -131,7 +174,9 @@ const SettingsScreen: React.FC = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Appearance</CardTitle>
-              <CardDescription className="text-xs">Customize how Flowlet looks</CardDescription>
+              <CardDescription className="text-xs">
+                Customize how Flowlet looks
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
               <div>
@@ -144,15 +189,21 @@ const SettingsScreen: React.FC = () => {
                   ].map(({ value, label, icon: Icon }) => (
                     <button
                       key={value}
-                      onClick={() => dispatch(setTheme(value as "light" | "dark" | "system"))}
+                      onClick={() =>
+                        dispatch(setTheme(value as "light" | "dark" | "system"))
+                      }
                       className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
                         theme === value
                           ? "border-primary bg-primary/5"
                           : "border-border hover:border-primary/40"
                       }`}
                     >
-                      <Icon className={`h-5 w-5 ${theme === value ? "text-primary" : "text-muted-foreground"}`} />
-                      <span className={`text-xs font-medium ${theme === value ? "text-primary" : "text-muted-foreground"}`}>
+                      <Icon
+                        className={`h-5 w-5 ${theme === value ? "text-primary" : "text-muted-foreground"}`}
+                      />
+                      <span
+                        className={`text-xs font-medium ${theme === value ? "text-primary" : "text-muted-foreground"}`}
+                      >
                         {label}
                       </span>
                     </button>
@@ -182,20 +233,45 @@ const SettingsScreen: React.FC = () => {
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Notification Preferences</CardTitle>
-              <CardDescription className="text-xs">Choose what you want to be notified about</CardDescription>
+              <CardTitle className="text-base">
+                Notification Preferences
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Choose what you want to be notified about
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
               {[
-                { key: "transactions" as const, label: "Transaction Alerts", description: "Get notified for every transaction" },
-                { key: "security" as const, label: "Security Alerts", description: "Login attempts and security events" },
-                { key: "weeklyReport" as const, label: "Weekly Report", description: "Summary of your weekly spending" },
-                { key: "marketing" as const, label: "Product Updates", description: "New features and announcements" },
+                {
+                  key: "transactions" as const,
+                  label: "Transaction Alerts",
+                  description: "Get notified for every transaction",
+                },
+                {
+                  key: "security" as const,
+                  label: "Security Alerts",
+                  description: "Login attempts and security events",
+                },
+                {
+                  key: "weeklyReport" as const,
+                  label: "Weekly Report",
+                  description: "Summary of your weekly spending",
+                },
+                {
+                  key: "marketing" as const,
+                  label: "Product Updates",
+                  description: "New features and announcements",
+                },
               ].map(({ key, label, description }) => (
-                <div key={key} className="flex items-center justify-between py-1">
+                <div
+                  key={key}
+                  className="flex items-center justify-between py-1"
+                >
                   <div>
                     <p className="text-sm font-medium">{label}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {description}
+                    </p>
                   </div>
                   <Switch
                     checked={notifications[key]}
@@ -206,7 +282,9 @@ const SettingsScreen: React.FC = () => {
                 </div>
               ))}
               <div className="flex justify-end pt-2 border-t border-border">
-                <Button onClick={handleSaveNotifications}>Save Preferences</Button>
+                <Button onClick={handleSaveNotifications}>
+                  Save Preferences
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -218,22 +296,44 @@ const SettingsScreen: React.FC = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Security Settings</CardTitle>
-                <CardDescription className="text-xs">Manage your account security</CardDescription>
+                <CardDescription className="text-xs">
+                  Manage your account security
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
                 {[
-                  { key: "twoFactor" as const, label: "Two-Factor Authentication", description: "Require a code when signing in", icon: Lock },
-                  { key: "loginAlerts" as const, label: "Login Alerts", description: "Email me when a new device signs in", icon: Bell },
-                  { key: "showBalance" as const, label: "Show Balance on Dashboard", description: "Display your balance by default", icon: Eye },
+                  {
+                    key: "twoFactor" as const,
+                    label: "Two-Factor Authentication",
+                    description: "Require a code when signing in",
+                    icon: Lock,
+                  },
+                  {
+                    key: "loginAlerts" as const,
+                    label: "Login Alerts",
+                    description: "Email me when a new device signs in",
+                    icon: Bell,
+                  },
+                  {
+                    key: "showBalance" as const,
+                    label: "Show Balance on Dashboard",
+                    description: "Display your balance by default",
+                    icon: Eye,
+                  },
                 ].map(({ key, label, description, icon: Icon }) => (
-                  <div key={key} className="flex items-center justify-between py-1">
+                  <div
+                    key={key}
+                    className="flex items-center justify-between py-1"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center">
                         <Icon className="h-4 w-4 text-muted-foreground" />
                       </div>
                       <div>
                         <p className="text-sm font-medium">{label}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {description}
+                        </p>
                       </div>
                     </div>
                     <Switch
@@ -272,8 +372,12 @@ const SettingsScreen: React.FC = () => {
 
             <Card className="border-destructive/30">
               <CardHeader>
-                <CardTitle className="text-base text-destructive">Danger Zone</CardTitle>
-                <CardDescription className="text-xs">Irreversible actions — proceed with caution</CardDescription>
+                <CardTitle className="text-base text-destructive">
+                  Danger Zone
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Irreversible actions — proceed with caution
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="destructive" size="sm">

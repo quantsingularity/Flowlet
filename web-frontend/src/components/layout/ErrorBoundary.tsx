@@ -1,7 +1,13 @@
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Props {
   children: ReactNode;
@@ -51,7 +57,8 @@ class ErrorBoundary extends Component<Props, State> {
               </div>
               <CardTitle className="text-xl">Something went wrong</CardTitle>
               <CardDescription>
-                We're sorry, but something unexpected happened. Please try refreshing the page.
+                We're sorry, but something unexpected happened. Please try
+                refreshing the page.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -68,7 +75,11 @@ class ErrorBoundary extends Component<Props, State> {
                 </div>
               )}
               <div className="flex gap-2">
-                <Button onClick={this.handleReset} variant="outline" className="flex-1">
+                <Button
+                  onClick={this.handleReset}
+                  variant="outline"
+                  className="flex-1"
+                >
                   Try Again
                 </Button>
                 <Button onClick={this.handleReload} className="flex-1">

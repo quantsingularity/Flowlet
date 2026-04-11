@@ -62,7 +62,11 @@ const ForgotPasswordScreen: React.FC = () => {
             <div>
               <h2 className="text-xl font-bold">Check your email</h2>
               <p className="text-muted-foreground text-sm mt-1">
-                If <span className="font-medium text-foreground">{getValues("email")}</span> is registered, you'll receive a password reset link shortly.
+                If{" "}
+                <span className="font-medium text-foreground">
+                  {getValues("email")}
+                </span>{" "}
+                is registered, you'll receive a password reset link shortly.
               </p>
             </div>
             <p className="text-xs text-muted-foreground">
@@ -73,7 +77,8 @@ const ForgotPasswordScreen: React.FC = () => {
                 onClick={() => setSubmitted(false)}
               >
                 try again
-              </button>.
+              </button>
+              .
             </p>
             <Link to="/login">
               <Button variant="outline" className="w-full gap-2">
@@ -85,7 +90,9 @@ const ForgotPasswordScreen: React.FC = () => {
         ) : (
           <>
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">Reset your password</h2>
+              <h2 className="text-2xl font-bold tracking-tight">
+                Reset your password
+              </h2>
               <p className="text-muted-foreground text-sm mt-1">
                 Enter your email address and we'll send you a reset link.
               </p>
@@ -109,7 +116,9 @@ const ForgotPasswordScreen: React.FC = () => {
                   className={errors.email ? "border-destructive" : ""}
                 />
                 {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
@@ -125,7 +134,10 @@ const ForgotPasswordScreen: React.FC = () => {
               </Button>
             </form>
 
-            <Link to="/login" className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              to="/login"
+              className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               <ArrowLeft className="h-3.5 w-3.5" />
               Back to sign in
             </Link>

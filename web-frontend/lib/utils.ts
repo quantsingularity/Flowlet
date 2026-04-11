@@ -1,1 +1,16 @@
-export { cn, formatCurrency, formatDate, formatRelativeTime, formatNumber, truncate, getInitials, slugify, debounce, sleep, generateId, clamp, omit, pick } from "@/src/lib/utils/utils";
+export {
+  cn,
+  formatCurrency,
+  formatDate,
+  formatRelativeTime,
+  formatNumber,
+  truncate,
+  getInitials,
+  slugify,
+  debounce,
+  sleep,
+  generateId,
+  clamp,
+  omit,
+  pick,
+} from "@/src/lib/utils/utils";

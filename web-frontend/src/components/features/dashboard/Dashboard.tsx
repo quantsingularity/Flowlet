@@ -34,19 +34,25 @@ const StatCard: React.FC<{
       <div className="flex items-start justify-between">
         <div className="space-y-1">
           <p className="text-sm text-muted-foreground font-medium">{title}</p>
-          <p className="text-2xl font-bold tabular-nums tracking-tight">{value}</p>
+          <p className="text-2xl font-bold tabular-nums tracking-tight">
+            {value}
+          </p>
           <div className="flex items-center gap-1">
             {trend === "up" ? (
               <TrendingUp className="h-3 w-3 text-emerald-500" />
             ) : (
               <TrendingDown className="h-3 w-3 text-red-500" />
             )}
-            <span className={`text-xs font-medium ${trend === "up" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+            <span
+              className={`text-xs font-medium ${trend === "up" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+            >
               {change} vs last month
             </span>
           </div>
         </div>
-        <div className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center shrink-0`}>
+        <div
+          className={`w-10 h-10 rounded-xl ${color} flex items-center justify-center shrink-0`}
+        >
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -58,10 +64,30 @@ const QuickActions: React.FC = () => {
   const navigate = useNavigate();
 
   const actions = [
-    { label: "Send Money", icon: Send, path: "/wallet/send", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
-    { label: "Receive", icon: ArrowDownRight, path: "/wallet/receive", color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
-    { label: "Cards", icon: CreditCard, path: "/cards", color: "bg-violet-500/10 text-violet-600 dark:text-violet-400" },
-    { label: "Add Funds", icon: Plus, path: "/wallet", color: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+    {
+      label: "Send Money",
+      icon: Send,
+      path: "/wallet/send",
+      color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    },
+    {
+      label: "Receive",
+      icon: ArrowDownRight,
+      path: "/wallet/receive",
+      color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    },
+    {
+      label: "Cards",
+      icon: CreditCard,
+      path: "/cards",
+      color: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    },
+    {
+      label: "Add Funds",
+      icon: Plus,
+      path: "/wallet",
+      color: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
+    },
   ];
 
   return (
@@ -79,7 +105,9 @@ const QuickActions: React.FC = () => {
                 onClick={() => navigate(action.path)}
                 className="flex flex-col items-center gap-2.5 p-4 rounded-xl border border-border hover:border-primary/40 hover:bg-accent/50 transition-all duration-200 group"
               >
-                <div className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
+                <div
+                  className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}
+                >
                   <Icon className="h-5 w-5" />
                 </div>
                 <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
@@ -111,14 +139,19 @@ const Dashboard: React.FC = () => {
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
       try {
         const walletData = await fetchWalletData();
-        if (isMounted) setState({ data: walletData, isLoading: false, error: null });
+        if (isMounted)
+          setState({ data: walletData, isLoading: false, error: null });
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Failed to load data";
-        if (isMounted) setState({ data: null, isLoading: false, error: errorMessage });
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to load data";
+        if (isMounted)
+          setState({ data: null, isLoading: false, error: errorMessage });
       }
     };
     loadData();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const { data, isLoading, error } = state;
@@ -132,7 +165,8 @@ const Dashboard: React.FC = () => {
 
   const colorMap: Record<string, string> = {
     "Total Balance": "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-    "Monthly Income": "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    "Monthly Income":
+      "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     "Monthly Expenses": "bg-red-500/10 text-red-600 dark:text-red-400",
     "Savings Rate": "bg-violet-500/10 text-violet-600 dark:text-violet-400",
   };
@@ -143,7 +177,9 @@ const Dashboard: React.FC = () => {
         <div className="relative">
           <div className="w-12 h-12 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
         </div>
-        <p className="text-sm text-muted-foreground animate-pulse">Loading your dashboard...</p>
+        <p className="text-sm text-muted-foreground animate-pulse">
+          Loading your dashboard...
+        </p>
       </div>
     );
   }
@@ -155,10 +191,16 @@ const Dashboard: React.FC = () => {
           <span className="text-destructive text-xl">!</span>
         </div>
         <div>
-          <p className="font-semibold text-destructive">Failed to load dashboard</p>
+          <p className="font-semibold text-destructive">
+            Failed to load dashboard
+          </p>
           <p className="text-sm text-muted-foreground mt-1">{error}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => window.location.reload()}
+        >
           Try again
         </Button>
       </div>
@@ -181,7 +223,11 @@ const Dashboard: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => navigate("/wallet/receive")}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/wallet/receive")}
+          >
             <ArrowDownRight className="h-4 w-4 mr-1.5" />
             Receive
           </Button>
@@ -218,7 +264,10 @@ const Dashboard: React.FC = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-medium">Security Status</p>
-                <Badge variant="secondary" className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30">
+                <Badge
+                  variant="secondary"
+                  className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30"
+                >
                   Secure
                 </Badge>
               </div>
@@ -228,9 +277,18 @@ const Dashboard: React.FC = () => {
                   { label: "Last login", status: true, value: "Just now" },
                   { label: "Active sessions", status: true, value: "1 device" },
                 ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between text-xs">
+                  <div
+                    key={item.label}
+                    className="flex items-center justify-between text-xs"
+                  >
                     <span className="text-muted-foreground">{item.label}</span>
-                    <span className={item.value ? "font-medium" : "text-emerald-600 dark:text-emerald-400 font-medium"}>
+                    <span
+                      className={
+                        item.value
+                          ? "font-medium"
+                          : "text-emerald-600 dark:text-emerald-400 font-medium"
+                      }
+                    >
                       {item.value ?? "Enabled"}
                     </span>
                   </div>

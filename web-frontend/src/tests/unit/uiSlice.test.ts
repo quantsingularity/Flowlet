@@ -1,10 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
 import uiReducer, {
-  setTheme, toggleSidebar, setSidebarOpen,
-  addNotification, markNotificationAsRead,
-  markAllNotificationsAsRead, removeNotification,
-  addToast, removeToast, clearToasts,
+  setTheme,
+  toggleSidebar,
+  setSidebarOpen,
+  addNotification,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  removeNotification,
+  addToast,
+  removeToast,
+  clearToasts,
 } from "@/src/store/uiSlice";
 
 const makeStore = () => configureStore({ reducer: { ui: uiReducer } });
@@ -37,20 +43,34 @@ describe("uiSlice", () => {
 
   it("addNotification increments unread count", () => {
     const store = makeStore();
-    store.dispatch(addNotification({
-      id: "1", type: "info", title: "Test", message: "Hello",
-      read: false, createdAt: "", updatedAt: "",
-    }));
+    store.dispatch(
+      addNotification({
+        id: "1",
+        type: "info",
+        title: "Test",
+        message: "Hello",
+        read: false,
+        createdAt: "",
+        updatedAt: "",
+      }),
+    );
     expect(store.getState().ui.unreadNotifications).toBe(1);
     expect(store.getState().ui.notifications).toHaveLength(1);
   });
 
   it("markNotificationAsRead decrements unread count", () => {
     const store = makeStore();
-    store.dispatch(addNotification({
-      id: "1", type: "info", title: "Test", message: "Hello",
-      read: false, createdAt: "", updatedAt: "",
-    }));
+    store.dispatch(
+      addNotification({
+        id: "1",
+        type: "info",
+        title: "Test",
+        message: "Hello",
+        read: false,
+        createdAt: "",
+        updatedAt: "",
+      }),
+    );
     store.dispatch(markNotificationAsRead("1"));
     expect(store.getState().ui.unreadNotifications).toBe(0);
     expect(store.getState().ui.notifications[0].read).toBe(true);
@@ -59,10 +79,17 @@ describe("uiSlice", () => {
   it("markAllNotificationsAsRead clears all unread", () => {
     const store = makeStore();
     for (let i = 0; i < 3; i++) {
-      store.dispatch(addNotification({
-        id: String(i), type: "info", title: "N", message: "M",
-        read: false, createdAt: "", updatedAt: "",
-      }));
+      store.dispatch(
+        addNotification({
+          id: String(i),
+          type: "info",
+          title: "N",
+          message: "M",
+          read: false,
+          createdAt: "",
+          updatedAt: "",
+        }),
+      );
     }
     store.dispatch(markAllNotificationsAsRead());
     expect(store.getState().ui.unreadNotifications).toBe(0);

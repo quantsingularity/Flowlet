@@ -75,10 +75,10 @@ pnpm build
 
 ## Demo Login
 
-| Field    | Value              |
-|----------|--------------------|
-| Email    | demo@flowlet.com   |
-| Password | demo123            |
+| Field    | Value            |
+| -------- | ---------------- |
+| Email    | demo@flowlet.com |
+| Password | demo123          |
 
 ## Bug Fixes Applied
 

@@ -17,12 +17,7 @@ export default defineConfig({
     ],
     coverage: {
       reporter: ["text", "json", "html"],
-      exclude: [
-        "node_modules/",
-        "dist/",
-        "src/components/ui/",
-        "**/*.d.ts",
-      ],
+      exclude: ["node_modules/", "dist/", "src/components/ui/", "**/*.d.ts"],
     },
   },
   resolve: {

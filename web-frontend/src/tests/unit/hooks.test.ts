@@ -3,8 +3,12 @@ import { renderHook, act } from "@testing-library/react";
 import { useDebounce, useOnlineStatus } from "@/src/hooks/useResponsive";
 
 describe("useDebounce", () => {
-  beforeEach(() => { vi.useFakeTimers(); });
-  afterEach(() => { vi.useRealTimers(); });
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("returns initial value immediately", () => {
     const { result } = renderHook(() => useDebounce("initial", 300));
@@ -19,7 +23,9 @@ describe("useDebounce", () => {
     expect(result.current).toBe("first");
     rerender({ value: "second" });
     expect(result.current).toBe("first");
-    act(() => { vi.advanceTimersByTime(300); });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
     expect(result.current).toBe("second");
   });
 
@@ -31,14 +37,19 @@ describe("useDebounce", () => {
     rerender({ value: "b" });
     rerender({ value: "c" });
     rerender({ value: "d" });
-    act(() => { vi.advanceTimersByTime(300); });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
     expect(result.current).toBe("d");
   });
 });
 
 describe("useOnlineStatus", () => {
   it("returns true when online", () => {
-    Object.defineProperty(navigator, "onLine", { value: true, configurable: true });
+    Object.defineProperty(navigator, "onLine", {
+      value: true,
+      configurable: true,
+    });
     const { result } = renderHook(() => useOnlineStatus());
     expect(result.current).toBe(true);
   });
@@ -53,8 +64,12 @@ describe("useOnlineStatus", () => {
 
   it("updates when online event fires", () => {
     const { result } = renderHook(() => useOnlineStatus());
-    act(() => { window.dispatchEvent(new Event("offline")); });
-    act(() => { window.dispatchEvent(new Event("online")); });
+    act(() => {
+      window.dispatchEvent(new Event("offline"));
+    });
+    act(() => {
+      window.dispatchEvent(new Event("online"));
+    });
     expect(result.current).toBe(true);
   });
 });

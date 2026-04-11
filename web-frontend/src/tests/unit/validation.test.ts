@@ -14,40 +14,65 @@ const sendMoneySchema = z.object({
 
 describe("Login schema validation", () => {
   it("accepts valid credentials", () => {
-    const result = loginSchema.safeParse({ email: "demo@flowlet.com", password: "demo123" });
+    const result = loginSchema.safeParse({
+      email: "demo@flowlet.com",
+      password: "demo123",
+    });
     expect(result.success).toBe(true);
   });
 
   it("rejects invalid email", () => {
-    const result = loginSchema.safeParse({ email: "not-an-email", password: "demo123" });
+    const result = loginSchema.safeParse({
+      email: "not-an-email",
+      password: "demo123",
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects short password", () => {
-    const result = loginSchema.safeParse({ email: "demo@flowlet.com", password: "abc" });
+    const result = loginSchema.safeParse({
+      email: "demo@flowlet.com",
+      password: "abc",
+    });
     expect(result.success).toBe(false);
   });
 });
 
 describe("SendMoney schema validation (amount coercion)", () => {
   it("coerces string amount to number", () => {
-    const result = sendMoneySchema.safeParse({ recipient: "user@test.com", amount: "100.50", currency: "USD" });
+    const result = sendMoneySchema.safeParse({
+      recipient: "user@test.com",
+      amount: "100.50",
+      currency: "USD",
+    });
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.amount).toBe(100.5);
   });
 
   it("rejects zero amount", () => {
-    const result = sendMoneySchema.safeParse({ recipient: "user@test.com", amount: 0, currency: "USD" });
+    const result = sendMoneySchema.safeParse({
+      recipient: "user@test.com",
+      amount: 0,
+      currency: "USD",
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects amount over 10000", () => {
-    const result = sendMoneySchema.safeParse({ recipient: "user@test.com", amount: 10001, currency: "USD" });
+    const result = sendMoneySchema.safeParse({
+      recipient: "user@test.com",
+      amount: 10001,
+      currency: "USD",
+    });
     expect(result.success).toBe(false);
   });
 
   it("rejects empty recipient", () => {
-    const result = sendMoneySchema.safeParse({ recipient: "", amount: 100, currency: "USD" });
+    const result = sendMoneySchema.safeParse({
+      recipient: "",
+      amount: 100,
+      currency: "USD",
+    });
     expect(result.success).toBe(false);
   });
 });

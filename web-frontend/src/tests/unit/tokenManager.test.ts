@@ -5,9 +5,15 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
     getItem: (key: string) => store[key] ?? null,
-    setItem: (key: string, value: string) => { store[key] = value; },
-    removeItem: (key: string) => { delete store[key]; },
-    clear: () => { store = {}; },
+    setItem: (key: string, value: string) => {
+      store[key] = value;
+    },
+    removeItem: (key: string) => {
+      delete store[key];
+    },
+    clear: () => {
+      store = {};
+    },
   };
 })();
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
@@ -28,12 +34,17 @@ describe("TokenManager", () => {
   it("stores and retrieves user data", () => {
     const user = { id: "1", email: "test@example.com" };
     TokenManager.setUser(user);
-    expect(TokenManager.getUser()).toMatchObject({ id: "1", email: "test@example.com" });
+    expect(TokenManager.getUser()).toMatchObject({
+      id: "1",
+      email: "test@example.com",
+    });
   });
 
   it("strips password from stored user", () => {
     TokenManager.setUser({ id: "1", email: "x@x.com", password: "secret" });
-    expect(TokenManager.getUser() as Record<string, unknown>).not.toHaveProperty("password");
+    expect(
+      TokenManager.getUser() as Record<string, unknown>,
+    ).not.toHaveProperty("password");
   });
 
   it("clears all tokens", () => {
@@ -55,12 +66,16 @@ describe("TokenManager", () => {
   });
 
   it("expired JWT is detected as expired", () => {
-    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) - 3600 }));
+    const payload = btoa(
+      JSON.stringify({ exp: Math.floor(Date.now() / 1000) - 3600 }),
+    );
     expect(TokenManager.isTokenExpired(`h.${payload}.s`)).toBe(true);
   });
 
   it("future JWT is not expired", () => {
-    const payload = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }));
+    const payload = btoa(
+      JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 }),
+    );
     expect(TokenManager.isTokenExpired(`h.${payload}.s`)).toBe(false);
   });
 });

@@ -52,8 +52,17 @@ export interface User extends BaseEntity {
 }
 
 export type UserRole = "customer" | "admin" | "support" | "compliance";
-export type UserStatus = "active" | "inactive" | "suspended" | "pending_verification";
-export type KYCStatus = "not_started" | "in_progress" | "completed" | "rejected" | "expired";
+export type UserStatus =
+  | "active"
+  | "inactive"
+  | "suspended"
+  | "pending_verification";
+export type KYCStatus =
+  | "not_started"
+  | "in_progress"
+  | "completed"
+  | "rejected"
+  | "expired";
 
 export interface Permission {
   id: string;

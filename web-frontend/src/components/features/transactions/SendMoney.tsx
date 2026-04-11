@@ -1,5 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, CheckCircle, DollarSign, Loader2, Send, Shield, User } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  DollarSign,
+  Loader2,
+  Send,
+  Shield,
+  User,
+} from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -53,7 +61,9 @@ const SendMoney: React.FC<SendMoneyProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [pendingData, setPendingData] = useState<SendMoneyFormData | null>(null);
+  const [pendingData, setPendingData] = useState<SendMoneyFormData | null>(
+    null,
+  );
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
@@ -72,10 +82,14 @@ const SendMoney: React.FC<SendMoneyProps> = ({
   const watchedAmount = watch("amount");
   const watchedRecipient = watch("recipient");
   const watchedCurrency = watch("currency");
-  const selectedCurrency = CURRENCIES.find((c) => c.code === watchedCurrency) ?? CURRENCIES[0];
+  const selectedCurrency =
+    CURRENCIES.find((c) => c.code === watchedCurrency) ?? CURRENCIES[0];
 
   const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: watchedCurrency || "USD" }).format(amount);
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: watchedCurrency || "USD",
+    }).format(amount);
 
   const fee = watchedAmount ? Math.min(watchedAmount * 0.005, 5) : 0;
   const total = watchedAmount ? watchedAmount + fee : 0;
@@ -120,13 +134,17 @@ const SendMoney: React.FC<SendMoneyProps> = ({
               <h3 className="text-xl font-bold">Transfer Sent!</h3>
               <p className="text-muted-foreground text-sm mt-1">
                 {formatCurrency(pendingData?.amount ?? 0)} has been sent to{" "}
-                <span className="font-medium text-foreground">{pendingData?.recipient}</span>
+                <span className="font-medium text-foreground">
+                  {pendingData?.recipient}
+                </span>
               </p>
             </div>
             <div className="rounded-xl bg-muted/50 p-4 text-sm space-y-2 text-left">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Amount</span>
-                <span className="font-medium">{formatCurrency(pendingData?.amount ?? 0)}</span>
+                <span className="font-medium">
+                  {formatCurrency(pendingData?.amount ?? 0)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Fee</span>
@@ -138,7 +156,15 @@ const SendMoney: React.FC<SendMoneyProps> = ({
               </div>
             </div>
             <div className="flex gap-3 pt-2">
-              <Button variant="outline" className="flex-1" onClick={() => { setSuccess(false); setShowConfirmation(false); setPendingData(null); }}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => {
+                  setSuccess(false);
+                  setShowConfirmation(false);
+                  setPendingData(null);
+                }}
+              >
                 Send Again
               </Button>
               <Button className="flex-1" onClick={() => navigate("/dashboard")}>
@@ -154,12 +180,19 @@ const SendMoney: React.FC<SendMoneyProps> = ({
   return (
     <div className="max-w-md mx-auto space-y-4 animate-fade-in">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="sm" className="p-2" onClick={() => navigate(-1)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="p-2"
+          onClick={() => navigate(-1)}
+        >
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
           <h1 className="text-xl font-bold">Send Money</h1>
-          <p className="text-xs text-muted-foreground">Available: {formatCurrency(availableBalance)}</p>
+          <p className="text-xs text-muted-foreground">
+            Available: {formatCurrency(availableBalance)}
+          </p>
         </div>
       </div>
 
@@ -179,7 +212,9 @@ const SendMoney: React.FC<SendMoneyProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Amount</span>
-                <span className="font-semibold">{formatCurrency(pendingData.amount)}</span>
+                <span className="font-semibold">
+                  {formatCurrency(pendingData.amount)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Network fee</span>
@@ -187,7 +222,9 @@ const SendMoney: React.FC<SendMoneyProps> = ({
               </div>
               <div className="flex justify-between border-t border-border pt-3">
                 <span className="font-bold">Total</span>
-                <span className="font-bold text-base">{formatCurrency(total)}</span>
+                <span className="font-bold text-base">
+                  {formatCurrency(total)}
+                </span>
               </div>
               {pendingData.notes && (
                 <div className="border-t border-border pt-3">
@@ -197,11 +234,24 @@ const SendMoney: React.FC<SendMoneyProps> = ({
               )}
             </div>
             <div className="flex gap-3">
-              <Button variant="outline" className="flex-1" onClick={() => setShowConfirmation(false)} disabled={isLoading}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowConfirmation(false)}
+                disabled={isLoading}
+              >
                 Edit
               </Button>
-              <Button className="flex-1" onClick={confirmSend} disabled={isLoading}>
-                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+              <Button
+                className="flex-1"
+                onClick={confirmSend}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="mr-2 h-4 w-4" />
+                )}
                 {isLoading ? "Sending..." : "Confirm & Send"}
               </Button>
             </div>
@@ -223,7 +273,9 @@ const SendMoney: React.FC<SendMoneyProps> = ({
                   className={errors.recipient ? "border-destructive" : ""}
                 />
                 {errors.recipient && (
-                  <p className="text-xs text-destructive">{errors.recipient.message}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.recipient.message}
+                  </p>
                 )}
               </div>
 
@@ -233,7 +285,10 @@ const SendMoney: React.FC<SendMoneyProps> = ({
                   Amount
                 </Label>
                 <div className="flex gap-2">
-                  <Select value={watchedCurrency} onValueChange={(v) => setValue("currency", v)}>
+                  <Select
+                    value={watchedCurrency}
+                    onValueChange={(v) => setValue("currency", v)}
+                  >
                     <SelectTrigger className="w-28 shrink-0">
                       <SelectValue />
                     </SelectTrigger>
@@ -256,12 +311,17 @@ const SendMoney: React.FC<SendMoneyProps> = ({
                       min="0.01"
                       placeholder="0.00"
                       {...register("amount")}
-                      className={cn("pl-7", errors.amount ? "border-destructive" : "")}
+                      className={cn(
+                        "pl-7",
+                        errors.amount ? "border-destructive" : "",
+                      )}
                     />
                   </div>
                 </div>
                 {errors.amount && (
-                  <p className="text-xs text-destructive">{errors.amount.message}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.amount.message}
+                  </p>
                 )}
               </div>
 
@@ -275,15 +335,19 @@ const SendMoney: React.FC<SendMoneyProps> = ({
                     <span>Fee (0.5%, max $5)</span>
                     <span>{formatCurrency(fee)}</span>
                   </div>
-                  <div className={cn(
-                    "flex justify-between font-semibold border-t border-border pt-1.5",
-                    insufficientFunds ? "text-destructive" : "",
-                  )}>
+                  <div
+                    className={cn(
+                      "flex justify-between font-semibold border-t border-border pt-1.5",
+                      insufficientFunds ? "text-destructive" : "",
+                    )}
+                  >
                     <span>Total</span>
                     <span>{formatCurrency(total)}</span>
                   </div>
                   {insufficientFunds && (
-                    <p className="text-destructive font-medium">Insufficient funds</p>
+                    <p className="text-destructive font-medium">
+                      Insufficient funds
+                    </p>
                   )}
                 </div>
               )}
@@ -295,10 +359,16 @@ const SendMoney: React.FC<SendMoneyProps> = ({
                   placeholder="What's this for?"
                   rows={2}
                   {...register("notes")}
-                  className={errors.notes ? "border-destructive resize-none" : "resize-none"}
+                  className={
+                    errors.notes
+                      ? "border-destructive resize-none"
+                      : "resize-none"
+                  }
                 />
                 {errors.notes && (
-                  <p className="text-xs text-destructive">{errors.notes.message}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.notes.message}
+                  </p>
                 )}
               </div>
 

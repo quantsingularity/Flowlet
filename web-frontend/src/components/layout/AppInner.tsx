@@ -1,6 +1,11 @@
 import type React from "react";
 import { useEffect } from "react";
-import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
 import { Toaster } from "sonner";
 
 import LoginScreen from "@/src/components/auth/LoginScreen";
@@ -48,7 +53,9 @@ const AppInner: React.FC = () => {
     const root = document.documentElement;
     root.classList.remove("light", "dark");
     if (theme === "system") {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      const prefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
       root.classList.add(prefersDark ? "dark" : "light");
     } else {
       root.classList.add(theme);
@@ -69,7 +76,9 @@ const AppInner: React.FC = () => {
   useEffect(() => {
     try {
       localStorage.setItem("flowlet_theme", theme);
-    } catch { /* ignore storage errors */ }
+    } catch {
+      /* ignore storage errors */
+    }
   }, [theme]);
 
   if (isLoading) return <LoadingScreen />;
@@ -87,19 +96,57 @@ const AppInner: React.FC = () => {
           <Route path="/developer" element={<DeveloperPortalPage />} />
 
           {/* Auth routes — redirect to dashboard if already logged in */}
-          <Route path="/login" element={<PublicRoute><LoginScreen /></PublicRoute>} />
-          <Route path="/register" element={<PublicRoute><RegisterScreen /></PublicRoute>} />
-          <Route path="/onboarding" element={<PublicRoute><OnboardingFlow /></PublicRoute>} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <LoginScreen />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <RegisterScreen />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <PublicRoute>
+                <OnboardingFlow />
+              </PublicRoute>
+            }
+          />
           {/* BUG FIX: /forgot-password was linked in LoginScreen but had no route */}
-          <Route path="/forgot-password" element={<PublicRoute><ForgotPasswordScreen /></PublicRoute>} />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute>
+                <ForgotPasswordScreen />
+              </PublicRoute>
+            }
+          />
 
           {/* Protected app routes */}
-          <Route path="/" element={<ProtectedRoute><Layout isMobile={isMobile} /></ProtectedRoute>}>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout isMobile={isMobile} />
+              </ProtectedRoute>
+            }
+          >
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
 
             <Route path="wallet" element={<WalletScreen />} />
-            <Route path="wallet/transactions" element={<TransactionHistory />} />
+            <Route
+              path="wallet/transactions"
+              element={<TransactionHistory />}
+            />
             <Route path="wallet/send" element={<SendMoney />} />
             <Route path="wallet/receive" element={<ReceiveMoney />} />
 
@@ -114,16 +161,28 @@ const AppInner: React.FC = () => {
 
             <Route path="chat" element={<ChatbotScreen />} />
             <Route path="alerts" element={<FraudAlerts />} />
-            <Route path="fraud-detection" element={<AIFraudDetectionScreen />} />
+            <Route
+              path="fraud-detection"
+              element={<AIFraudDetectionScreen />}
+            />
 
             <Route path="security" element={<SecurityScreen />} />
-            <Route path="security/advanced" element={<EnhancedSecurityScreen />} />
+            <Route
+              path="security/advanced"
+              element={<EnhancedSecurityScreen />}
+            />
             <Route path="settings" element={<SettingsScreen />} />
           </Route>
 
           <Route
             path="*"
-            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/home" replace />}
+            element={
+              isAuthenticated ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/home" replace />
+              )
+            }
           />
         </Routes>
 

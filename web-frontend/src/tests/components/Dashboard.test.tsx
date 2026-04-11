@@ -18,14 +18,50 @@ vi.mock("@/src/hooks/useAuth", () => ({
 vi.mock("@/src/services/walletService", () => ({
   fetchWalletData: vi.fn().mockResolvedValue({
     quickStats: [
-      { title: "Total Balance", value: "$12,345.67", change: "+2.5%", trend: "up", icon: () => null },
-      { title: "Monthly Income", value: "$4,200.00", change: "+8.1%", trend: "up", icon: () => null },
-      { title: "Monthly Expenses", value: "$2,850.30", change: "-3.2%", trend: "down", icon: () => null },
-      { title: "Savings Rate", value: "32.1%", change: "+5.4%", trend: "up", icon: () => null },
+      {
+        title: "Total Balance",
+        value: "$12,345.67",
+        change: "+2.5%",
+        trend: "up",
+        icon: () => null,
+      },
+      {
+        title: "Monthly Income",
+        value: "$4,200.00",
+        change: "+8.1%",
+        trend: "up",
+        icon: () => null,
+      },
+      {
+        title: "Monthly Expenses",
+        value: "$2,850.30",
+        change: "-3.2%",
+        trend: "down",
+        icon: () => null,
+      },
+      {
+        title: "Savings Rate",
+        value: "32.1%",
+        change: "+5.4%",
+        trend: "up",
+        icon: () => null,
+      },
     ],
     recentTransactions: [
-      { id: 1, description: "Coffee Shop", amount: -4.5, date: "2025-01-14", category: "Food" },
-      { id: 2, description: "Salary", amount: 4200, date: "2025-01-13", category: "Income" },
+      {
+        id: 1,
+        description: "Coffee Shop",
+        amount: -4.5,
+        date: "2025-01-14",
+        category: "Food",
+      },
+      {
+        id: 2,
+        description: "Salary",
+        amount: 4200,
+        date: "2025-01-13",
+        category: "Income",
+      },
     ],
   }),
 }));
@@ -35,7 +71,12 @@ const createTestStore = () =>
     reducer: { auth: authReducer, ui: uiReducer },
     preloadedState: {
       auth: {
-        user: { id: "1", firstName: "Demo", lastName: "User", email: "demo@flowlet.com" },
+        user: {
+          id: "1",
+          firstName: "Demo",
+          lastName: "User",
+          email: "demo@flowlet.com",
+        },
         isAuthenticated: true,
         isLoading: false,
         token: null,
