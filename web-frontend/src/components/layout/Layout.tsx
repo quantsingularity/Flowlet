@@ -1,7 +1,7 @@
-import type React from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/src/hooks/redux";
-import { setMobileMenuOpen, toggleSidebar } from "@/src/store/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { setMobileMenuOpen, toggleSidebar } from "@/store/uiSlice";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { cn } from "@/lib/utils";

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, Download, Settings, Share2 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";

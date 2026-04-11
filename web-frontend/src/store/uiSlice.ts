@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { Notification } from "@/src/types";
+import type { Notification } from "@/types";
 
 type Theme = "light" | "dark" | "system";
 

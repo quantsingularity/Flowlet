@@ -1,11 +1,8 @@
-import type { LucideIcon } from "lucide-react";
-
 export interface QuickStat {
   title: string;
   value: string;
   change: string;
   trend: "up" | "down";
-  icon: LucideIcon;
 }
 
 export interface Transaction {

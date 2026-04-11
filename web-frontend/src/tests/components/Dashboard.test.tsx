@@ -3,11 +3,11 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
-import Dashboard from "@/src/components/features/dashboard/Dashboard";
-import authReducer from "@/src/store/authSlice";
-import uiReducer from "@/src/store/uiSlice";
+import Dashboard from "@/components/features/dashboard/Dashboard";
+import authReducer from "@/store/authSlice";
+import uiReducer from "@/store/uiSlice";
 
-vi.mock("@/src/hooks/useAuth", () => ({
+vi.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
     user: { firstName: "Demo", lastName: "User", email: "demo@flowlet.com" },
     isAuthenticated: true,
@@ -15,7 +15,7 @@ vi.mock("@/src/hooks/useAuth", () => ({
   }),
 }));
 
-vi.mock("@/src/services/walletService", () => ({
+vi.mock("@/services/walletService", () => ({
   fetchWalletData: vi.fn().mockResolvedValue({
     quickStats: [
       {

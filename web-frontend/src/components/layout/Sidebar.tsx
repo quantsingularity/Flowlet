@@ -4,6 +4,7 @@ import {
   Bot,
   ChevronRight,
   CreditCard,
+  GitBranch,
   Home,
   MessageSquare,
   PiggyBank,
@@ -13,7 +14,7 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -67,6 +68,10 @@ const navigation: NavGroup[] = [
     ],
   },
   {
+    title: "Automation",
+    items: [{ icon: GitBranch, label: "Workflows", path: "/workflows" }],
+  },
+  {
     title: "System",
     items: [
       { icon: Shield, label: "Security", path: "/security" },
@@ -102,29 +107,31 @@ const SidebarContent: React.FC<{
                   to={item.path}
                   onClick={onItemClick}
                   className={cn(
-                    "group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
+                    "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 group",
                     isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
-                      : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent",
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50",
                   )}
                 >
                   <Icon
                     className={cn(
-                      "h-4 w-4 shrink-0 transition-transform duration-150",
-                      isActive ? "" : "group-hover:scale-110",
+                      "h-4 w-4 shrink-0 transition-colors",
+                      isActive
+                        ? "text-sidebar-primary"
+                        : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground/80",
                     )}
                   />
                   <span className="flex-1 truncate">{item.label}</span>
                   {item.badge && (
                     <Badge
                       variant={item.badgeVariant ?? "secondary"}
-                      className="h-4 px-1.5 text-[10px] font-bold min-w-[16px] flex items-center justify-center"
+                      className="text-[10px] h-4 px-1.5 min-w-4 justify-center"
                     >
                       {item.badge}
                     </Badge>
                   )}
-                  {isActive && (
-                    <ChevronRight className="h-3 w-3 shrink-0 opacity-60" />
+                  {isActive && !item.badge && (
+                    <ChevronRight className="h-3 w-3 text-sidebar-primary opacity-60" />
                   )}
                 </Link>
               );
@@ -144,72 +151,69 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isMobile, onClose }) => {
       <>
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
             onClick={onClose}
           />
         )}
-        <div
+        <aside
           className={cn(
-            "fixed top-0 left-0 h-full w-64 bg-sidebar flex flex-col z-50 transform transition-transform duration-300 ease-out lg:hidden",
+            "fixed top-0 left-0 z-50 h-full w-72 bg-sidebar flex flex-col transition-transform duration-300 ease-out",
             isOpen ? "translate-x-0" : "-translate-x-full",
           )}
         >
-          <div className="flex items-center justify-between px-4 h-16 border-b border-sidebar-border shrink-0">
+          <div className="flex items-center justify-between h-16 px-4 border-b border-sidebar-border shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
-                <span className="text-sidebar-primary-foreground font-bold text-sm">
-                  F
-                </span>
+              <div className="w-7 h-7 rounded-lg bg-sidebar-primary flex items-center justify-center">
+                <Zap className="h-4 w-4 text-sidebar-primary-foreground" />
               </div>
-              <span className="text-sidebar-foreground font-semibold text-lg tracking-tight">
+              <span className="text-sidebar-foreground font-semibold text-base tracking-tight">
                 Flowlet
               </span>
             </div>
             <Button
               variant="ghost"
               size="sm"
+              className="p-1.5 text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent"
               onClick={onClose}
-              className="text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent p-2"
+              aria-label="Close sidebar"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
           <SidebarContent location={location} onItemClick={onClose} />
-          <SidebarFooter />
-        </div>
+          <div className="p-3 border-t border-sidebar-border shrink-0">
+            <p className="text-sidebar-foreground/25 text-[10px] text-center">
+              Flowlet v2.0 · Embedded Finance
+            </p>
+          </div>
+        </aside>
       </>
     );
   }
 
   return (
-    <div
+    <aside
       className={cn(
-        "fixed top-16 left-0 h-[calc(100vh-4rem)] w-64 bg-sidebar flex flex-col transform transition-transform duration-300 ease-out z-30 border-r border-sidebar-border",
-        isOpen ? "translate-x-0" : "-translate-x-full",
+        "fixed top-0 left-0 z-30 h-full bg-sidebar flex flex-col transition-all duration-300 ease-out",
+        isOpen ? "w-64" : "w-0 overflow-hidden",
       )}
     >
+      <div className="flex items-center gap-2.5 h-16 px-5 border-b border-sidebar-border shrink-0">
+        <div className="w-7 h-7 rounded-lg bg-sidebar-primary flex items-center justify-center">
+          <Zap className="h-4 w-4 text-sidebar-primary-foreground" />
+        </div>
+        <span className="text-sidebar-foreground font-semibold text-base tracking-tight whitespace-nowrap">
+          Flowlet
+        </span>
+      </div>
       <SidebarContent location={location} />
-      <SidebarFooter />
-    </div>
+      <div className="p-3 border-t border-sidebar-border shrink-0">
+        <p className="text-sidebar-foreground/25 text-[10px] text-center whitespace-nowrap">
+          Flowlet v2.0 · Embedded Finance
+        </p>
+      </div>
+    </aside>
   );
 };
-
-const SidebarFooter: React.FC = () => (
-  <div className="px-3 py-4 border-t border-sidebar-border shrink-0">
-    <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-sidebar-accent/50">
-      <div className="w-6 h-6 rounded-md bg-emerald-500/20 flex items-center justify-center">
-        <Zap className="h-3.5 w-3.5 text-emerald-400" />
-      </div>
-      <div className="min-w-0">
-        <p className="text-[11px] font-semibold text-sidebar-foreground/90">
-          Pro Plan
-        </p>
-        <p className="text-[10px] text-sidebar-foreground/50 truncate">
-          All features unlocked
-        </p>
-      </div>
-    </div>
-  </div>
-);
 
 export default Sidebar;

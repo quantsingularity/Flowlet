@@ -1,5 +1,4 @@
-import { ArrowDownRight, ArrowUpRight, TrendingUp, Wallet } from "lucide-react";
-import type { QuickStat, Transaction, WalletData } from "@/src/types/wallet";
+import type { QuickStat, Transaction, WalletData } from "@/types/wallet";
 
 const mockQuickStats: QuickStat[] = [
   {
@@ -7,28 +6,24 @@ const mockQuickStats: QuickStat[] = [
     value: "$12,345.67",
     change: "+2.5%",
     trend: "up",
-    icon: Wallet,
   },
   {
     title: "Monthly Income",
     value: "$4,200.00",
     change: "+8.1%",
     trend: "up",
-    icon: ArrowDownRight,
   },
   {
     title: "Monthly Expenses",
     value: "$2,850.30",
     change: "-3.2%",
     trend: "down",
-    icon: ArrowUpRight,
   },
   {
     title: "Savings Rate",
     value: "32.1%",
     change: "+5.4%",
     trend: "up",
-    icon: TrendingUp,
   },
 ];
 
@@ -73,7 +68,6 @@ const mockRecentTransactions: Transaction[] = [
 export const fetchWalletData = (): Promise<WalletData> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // Reduced random failure rate from 5% to 2% for better UX
       if (Math.random() < 0.02) {
         reject(new Error("Failed to fetch wallet data. Please try again."));
         return;

@@ -11,11 +11,11 @@ import {
   Unlock,
 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { EncryptionService } from "../../lib/security/encryption";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { EncryptionService } from "@/lib/utils/encryption";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface EncryptedData {
   encrypted: string;

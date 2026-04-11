@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import { useEffect } from "react";
 import {
   Navigate,
@@ -8,40 +8,41 @@ import {
 } from "react-router-dom";
 import { Toaster } from "sonner";
 
-import LoginScreen from "@/src/components/auth/LoginScreen";
-import RegisterScreen from "@/src/components/auth/RegisterScreen";
-import OnboardingFlow from "@/src/components/auth/OnboardingFlow";
-import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
-import PublicRoute from "@/src/components/auth/PublicRoute";
-import Layout from "@/src/components/layout/Layout";
-import LoadingScreen from "@/src/components/layout/LoadingScreen";
-import OfflineIndicator from "@/src/components/layout/OfflineIndicator";
-import ForgotPasswordScreen from "@/src/components/pages/public/ForgotPasswordScreen";
-import HomePage from "@/src/components/pages/public/HomePage";
-import PaymentsPage from "@/src/components/pages/public/PaymentsPage";
-import CompliancePage from "@/src/components/pages/public/CompliancePage";
-import DeveloperPortalPage from "@/src/components/pages/public/DeveloperPortalPage";
+import LoginScreen from "@/components/auth/LoginScreen";
+import RegisterScreen from "@/components/auth/RegisterScreen";
+import OnboardingFlow from "@/components/auth/OnboardingFlow";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import PublicRoute from "@/components/auth/PublicRoute";
+import Layout from "@/components/layout/Layout";
+import LoadingScreen from "@/components/layout/LoadingScreen";
+import OfflineIndicator from "@/components/layout/OfflineIndicator";
+import ForgotPasswordScreen from "@/components/pages/public/ForgotPasswordScreen";
+import HomePage from "@/components/pages/public/HomePage";
+import PaymentsPage from "@/components/pages/public/PaymentsPage";
+import CompliancePage from "@/components/pages/public/CompliancePage";
+import DeveloperPortalPage from "@/components/pages/public/DeveloperPortalPage";
 
-import Dashboard from "@/src/components/features/dashboard/Dashboard";
-import WalletScreen from "@/src/components/features/wallet/WalletScreen";
-import CardsScreen from "@/src/components/features/cards/CardsScreen";
-import CardDetails from "@/src/components/features/cards/CardDetails";
-import IssueCard from "@/src/components/features/cards/IssueCard";
-import TransactionHistory from "@/src/components/features/transactions/TransactionHistory";
-import SendMoney from "@/src/components/features/transactions/SendMoney";
-import ReceiveMoney from "@/src/components/features/transactions/ReceiveMoney";
-import AnalyticsScreen from "@/src/components/features/analytics/AnalyticsScreen";
-import BudgetingScreen from "@/src/components/features/budgeting/BudgetingScreen";
-import ChatbotScreen from "@/src/components/features/ai/ChatbotScreen";
-import FraudAlerts from "@/src/components/features/ai/FraudAlerts";
-import AIFraudDetectionScreen from "@/src/components/features/ai/AIFraudDetectionScreen";
-import SecurityScreen from "@/src/components/features/security/SecurityScreen";
-import EnhancedSecurityScreen from "@/src/components/features/security/EnhancedSecurityScreen";
-import SettingsScreen from "@/src/components/features/settings/SettingsScreen";
+import Dashboard from "@/components/features/dashboard/Dashboard";
+import WalletScreen from "@/components/features/wallet/WalletScreen";
+import CardsScreen from "@/components/features/cards/CardsScreen";
+import CardDetails from "@/components/features/cards/CardDetails";
+import IssueCard from "@/components/features/cards/IssueCard";
+import TransactionHistory from "@/components/features/transactions/TransactionHistory";
+import SendMoney from "@/components/features/transactions/SendMoney";
+import ReceiveMoney from "@/components/features/transactions/ReceiveMoney";
+import AnalyticsScreen from "@/components/features/analytics/AnalyticsScreen";
+import BudgetingScreen from "@/components/features/budgeting/BudgetingScreen";
+import ChatbotScreen from "@/components/features/ai/ChatbotScreen";
+import FraudAlerts from "@/components/features/ai/FraudAlerts";
+import AIFraudDetectionScreen from "@/components/features/ai/AIFraudDetectionScreen";
+import SecurityScreen from "@/components/features/security/SecurityScreen";
+import EnhancedSecurityScreen from "@/components/features/security/EnhancedSecurityScreen";
+import SettingsScreen from "@/components/features/settings/SettingsScreen";
+import WorkflowMain from "@/components/features/workflow/WorkflowMain";
 
-import { useOnlineStatus, useResponsive } from "@/src/hooks";
-import { useAuth } from "@/src/hooks/useAuth";
-import { useAppSelector } from "@/src/hooks/redux";
+import { useOnlineStatus, useResponsive } from "@/hooks";
+import { useAuth } from "@/hooks/useAuth";
+import { useAppSelector } from "@/hooks/redux";
 
 const AppInner: React.FC = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -120,7 +121,6 @@ const AppInner: React.FC = () => {
               </PublicRoute>
             }
           />
-          {/* BUG FIX: /forgot-password was linked in LoginScreen but had no route */}
           <Route
             path="/forgot-password"
             element={
@@ -171,6 +171,7 @@ const AppInner: React.FC = () => {
               path="security/advanced"
               element={<EnhancedSecurityScreen />}
             />
+            <Route path="workflows" element={<WorkflowMain />} />
             <Route path="settings" element={<SettingsScreen />} />
           </Route>
 

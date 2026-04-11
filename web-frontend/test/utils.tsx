@@ -15,7 +15,7 @@ const createTestStore = (preloadedState?: Partial<RootState>) => {
     reducer: {
       auth: authReducer,
       wallet: walletReducer,
-      transaction: transactionReducer,
+      transactions: transactionReducer,
       ui: uiReducer,
       [api.reducerPath]: api.reducer,
     },
@@ -62,7 +62,7 @@ export const mockUser = {
   permissions: [],
   isEmailVerified: true,
   isPhoneVerified: false,
-  kycStatus: "verified" as const,
+  kycStatus: "completed" as const,
   mfaEnabled: false,
   status: "active" as const,
   createdAt: "2023-01-01T00:00:00Z",

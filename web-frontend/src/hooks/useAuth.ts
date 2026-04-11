@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { authService } from "@/src/lib/api/authService";
-import { refreshToken, validateToken } from "@/src/store/authSlice";
+import { authService } from "@/lib/api/authService";
+import { refreshToken, validateToken } from "@/store/authSlice";
 import { useAppDispatch, useAppSelector } from "./redux";
 
 export const useAuth = () => {

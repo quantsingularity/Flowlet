@@ -11,10 +11,7 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: ["./test/setup.ts"],
-    include: [
-      "src/tests/**/*.{test,spec}.{ts,tsx}",
-      "**/__tests__/**/*.{test,spec}.{ts,tsx}",
-    ],
+    include: ["src/tests/**/*.{test,spec}.{ts,tsx}"],
     coverage: {
       reporter: ["text", "json", "html"],
       exclude: ["node_modules/", "dist/", "src/components/ui/", "**/*.d.ts"],
@@ -22,7 +19,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./"),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
 });

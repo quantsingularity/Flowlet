@@ -3,14 +3,9 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { ApiError, TokenManager } from "@/src/lib/api/client";
-import { authService } from "@/src/lib/api/authService";
-import type {
-  AuthState,
-  LoginCredentials,
-  RegisterData,
-  User,
-} from "@/src/types";
+import { ApiError, TokenManager } from "@/lib/api/client";
+import { authService } from "@/lib/api/authService";
+import type { AuthState, LoginCredentials, RegisterData, User } from "@/types";
 
 const initialState: AuthState = {
   user: null,

@@ -9,7 +9,7 @@ import {
   User,
   X,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -26,10 +26,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { useAppDispatch, useAppSelector } from "@/src/hooks/redux";
-import { useAuth } from "@/src/hooks/useAuth";
-import { logoutUser } from "@/src/store/authSlice";
-import { setTheme } from "@/src/store/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useAuth } from "@/hooks/useAuth";
+import { logoutUser } from "@/store/authSlice";
+import { setTheme } from "@/store/uiSlice";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {

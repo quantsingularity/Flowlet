@@ -24,7 +24,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

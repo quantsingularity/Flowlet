@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAppDispatch } from "@/src/hooks/redux";
-import { registerUser } from "@/src/store/authSlice";
+import { useAppDispatch } from "@/hooks/redux";
+import { registerUser } from "@/store/authSlice";
 
 const registerSchema = z
   .object({
@@ -265,7 +265,6 @@ const RegisterScreen: React.FC = () => {
           </div>
 
           <div className="space-y-1.5">
-            {/* BUG FIX: use Controller for Radix Checkbox — register() doesn't propagate correctly */}
             <div className="flex items-start gap-2.5">
               <Controller
                 name="acceptTerms"

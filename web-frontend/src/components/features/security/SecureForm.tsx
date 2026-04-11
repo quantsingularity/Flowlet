@@ -8,13 +8,13 @@ import {
   useForm,
 } from "react-hook-form";
 import type { z } from "zod";
-import { EncryptionService } from "../../lib/security/encryption";
-import { CSRFService } from "../../lib/security/headers";
-import { ValidationService } from "../../lib/security/validation";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { EncryptionService } from "@/lib/utils/encryption";
+import { CSRFService } from "@/lib/utils/headers";
+import { ValidationService } from "@/lib/utils/validation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface SecureFormField {
   name: string;

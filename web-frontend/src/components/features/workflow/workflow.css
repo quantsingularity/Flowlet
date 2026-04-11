@@ -23,7 +23,7 @@
 }
 
 .workflow-node.selected {
-  box-shadow: 0 0 0 2px hsl(var(--primary));
+  box-shadow: 0 0 0 2px var(--primary);
 }
 
 .workflow-node.running {
@@ -42,14 +42,14 @@
 
 /* Connection lines */
 .workflow-connection {
-  stroke: hsl(var(--border));
+  stroke: var(--border);
   stroke-width: 2;
   fill: none;
   marker-end: url(#arrowhead);
 }
 
 .workflow-connection.active {
-  stroke: hsl(var(--primary));
+  stroke: var(--primary);
   stroke-width: 3;
 }
 
@@ -66,7 +66,7 @@
 /* Drag and drop styles */
 .drag-over {
   background-color: rgba(var(--primary-rgb), 0.1);
-  border: 2px dashed hsl(var(--primary));
+  border: 2px dashed var(--primary);
 }
 
 /* Workflow canvas zoom controls */
@@ -82,7 +82,7 @@
 /* Node palette styles */
 .node-palette {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border)) transparent;
+  scrollbar-color: var(--border) transparent;
 }
 
 .node-palette::-webkit-scrollbar {
@@ -94,12 +94,12 @@
 }
 
 .node-palette::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
+  background: var(--border);
   border-radius: 3px;
 }
 
 .node-palette::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--border));
+  background: var(--border);
 }
 
 /* Properties panel animations */
@@ -171,8 +171,8 @@
     width: 100%;
     max-width: 400px;
     z-index: 50;
-    background: hsl(var(--background));
-    border-left: 1px solid hsl(var(--border));
+    background: var(--background);
+    border-left: 1px solid var(--border);
   }
 }
 
@@ -180,9 +180,9 @@
 .loading-skeleton {
   background: linear-gradient(
     90deg,
-    hsl(var(--muted)) 25%,
-    hsl(var(--muted-foreground) / 0.1) 50%,
-    hsl(var(--muted)) 75%
+    var(--muted) 25%,
+    oklch(from var(--muted-foreground) l c h / 0.1) 50%,
+    var(--muted) 75%
   );
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
@@ -199,7 +199,7 @@
 
 /* Workflow execution visualization */
 .execution-path {
-  stroke: hsl(var(--primary));
+  stroke: var(--primary);
   stroke-width: 3;
   stroke-dasharray: 5, 5;
   animation: dash 1s linear infinite;
@@ -213,29 +213,29 @@
 
 /* Node type specific styles */
 .node-trigger {
-  border-left: 4px solid hsl(var(--primary));
+  border-left: 4px solid var(--primary);
 }
 
 .node-action {
-  border-left: 4px solid hsl(var(--secondary));
+  border-left: 4px solid var(--secondary);
 }
 
 .node-condition {
-  border-left: 4px solid hsl(var(--warning));
+  border-left: 4px solid var(--warning);
 }
 
 .node-security {
-  border-left: 4px solid hsl(var(--destructive));
+  border-left: 4px solid var(--destructive);
 }
 
 /* Accessibility improvements */
 .workflow-node:focus {
-  outline: 2px solid hsl(var(--primary));
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 
 .node-handle:focus {
-  outline: 2px solid hsl(var(--primary));
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
 

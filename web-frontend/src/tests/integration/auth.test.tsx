@@ -4,9 +4,9 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
-import LoginScreen from "@/src/components/auth/LoginScreen";
-import authReducer from "@/src/store/authSlice";
-import uiReducer from "@/src/store/uiSlice";
+import LoginScreen from "@/components/auth/LoginScreen";
+import authReducer from "@/store/authSlice";
+import uiReducer from "@/store/uiSlice";
 
 const mockNavigate = vi.fn();
 
@@ -15,8 +15,8 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
-vi.mock("@/src/store/authSlice", async () => {
-  const actual = await vi.importActual("@/src/store/authSlice");
+vi.mock("@/store/authSlice", async () => {
+  const actual = await vi.importActual("@/store/authSlice");
   return {
     ...actual,
     loginUser: vi.fn().mockImplementation(() => ({

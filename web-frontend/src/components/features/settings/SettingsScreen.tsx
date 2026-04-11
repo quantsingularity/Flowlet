@@ -9,7 +9,7 @@ import {
   Sun,
   User,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,9 +30,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAppDispatch, useAppSelector } from "@/src/hooks/redux";
-import { useAuth } from "@/src/hooks/useAuth";
-import { setTheme } from "@/src/store/uiSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { useAuth } from "@/hooks/useAuth";
+import { setTheme } from "@/store/uiSlice";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 

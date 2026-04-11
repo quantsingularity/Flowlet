@@ -6,7 +6,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {

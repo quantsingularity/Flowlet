@@ -11,13 +11,13 @@ import {
   Unlock,
   XCircle,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useCallback, useEffect, useState } from "react";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Progress } from "../ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 interface BiometricCapability {
   type: "fingerprint" | "face" | "voice" | "iris";

@@ -3,13 +3,13 @@ import {
   createSlice,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { ApiError } from "@/src/lib/api/client";
+import { ApiError } from "@/lib/api/client";
 import {
   type Account,
   type Card,
   type Transaction,
   walletService,
-} from "@/src/lib/api/walletService";
+} from "@/lib/api/walletService";
 
 const getErrorMessage = (error: unknown, fallback: string): string => {
   if (error instanceof ApiError) return error.message;

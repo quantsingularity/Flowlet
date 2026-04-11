@@ -258,7 +258,6 @@ export default function HomePage() {
             </div>
             <span className="font-medium text-sm">Flowlet</span>
           </div>
-          {/* BUG FIX: dynamic year instead of hardcoded 2024 */}
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Flowlet, Inc. All rights reserved.
           </p>

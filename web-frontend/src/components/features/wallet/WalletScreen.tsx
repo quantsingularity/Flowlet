@@ -7,7 +7,7 @@ import {
   Plus,
   Send,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -116,6 +116,7 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
                 </span>
                 <button
                   onClick={() => setBalanceVisible(!balanceVisible)}
+                  aria-label="Toggle balance visibility"
                   className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
                 >
                   {balanceVisible ? (

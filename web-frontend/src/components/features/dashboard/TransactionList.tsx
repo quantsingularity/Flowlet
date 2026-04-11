@@ -1,5 +1,5 @@
 import { ArrowDownLeft, ArrowUpRight, ExternalLink } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { TransactionListProps } from "@/src/types/wallet";
+import type { TransactionListProps } from "@/types/wallet";
 import { cn } from "@/lib/utils";
 
 const categoryColors: Record<string, string> = {

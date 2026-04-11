@@ -11,7 +11,7 @@ import uiReducer, {
   addToast,
   removeToast,
   clearToasts,
-} from "@/src/store/uiSlice";
+} from "@/store/uiSlice";
 
 const makeStore = () => configureStore({ reducer: { ui: uiReducer } });
 

@@ -17,7 +17,7 @@ import {
   TrendingUp,
   Zap,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

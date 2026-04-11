@@ -4,9 +4,9 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
-import LoginScreen from "@/src/components/auth/LoginScreen";
-import authReducer from "@/src/store/authSlice";
-import uiReducer from "@/src/store/uiSlice";
+import LoginScreen from "@/components/auth/LoginScreen";
+import authReducer from "@/store/authSlice";
+import uiReducer from "@/store/uiSlice";
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");

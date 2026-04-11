@@ -8,7 +8,7 @@ import {
   Shield,
   User,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +29,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-// BUG FIX: amount uses z.coerce.number() so string input from <input> is properly cast
 const sendMoneySchema = z.object({
   recipient: z.string().min(1, "Recipient is required"),
   amount: z.coerce

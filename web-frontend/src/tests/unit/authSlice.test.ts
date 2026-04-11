@@ -4,7 +4,7 @@ import authReducer, {
   clearError,
   updateUser,
   setLoading,
-} from "@/src/store/authSlice";
+} from "@/store/authSlice";
 
 const makeStore = (preloaded = {}) =>
   configureStore({

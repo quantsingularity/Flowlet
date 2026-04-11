@@ -10,15 +10,15 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/src/hooks/useAuth";
-import { fetchWalletData } from "@/src/services/walletService";
-import type { DashboardState } from "@/src/types/wallet";
+import { useAuth } from "@/hooks/useAuth";
+import { fetchWalletData } from "@/services/walletService";
+import type { DashboardState } from "@/types/wallet";
 import TransactionList from "./TransactionList";
 
 const StatCard: React.FC<{

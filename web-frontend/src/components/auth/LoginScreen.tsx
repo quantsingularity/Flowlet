@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, Loader2, Shield, Zap } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAppDispatch } from "@/src/hooks/redux";
-import { loginUser } from "@/src/store/authSlice";
+import { useAppDispatch } from "@/hooks/redux";
+import { loginUser } from "@/store/authSlice";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -202,7 +202,6 @@ const LoginScreen: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* BUG FIX: use Controller for Radix-based Checkbox, not register() */}
               <Controller
                 name="rememberMe"
                 control={control}

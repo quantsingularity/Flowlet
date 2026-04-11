@@ -1,9 +1,7 @@
 import { Provider } from "react-redux";
-import AppInner from "@/components/AppInner";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import AppInner from "@/components/layout/AppInner";
+import ErrorBoundary from "@/components/layout/ErrorBoundary";
 import { store } from "@/store";
-
-import "./App.css";
 
 function App() {
   return (

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { TokenManager } from "@/src/lib/api/client";
+import { TokenManager } from "@/lib/api/client";
 
 const localStorageMock = (() => {
   let store: Record<string, string> = {};

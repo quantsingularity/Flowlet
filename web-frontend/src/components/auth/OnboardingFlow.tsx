@@ -1,16 +1,16 @@
 import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
-import type React from "react";
+import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/src/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/src/components/ui/card";
-import { Progress } from "@/src/components/ui/progress";
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 const OnboardingFlow: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
