@@ -12,6 +12,7 @@ import pytest
 backend_dir = Path(__file__).parent.parent.parent
 src_dir = backend_dir / "src"
 code_dir = backend_dir.parent  # code/ root – resolves ml_services.*
+ml_fraud_dir = code_dir / "ml_services" / "fraud_detection"  # new canonical location
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 if str(code_dir) not in sys.path:
@@ -37,21 +38,20 @@ class TestModuleStructure:
             assert file_path.stat().st_size > 0, f"Empty file: {file_path}"
 
     def test_fraud_detection_files_exist(self) -> Any:
-        """Test that fraud detection files exist"""
-        # Check both possible locations
-        fraud_dir_primary = src_dir / "fraud_detection"
-        fraud_dir_ml = src_dir / "ml" / "fraud_detection"
-
-        # At least one must have the key files
+        """Test that fraud detection files exist in ml_services/fraud_detection"""
         required_files = [
             "__init__.py",
+            "service.py",
+            "anomaly_models.py",
+            "ensemble_model.py",
+            "supervised_models.py",
         ]
         for file_name in required_files:
-            primary = fraud_dir_primary / file_name
-            ml_path = fraud_dir_ml / file_name
+            file_path = ml_fraud_dir / file_name
             assert (
-                primary.exists() or ml_path.exists()
-            ), f"Missing file: {file_name} in either fraud_detection or ml/fraud_detection"
+                file_path.exists()
+            ), f"Missing file: {file_name} in ml_services/fraud_detection"
+            assert file_path.stat().st_size > 0, f"Empty file: {file_path}"
 
     def test_routes_files_exist(self) -> Any:
         """Test that route files exist"""
@@ -87,8 +87,8 @@ class TestCodeQuality:
         assert "async def initiate_payment" in content
 
     def test_fraud_detection_models_structure(self) -> Any:
-        """Test fraud detection models structure (checks primary src/fraud_detection)"""
-        fraud_init = src_dir / "fraud_detection" / "__init__.py"
+        """Test fraud detection models structure"""
+        fraud_init = ml_fraud_dir / "__init__.py"
         content = fraud_init.read_text()
         # Anomaly models
         assert "class IsolationForestModel" in content
@@ -104,7 +104,7 @@ class TestCodeQuality:
 
     def test_ensemble_model_structure(self) -> Any:
         """Test ensemble model structure"""
-        fraud_init = src_dir / "fraud_detection" / "__init__.py"
+        fraud_init = ml_fraud_dir / "__init__.py"
         content = fraud_init.read_text()
         assert "class EnsembleFraudModel" in content
         assert "class RealTimeFraudDetector" in content
@@ -114,7 +114,7 @@ class TestCodeQuality:
 
     def test_service_structure(self) -> Any:
         """Test fraud detection service structure"""
-        service_file = src_dir / "fraud_detection" / "__init__.py"
+        service_file = ml_fraud_dir / "__init__.py"
         content = service_file.read_text()
         assert "class FraudDetectionService" in content
         assert "async def train_model" in content
@@ -123,7 +123,7 @@ class TestCodeQuality:
 
     def test_fraud_detection_init(self) -> Any:
         """Test fraud detection __init__ exports"""
-        fraud_init = src_dir / "fraud_detection" / "__init__.py"
+        fraud_init = ml_fraud_dir / "__init__.py"
         content = fraud_init.read_text()
         assert "FraudDetectionError" in content
         assert "ModelNotTrainedError" in content
@@ -143,7 +143,7 @@ class TestCodeQuality:
 
     def test_fraud_detection_compliance(self) -> Any:
         """Test fraud detection compliance features"""
-        service_file = src_dir / "fraud_detection" / "__init__.py"
+        service_file = ml_fraud_dir / "__init__.py"
         content = service_file.read_text()
         assert "update_model_feedback" in content
         assert "performance_metrics" in content
