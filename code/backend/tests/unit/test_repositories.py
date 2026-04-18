@@ -105,7 +105,7 @@ def _make_transaction(session, user_id: str, account_id: str, **kwargs) -> Trans
         amount=Decimal("50.00"),
         currency="USD",
         description="Test transaction",
-        category=TransactionCategory.PAYMENT,
+        transaction_category=TransactionCategory.PAYMENT,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
     )

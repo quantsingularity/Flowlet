@@ -9,7 +9,7 @@ if _code_root not in sys.path:
     sys.path.insert(0, _code_root)
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import Optional
+from typing import Any, Optional
 
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
