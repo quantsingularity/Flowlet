@@ -104,13 +104,13 @@ class EncryptionService:
         self._key_metadata = {}
         self._initialize_encryption_service()
 
-    def _initialize_encryption_service(self) -> Any:
+    def _initialize_encryption_service(self) -> object:
         """Initialize the encryption service."""
         if "master_key" not in self._keys:
             self._generate_master_key()
         self.logger.info("Encryption service initialized successfully")
 
-    def _generate_master_key(self) -> Any:
+    def _generate_master_key(self) -> object:
         """Generate master encryption key."""
         master_key = Fernet.generate_key()
         key_id = "master_key"

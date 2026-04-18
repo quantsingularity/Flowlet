@@ -3,7 +3,6 @@
 import uuid
 from datetime import datetime, timezone
 from enum import Enum as PyEnum
-from typing import Any
 
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text
 
@@ -39,7 +38,7 @@ class FraudAlert(Base):
         onupdate=lambda: datetime.now(timezone.utc),
     )
 
-    def to_dict(self) -> Any:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "user_id": self.user_id,

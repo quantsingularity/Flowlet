@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 @payment_bp.route("/process", methods=["POST"])
 @token_required
-def process_payment() -> Any:
+def process_payment() -> "flask.Response":
     """
     Process an external payment (deposit) into a user's account.
     """
@@ -72,7 +72,7 @@ def process_payment() -> Any:
 
 
 @payment_bp.route("/webhook/<processor_name>", methods=["POST"])
-def payment_webhook(processor_name: Any) -> Any:
+def payment_webhook(processor_name: Any) -> object:
     """
     Webhook endpoint for payment processors to notify of transaction status updates.
     NOTE: This is a placeholder. A real implementation would require a dedicated webhook handler
@@ -101,7 +101,7 @@ def payment_webhook(processor_name: Any) -> Any:
 
 @payment_bp.route("/transaction/<transaction_id>", methods=["GET"])
 @token_required
-def get_transaction_details_route(transaction_id: Any) -> Any:
+def get_transaction_details_route(transaction_id: Any) -> "flask.Response":
     """Get details for a specific transaction"""
     try:
         user_id = g.current_user.id
@@ -115,7 +115,7 @@ def get_transaction_details_route(transaction_id: Any) -> Any:
 
 @payment_bp.route("/<wallet_id>/send", methods=["POST"])
 @token_required
-def send_p2p_payment(wallet_id: str) -> Any:
+def send_p2p_payment(wallet_id: str) -> None:
     """Send a peer-to-peer payment from a wallet."""
     data = request.get_json() or {}
     recipient_wallet_id = data.get("recipient_wallet_id")

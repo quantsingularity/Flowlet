@@ -46,7 +46,7 @@ class ReportParameters:
     output_format: OutputFormat = OutputFormat.JSON
     include_charts: bool = False
 
-    def __post_init__(self) -> Any:
+    def __post_init__(self) -> object:
         if self.filters is None:
             self.filters = {}
         if self.grouping is None:

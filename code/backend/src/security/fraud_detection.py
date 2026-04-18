@@ -121,7 +121,7 @@ class BehavioralProfile:
 
     def update_transaction_pattern(
         self, amount: float, merchant: str, category: str, timestamp: datetime
-    ) -> Any:
+    ) -> None:
         """Update transaction behavioral patterns."""
         hour = timestamp.hour
         day_of_week = timestamp.weekday()
@@ -136,7 +136,7 @@ class BehavioralProfile:
 
     def update_login_pattern(
         self, ip_address: str, user_agent: str, location: str, timestamp: datetime
-    ) -> Any:
+    ) -> None:
         """Update login behavioral patterns."""
         hour = timestamp.hour
         day_of_week = timestamp.weekday()
@@ -147,7 +147,7 @@ class BehavioralProfile:
         self.login_patterns["days"].append(day_of_week)
         self.last_updated = datetime.now(timezone.utc)
 
-    def _cleanup_old_patterns(self, cutoff: datetime) -> Any:
+    def _cleanup_old_patterns(self, cutoff: datetime) -> object:
         """Remove patterns older than cutoff date."""
 
     def get_transaction_anomaly_score(
@@ -221,7 +221,7 @@ class FraudDetectionEngine:
         }
         self._initialize_fraud_engine()
 
-    def _initialize_fraud_engine(self) -> Any:
+    def _initialize_fraud_engine(self) -> object:
         """Initialize the fraud detection engine."""
         self._load_fraud_rules()
         self._initialize_ml_models()
@@ -229,7 +229,7 @@ class FraudDetectionEngine:
         self._initialize_velocity_trackers()
         self.logger.info("Fraud detection engine initialized successfully")
 
-    def _load_fraud_rules(self) -> Any:
+    def _load_fraud_rules(self) -> object:
         """Load fraud detection rules."""
         self._fraud_rules["transaction_amount"] = {
             "large_transaction_threshold": 10000,
@@ -259,7 +259,7 @@ class FraudDetectionEngine:
             "password_change_risk_period_hours": 24,
         }
 
-    def _initialize_ml_models(self) -> Any:
+    def _initialize_ml_models(self) -> object:
         """Initialize machine learning models for fraud detection."""
         self._ml_models = {
             "transaction_risk_model": {
@@ -306,7 +306,7 @@ class FraudDetectionEngine:
             },
         }
 
-    def _load_security_lists(self) -> Any:
+    def _load_security_lists(self) -> object:
         """Load blacklists and whitelists."""
         self._blacklists["ip_addresses"] = {"192.168.1.100", "10.0.0.50", "172.16.0.25"}
         self._blacklists["email_domains"] = {
@@ -325,7 +325,7 @@ class FraudDetectionEngine:
         }
         self._whitelists["trusted_ip_ranges"] = {"192.168.1.0/24", "10.0.0.0/8"}
 
-    def _initialize_velocity_trackers(self) -> Any:
+    def _initialize_velocity_trackers(self) -> object:
         """Initialize velocity tracking systems."""
         self._velocity_trackers = {
             "transaction_count": defaultdict(lambda: deque()),
@@ -920,7 +920,7 @@ class FraudDetectionEngine:
 
     def _update_velocity_trackers(
         self, user_id: str, transaction_data: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Update velocity tracking data."""
         timestamp = datetime.now(timezone.utc)
         amount = transaction_data.get("amount", 0)

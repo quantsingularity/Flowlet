@@ -91,7 +91,7 @@ class MetricWindow:
     metric_name: str
     aggregation_function: str
 
-    def __post_init__(self) -> Any:
+    def __post_init__(self) -> object:
         self.data_points = deque()
         self.current_value = 0.0
         self.last_calculation = datetime.now(timezone.utc)
@@ -127,7 +127,7 @@ class RealTimeAnalytics:
         self._initialize_default_windows()
         self._initialize_default_alert_rules()
 
-    def _initialize_default_windows(self) -> Any:
+    def _initialize_default_windows(self) -> object:
         """Initialize default metric windows."""
         self._metric_windows["transaction_volume_1m"] = MetricWindow(
             window_size=timedelta(minutes=1),
@@ -166,7 +166,7 @@ class RealTimeAnalytics:
             aggregation_function="avg",
         )
 
-    def _initialize_default_alert_rules(self) -> Any:
+    def _initialize_default_alert_rules(self) -> object:
         """Initialize default alert rules."""
         self._alert_rules = {
             "high_transaction_volume": {
@@ -483,29 +483,29 @@ class RealTimeAnalytics:
                 f"Notifying {len(subscribers)} subscribers of metric {metric_name}: {value}"
             )
 
-    def subscribe_to_dashboard_updates(self, subscriber_id: str) -> Any:
+    def subscribe_to_dashboard_updates(self, subscriber_id: str) -> object:
         """Subscribe to real-time dashboard updates."""
         self._dashboard_subscribers.add(subscriber_id)
         self.logger.info(f"Subscriber {subscriber_id} added to dashboard updates")
 
-    def unsubscribe_from_dashboard_updates(self, subscriber_id: str) -> Any:
+    def unsubscribe_from_dashboard_updates(self, subscriber_id: str) -> object:
         """Unsubscribe from real-time dashboard updates."""
         self._dashboard_subscribers.discard(subscriber_id)
         self.logger.info(f"Subscriber {subscriber_id} removed from dashboard updates")
 
-    def subscribe_to_metric(self, metric_name: str, subscriber_id: str) -> Any:
+    def subscribe_to_metric(self, metric_name: str, subscriber_id: str) -> object:
         """Subscribe to specific metric updates."""
         self._metric_subscribers[metric_name].add(subscriber_id)
         self.logger.info(f"Subscriber {subscriber_id} added to metric {metric_name}")
 
-    def unsubscribe_from_metric(self, metric_name: str, subscriber_id: str) -> Any:
+    def unsubscribe_from_metric(self, metric_name: str, subscriber_id: str) -> object:
         """Unsubscribe from specific metric updates."""
         self._metric_subscribers[metric_name].discard(subscriber_id)
         self.logger.info(
             f"Subscriber {subscriber_id} removed from metric {metric_name}"
         )
 
-    def add_alert_callback(self, callback: Callable) -> Any:
+    def add_alert_callback(self, callback: Callable) -> object:
         """Add a callback function for alert notifications."""
         self._alert_callbacks.append(callback)
 
@@ -547,7 +547,7 @@ class RealTimeAnalytics:
 
     def add_custom_metric_window(
         self, window_name: str, window_config: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Add a custom metric window."""
         window = MetricWindow(
             window_size=timedelta(seconds=window_config["window_size_seconds"]),
@@ -558,7 +558,9 @@ class RealTimeAnalytics:
         self._metric_windows[window_name] = window
         self.logger.info(f"Added custom metric window: {window_name}")
 
-    def add_custom_alert_rule(self, rule_name: str, rule_config: Dict[str, Any]) -> Any:
+    def add_custom_alert_rule(
+        self, rule_name: str, rule_config: Dict[str, Any]
+    ) -> object:
         """Add a custom alert rule."""
         self._alert_rules[rule_name] = {
             "metric": rule_config["metric"],

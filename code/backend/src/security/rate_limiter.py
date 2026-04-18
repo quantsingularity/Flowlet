@@ -16,12 +16,12 @@ class RateLimiter:
         self.redis_client = redis_client
         self.memory_store = {}
 
-    def limit(self, rate_limit_string: str) -> Any:
+    def limit(self, rate_limit_string: str) -> object:
         """Decorator for rate limiting using string format like '5 per minute'"""
 
-        def decorator(f: Any) -> Any:
+        def decorator(f: Any) -> object:
             @wraps(f)
-            def decorated_function(*args: Any, **kwargs: Any) -> Any:
+            def decorated_function(*args: Any, **kwargs: Any) -> object:
                 try:
                     # Bypass rate limiting in testing mode
                     try:
@@ -80,14 +80,14 @@ class RateLimiter:
 
         return decorator
 
-    def _get_client_id(self) -> Any:
+    def _get_client_id(self) -> object:
         """Get unique client identifier"""
         ip = request.remote_addr
         user_agent = request.headers.get("User-Agent", "")
         client_string = f"{ip}:{user_agent}"
         return hashlib.sha256(client_string.encode()).hexdigest()[:16]
 
-    def _get_key(self, identifier: Any, window_type: Any) -> Any:
+    def _get_key(self, identifier: Any, window_type: Any) -> object:
         """Generate Redis key for rate limiting"""
         timestamp = int(time.time())
         if window_type == "minute":
@@ -100,7 +100,7 @@ class RateLimiter:
             window = timestamp // 60
         return f"rate_limit:{identifier}:{window_type}:{window}"
 
-    def _check_redis_limit(self, key: Any, limit: Any, window_seconds: Any) -> Any:
+    def _check_redis_limit(self, key: Any, limit: Any, window_seconds: Any) -> object:
         """Check rate limit using Redis"""
         try:
             current_count = self.redis_client.get(key)
@@ -116,7 +116,7 @@ class RateLimiter:
             current_app.logger.error(f"Redis rate limiting error: {str(e)}")
             return (True, 0, limit)
 
-    def _check_memory_limit(self, key: Any, limit: Any, window_seconds: Any) -> Any:
+    def _check_memory_limit(self, key: Any, limit: Any, window_seconds: Any) -> object:
         """Check rate limit using memory store (fallback)"""
         now = time.time()
         self.memory_store = {
@@ -133,7 +133,7 @@ class RateLimiter:
         entry["count"] += 1
         return (True, entry["count"], limit)
 
-    def check_rate_limit(self, identifier: Any, limits: Any) -> Any:
+    def check_rate_limit(self, identifier: Any, limits: Any) -> None:
         """
         Check multiple rate limits
 
@@ -170,13 +170,13 @@ class RateLimiter:
                 return (False, current_counts, limits_info)
         return (True, current_counts, limits_info)
 
-    def rate_limit(self, **limits) -> Any:
+    def rate_limit(self, **limits) -> object:
         """
         Decorator for rate limiting endpoints
 
         Usage:
             @rate_limit(minute=10, hour=100)
-            def my_endpoint() -> Any:
+            def my_endpoint() -> object:
                 pass
         """
 

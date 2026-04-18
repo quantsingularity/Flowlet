@@ -196,14 +196,14 @@ class RuleEngine:
         self._execution_stats = defaultdict(list)
         self._initialize_rule_engine()
 
-    def _initialize_rule_engine(self) -> Any:
+    def _initialize_rule_engine(self) -> object:
         """Initialize the rule engine."""
         self._register_operators()
         self._register_action_handlers()
         self._create_default_templates()
         self.logger.info("Rule engine initialized successfully")
 
-    def _register_operators(self) -> Any:
+    def _register_operators(self) -> object:
         """Register rule condition operators."""
         self._operators[OperatorType.EQUALS] = lambda a, b: a == b
         self._operators[OperatorType.NOT_EQUALS] = lambda a, b: a != b
@@ -232,7 +232,7 @@ class RuleEngine:
             b[0] <= float(a) <= b[1] if isinstance(b, list) and len(b) == 2 else False
         )
 
-    def _register_action_handlers(self) -> Any:
+    def _register_action_handlers(self) -> object:
         """Register rule action handlers."""
         self._action_handlers[ActionType.SET_VALUE] = self._handle_set_value_action
         self._action_handlers[ActionType.CALCULATE] = self._handle_calculate_action
@@ -252,7 +252,7 @@ class RuleEngine:
             self._handle_update_status_action
         )
 
-    def _create_default_templates(self) -> Any:
+    def _create_default_templates(self) -> object:
         """Create default rule templates."""
         transaction_limit_rule = self._create_transaction_limit_template()
         self._rule_templates[transaction_limit_rule.rule_id] = transaction_limit_rule
@@ -608,7 +608,7 @@ class RuleEngine:
         else:
             return self._evaluate_custom_logic(rule.condition_logic, condition_results)
 
-    def _get_field_value(self, data: Dict[str, Any], field_name: str) -> Any:
+    def _get_field_value(self, data: Dict[str, Any], field_name: str) -> object:
         """Get field value from data, supporting nested fields."""
         if "." in field_name:
             parts = field_name.split(".")
@@ -634,7 +634,7 @@ class RuleEngine:
         except Exception:
             return False
 
-    def _execute_action(self, action: RuleAction, data: Dict[str, Any]) -> Any:
+    def _execute_action(self, action: RuleAction, data: Dict[str, Any]) -> object:
         """Execute a rule action."""
         handler = self._action_handlers.get(action.action_type)
         if handler:
@@ -642,7 +642,9 @@ class RuleEngine:
         else:
             self.logger.warning(f"No handler for action type: {action.action_type}")
 
-    def _handle_set_value_action(self, action: RuleAction, data: Dict[str, Any]) -> Any:
+    def _handle_set_value_action(
+        self, action: RuleAction, data: Dict[str, Any]
+    ) -> object:
         """Handle set value action."""
         field = action.parameters.get("field")
         value = action.parameters.get("value")
@@ -650,7 +652,9 @@ class RuleEngine:
             data[field] = value
             self.logger.info(f"Set {field} = {value}")
 
-    def _handle_calculate_action(self, action: RuleAction, data: Dict[str, Any]) -> Any:
+    def _handle_calculate_action(
+        self, action: RuleAction, data: Dict[str, Any]
+    ) -> object:
         """Handle calculation action."""
         formula = action.parameters.get("formula", "")
         result_field = action.parameters.get("result_field", "calculated_value")
@@ -663,7 +667,7 @@ class RuleEngine:
 
     def _handle_send_email_action(
         self, action: RuleAction, data: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Handle send email action."""
         template = action.parameters.get("template", "")
         recipient = action.parameters.get("recipient", "")
@@ -674,7 +678,7 @@ class RuleEngine:
 
     def _handle_create_task_action(
         self, action: RuleAction, data: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Handle create task action."""
         task_type = action.parameters.get("task_type", "")
         assignee = action.parameters.get("assignee", "")
@@ -683,12 +687,14 @@ class RuleEngine:
 
     def _handle_trigger_workflow_action(
         self, action: RuleAction, data: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Handle trigger workflow action."""
         workflow_id = action.parameters.get("workflow_id", "")
         self.logger.info(f"Triggering workflow: {workflow_id}")
 
-    def _handle_log_event_action(self, action: RuleAction, data: Dict[str, Any]) -> Any:
+    def _handle_log_event_action(
+        self, action: RuleAction, data: Dict[str, Any]
+    ) -> object:
         """Handle log event action."""
         event_type = action.parameters.get("event_type", "")
         severity = action.parameters.get("severity", "info")
@@ -697,7 +703,7 @@ class RuleEngine:
 
     def _handle_block_transaction_action(
         self, action: RuleAction, data: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Handle block transaction action."""
         reason = action.parameters.get("reason", "Transaction blocked by rule")
         action.parameters.get("notify_customer", False)
@@ -707,7 +713,7 @@ class RuleEngine:
 
     def _handle_require_approval_action(
         self, action: RuleAction, data: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Handle require approval action."""
         approver_role = action.parameters.get("approver_role", "")
         timeout_hours = action.parameters.get("timeout_hours", 24)
@@ -718,7 +724,7 @@ class RuleEngine:
 
     def _handle_update_status_action(
         self, action: RuleAction, data: Dict[str, Any]
-    ) -> Any:
+    ) -> object:
         """Handle update status action."""
         status_field = action.parameters.get("status_field", "status")
         new_status = action.parameters.get("new_status", "")

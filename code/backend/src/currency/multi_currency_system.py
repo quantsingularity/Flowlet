@@ -172,7 +172,7 @@ class ExchangeRateService:
 
     def __init__(
         self, database_url: str, redis_url: str = "redis://localhost:6379/9"
-    ) -> Any:
+    ) -> object:
         self.engine = create_engine(database_url)
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)

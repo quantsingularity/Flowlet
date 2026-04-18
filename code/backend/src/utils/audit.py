@@ -12,7 +12,7 @@ def log_audit_event(
     severity: Any,
     details: str,
     ip_address: str = None,
-) -> Any:
+) -> object:
     """Log an audit event to the database."""
     try:
         from src.models import db

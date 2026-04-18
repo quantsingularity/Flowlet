@@ -105,12 +105,12 @@ class RegulatoryFramework:
         self._jurisdiction_profiles = {}
         self._initialize_framework()
 
-    def _initialize_framework(self) -> Any:
+    def _initialize_framework(self) -> object:
         """Initialize the regulatory framework with default rules and profiles."""
         self._initialize_jurisdiction_profiles()
         self._initialize_compliance_rules()
 
-    def _initialize_jurisdiction_profiles(self) -> Any:
+    def _initialize_jurisdiction_profiles(self) -> object:
         """Initialize jurisdiction profiles with regulatory requirements."""
         self._jurisdiction_profiles[Jurisdiction.EU] = JurisdictionProfile(
             jurisdiction=Jurisdiction.EU,
@@ -315,7 +315,7 @@ class RegulatoryFramework:
             },
         )
 
-    def _initialize_compliance_rules(self) -> Any:
+    def _initialize_compliance_rules(self) -> object:
         """Initialize compliance rules for all jurisdictions."""
         self._add_eu_rules()
         self._add_us_rules()
@@ -323,7 +323,7 @@ class RegulatoryFramework:
         self._add_hong_kong_rules()
         self._add_global_rules()
 
-    def _add_eu_rules(self) -> Any:
+    def _add_eu_rules(self) -> object:
         """Add EU-specific compliance rules."""
         self._rules["eu_gdpr_consent"] = ComplianceRule(
             rule_id="eu_gdpr_consent",
@@ -396,7 +396,7 @@ class RegulatoryFramework:
             effective_date=datetime(2021, 6, 3),
         )
 
-    def _add_us_rules(self) -> Any:
+    def _add_us_rules(self) -> object:
         """Add US-specific compliance rules."""
         self._rules["us_bsa_ctr"] = ComplianceRule(
             rule_id="us_bsa_ctr",
@@ -464,7 +464,7 @@ class RegulatoryFramework:
             effective_date=datetime(2020, 1, 1),
         )
 
-    def _add_singapore_rules(self) -> Any:
+    def _add_singapore_rules(self) -> object:
         """Add Singapore-specific compliance rules."""
         self._rules["sg_psa_licensing"] = ComplianceRule(
             rule_id="sg_psa_licensing",
@@ -501,7 +501,7 @@ class RegulatoryFramework:
             effective_date=datetime(2014, 7, 2),
         )
 
-    def _add_hong_kong_rules(self) -> Any:
+    def _add_hong_kong_rules(self) -> object:
         """Add Hong Kong-specific compliance rules."""
         self._rules["hk_amlo_cdd"] = ComplianceRule(
             rule_id="hk_amlo_cdd",
@@ -521,7 +521,7 @@ class RegulatoryFramework:
             effective_date=datetime(2012, 4, 1),
         )
 
-    def _add_global_rules(self) -> Any:
+    def _add_global_rules(self) -> object:
         """Add global/international compliance rules."""
         self._rules["global_fatf_40"] = ComplianceRule(
             rule_id="global_fatf_40",
@@ -605,7 +605,7 @@ class RegulatoryFramework:
                     filtered_rules.append(rule)
         return filtered_rules
 
-    def add_custom_rule(self, rule: ComplianceRule) -> Any:
+    def add_custom_rule(self, rule: ComplianceRule) -> object:
         """Add a custom compliance rule."""
         self._rules[rule.rule_id] = rule
 

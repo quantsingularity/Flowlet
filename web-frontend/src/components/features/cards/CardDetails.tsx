@@ -76,6 +76,7 @@ export default function CardDetails() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  className="text-white hover:bg-white/20 hover:text-white h-8 w-8"
                   onClick={() => setShowNumber(!showNumber)}
                 >
                   {showNumber ? (

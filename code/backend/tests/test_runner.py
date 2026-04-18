@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-from typing import Any
 
 logging.basicConfig(
     level=logging.INFO,
@@ -19,7 +18,7 @@ if _code_root not in sys.path:
     sys.path.insert(0, _code_root)
 
 
-def test_security_modules() -> Any:
+def test_security_modules() -> None:
     """Test security modules without database"""
     logger.info("Testing security modules...")
     from src.security.password_security import PasswordSecurity
@@ -55,7 +54,7 @@ def test_security_modules() -> Any:
     logger.info("✓ Encryption tests passed")
 
 
-def test_financial_calculations() -> Any:
+def test_financial_calculations() -> None:
     """Test financial calculation accuracy"""
     logger.info("Testing financial calculations...")
     from decimal import ROUND_HALF_UP, Decimal
@@ -70,7 +69,7 @@ def test_financial_calculations() -> Any:
     logger.info("✓ Financial calculation tests passed")
 
 
-def test_compliance_features() -> Any:
+def test_compliance_features() -> None:
     """Test compliance features"""
     logger.info("Testing compliance features...")
 
@@ -94,7 +93,7 @@ def test_compliance_features() -> Any:
     logger.info("✓ Compliance feature tests passed")
 
 
-def run_all_tests() -> Any:
+def run_all_tests() -> None:
     """Run all tests"""
     logger.info("Running Enhanced Flowlet Backend Tests")
     logger.info("=" * 50)

@@ -19,17 +19,17 @@ class TestGatewayOptimizations:
     """Test API Gateway performance optimizations"""
 
     @pytest.fixture
-    def app(self) -> Any:
+    def app(self) -> None:
         """Create optimized application for testing"""
         app = create_app("testing")
         return app
 
     @pytest.fixture
-    def client(self, app: Any) -> Any:
+    def client(self, app: Any) -> None:
         """Create test client"""
         return app.test_client()
 
-    def test_caching_performance(self, client: Any) -> Any:
+    def test_caching_performance(self, client: Any) -> None:
         """Test caching improves response times"""
         endpoint = "/api/v1/info"
         start_time = time.time()
@@ -45,7 +45,7 @@ class TestGatewayOptimizations:
             f"First request: {first_request_time:.4f}s, Second request: {second_request_time:.4f}s"
         )
 
-    def test_concurrent_request_performance(self, client: Any) -> Any:
+    def test_concurrent_request_performance(self, client: Any) -> None:
         """Test performance under concurrent load"""
 
         def make_request():
@@ -79,7 +79,7 @@ class TestGatewayOptimizations:
             p95_response_time < 1.0
         ), f"P95 response time too slow: {p95_response_time:.4f}s"
 
-    def test_rate_limiting_performance(self, client: Any) -> Any:
+    def test_rate_limiting_performance(self, client: Any) -> None:
         """Test rate limiting doesn't significantly impact performance"""
         response_times = []
         for _ in range(50):
@@ -93,7 +93,7 @@ class TestGatewayOptimizations:
             avg_response_time < 0.1
         ), f"Rate limiting overhead too high: {avg_response_time:.4f}s"
 
-    def test_gateway_metrics_endpoint(self, client: Any) -> Any:
+    def test_gateway_metrics_endpoint(self, client: Any) -> None:
         """Test gateway metrics endpoint performance"""
         for _ in range(10):
             client.get("/health")
@@ -111,7 +111,7 @@ class TestCacheManager:
     """Test cache manager functionality"""
 
     @pytest.fixture
-    def cache_config(self) -> Any:
+    def cache_config(self) -> None:
         return {
             "default_ttl": 300,
             "max_cache_size": 1000,
@@ -122,7 +122,7 @@ class TestCacheManager:
             },
         }
 
-    def test_cache_operations(self, cache_config: Any) -> Any:
+    def test_cache_operations(self, cache_config: Any) -> None:
         """Test basic cache operations"""
         cache_manager = CacheManager(None, cache_config)
         result = cache_manager.get("test_key", "default")
@@ -132,7 +132,7 @@ class TestCacheManager:
         cached_result = cache_manager.get("test_key", "default")
         assert cached_result == test_data
 
-    def test_cache_ttl_strategies(self, cache_config: Any) -> Any:
+    def test_cache_ttl_strategies(self, cache_config: Any) -> None:
         """Test different TTL strategies"""
         cache_manager = CacheManager(None, cache_config)
         cache_types = ["user_profile", "account_balance", "static_data"]
@@ -143,7 +143,7 @@ class TestCacheManager:
             cached_data = cache_manager.get(key, cache_type)
             assert cached_data == data
 
-    def test_cache_key_generation(self, cache_config: Any) -> Any:
+    def test_cache_key_generation(self, cache_config: Any) -> None:
         """Test cache key generation"""
         cache_manager = CacheManager(None, cache_config)
         endpoint = "/api/v1/test"
@@ -160,10 +160,10 @@ class TestCircuitBreaker:
     """Test circuit breaker functionality"""
 
     @pytest.fixture
-    def circuit_config(self) -> Any:
+    def circuit_config(self) -> None:
         return {"failure_threshold": 3, "recovery_timeout": 5, "half_open_max_calls": 2}
 
-    def test_circuit_breaker_closed_state(self, circuit_config: Any) -> Any:
+    def test_circuit_breaker_closed_state(self, circuit_config: Any) -> None:
         """Test circuit breaker in closed state"""
         circuit_breaker = CircuitBreaker("test_service", circuit_config)
 
@@ -174,7 +174,7 @@ class TestCircuitBreaker:
         assert result == "success"
         assert circuit_breaker.state == "closed"
 
-    def test_circuit_breaker_failure_handling(self, circuit_config: Any) -> Any:
+    def test_circuit_breaker_failure_handling(self, circuit_config: Any) -> None:
         """Test circuit breaker failure handling"""
         circuit_breaker = CircuitBreaker("test_service", circuit_config)
 
@@ -193,14 +193,14 @@ class TestRequestBatcher:
     """Test request batching functionality"""
 
     @pytest.fixture
-    def batch_config(self) -> Any:
+    def batch_config(self) -> None:
         return {
             "batch_size": 5,
             "batch_timeout": 100,
             "batch_endpoints": ["/api/v1/test/batch"],
         }
 
-    def test_non_batchable_request(self, batch_config: Any) -> Any:
+    def test_non_batchable_request(self, batch_config: Any) -> None:
         """Test non-batchable requests are executed immediately"""
         batcher = RequestBatcher(batch_config)
         result = None
@@ -218,7 +218,7 @@ class TestRequestBatcher:
 class TestPerformanceBenchmarks:
     """Performance benchmark tests"""
 
-    def test_response_time_benchmarks(self, client: Any) -> Any:
+    def test_response_time_benchmarks(self, client: Any) -> None:
         """Test response time benchmarks for different endpoints"""
         endpoints = ["/health", "/api/v1/info", "/api/v1/gateway/metrics"]
         benchmark_results = {}
@@ -257,7 +257,7 @@ class TestPerformanceBenchmarks:
                 metrics["p95"] < 200
             ), f"{endpoint} P95 response time too slow: {metrics['p95']:.2f}ms"
 
-    def test_throughput_benchmark(self, client: Any) -> Any:
+    def test_throughput_benchmark(self, client: Any) -> None:
         """Test throughput benchmark"""
         endpoint = "/health"
         duration = 5

@@ -171,13 +171,13 @@ class ConfigurationEngine:
         self._change_listeners = defaultdict(list)
         self._initialize_config_engine()
 
-    def _initialize_config_engine(self) -> Any:
+    def _initialize_config_engine(self) -> object:
         """Initialize the configuration engine."""
         self._create_default_templates()
         self._register_default_validators()
         self.logger.info("Configuration engine initialized successfully")
 
-    def _create_default_templates(self) -> Any:
+    def _create_default_templates(self) -> object:
         """Create default configuration templates."""
         payment_template = self._create_payment_processing_template()
         self._templates[payment_template.template_id] = payment_template
@@ -520,7 +520,7 @@ class ConfigurationEngine:
             sections=[reporting_section, dashboard_section],
         )
 
-    def _register_default_validators(self) -> Any:
+    def _register_default_validators(self) -> object:
         """Register default field validators."""
 
         def validate_required(value: Any, rule_value: bool) -> bool:
@@ -715,7 +715,7 @@ class ConfigurationEngine:
 
     def _collect_fields(
         self, section: ConfigSection, fields_dict: Dict[str, ConfigField]
-    ) -> Any:
+    ) -> object:
         """Recursively collect all fields from section and subsections."""
         for field_obj in section.fields:
             fields_dict[field_obj.field_id] = field_obj
@@ -753,7 +753,7 @@ class ConfigurationEngine:
         except Exception:
             return False
 
-    def register_change_listener(self, instance_id: str, callback: Callable) -> Any:
+    def register_change_listener(self, instance_id: str, callback: Callable) -> object:
         """Register a callback for configuration changes."""
         self._change_listeners[instance_id].append(callback)
 
@@ -763,7 +763,7 @@ class ConfigurationEngine:
         action: str,
         new_values: Dict[str, Any],
         old_values: Dict[str, Any] = None,
-    ) -> Any:
+    ) -> object:
         """Notify registered change listeners."""
         for callback in self._change_listeners[instance_id]:
             try:
@@ -798,7 +798,7 @@ class ConfigurationEngine:
         )
         return instance_id
 
-    def _import_template(self, template_data: Dict[str, Any]) -> Any:
+    def _import_template(self, template_data: Dict[str, Any]) -> object:
         """Import template from dictionary."""
         sections = []
         for section_data in template_data.get("sections", []):

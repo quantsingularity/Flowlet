@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
-from typing import Any
 
 from flask import Blueprint, g, jsonify, request
 from sqlalchemy import select
@@ -20,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 @compliance_bp.route("/sar-report", methods=["POST"])
 @admin_required
-def generate_sar_report() -> Any:
+def generate_sar_report() -> str:
     """Generate a Suspicious Activity Report (SAR) for a user."""
     try:
         data = request.get_json()
@@ -102,7 +101,7 @@ def generate_sar_report() -> Any:
 
 @compliance_bp.route("/ctr-report", methods=["GET"])
 @admin_required
-def get_ctr_report() -> Any:
+def get_ctr_report() -> "flask.Response":
     """Generate a Currency Transaction Report (CTR) for transactions over $10,000 in a day."""
     try:
         ctr_threshold = Decimal("10000.00")
@@ -162,7 +161,7 @@ def get_ctr_report() -> Any:
 
 @compliance_bp.route("/watchlist-screening", methods=["POST"])
 @admin_required
-def watchlist_screening() -> Any:
+def watchlist_screening() -> object:
     """Simulate screening a user against watchlists."""
     try:
         data = request.get_json()

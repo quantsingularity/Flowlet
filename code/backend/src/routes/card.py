@@ -8,7 +8,6 @@ import string
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation
-from typing import Any
 
 from flask import Blueprint, g, jsonify, request
 
@@ -36,7 +35,7 @@ def _card_hash(token: str) -> str:
 
 @card_bp.route("/issue", methods=["POST"])
 @token_required
-def issue_card() -> Any:
+def issue_card() -> object:
     """Issue a new virtual or physical card linked to a wallet."""
     data = request.get_json() or {}
     wallet_id = data.get("wallet_id")
@@ -109,7 +108,7 @@ def issue_card() -> Any:
 
 @card_bp.route("/<card_id>/transaction", methods=["POST"])
 @token_required
-def card_transaction(card_id: str) -> Any:
+def card_transaction(card_id: str) -> object:
     """Process a card transaction (purchase)."""
     card = db.session.get(Card, card_id)
     if not card:
@@ -181,7 +180,7 @@ def card_transaction(card_id: str) -> Any:
 
 @card_bp.route("/<card_id>/freeze", methods=["POST"])
 @token_required
-def freeze_card(card_id: str) -> Any:
+def freeze_card(card_id: str) -> None:
     """Freeze a card."""
     card = db.session.get(Card, card_id)
     if not card:
@@ -197,7 +196,7 @@ def freeze_card(card_id: str) -> Any:
 
 @card_bp.route("/<card_id>/unfreeze", methods=["POST"])
 @token_required
-def unfreeze_card(card_id: str) -> Any:
+def unfreeze_card(card_id: str) -> object:
     """Unfreeze a card."""
     card = db.session.get(Card, card_id)
     if not card:
@@ -213,7 +212,7 @@ def unfreeze_card(card_id: str) -> Any:
 
 @card_bp.route("/<card_id>/controls", methods=["PUT", "PATCH"])
 @token_required
-def update_card_controls(card_id: str) -> Any:
+def update_card_controls(card_id: str) -> None:
     """Update card spending controls."""
     card = db.session.get(Card, card_id)
     if not card:
@@ -241,7 +240,7 @@ def update_card_controls(card_id: str) -> Any:
 
 @card_bp.route("/", methods=["GET"])
 @token_required
-def list_cards() -> Any:
+def list_cards() -> "flask.Response":
     """List all cards for the current user."""
     cards = db.session.query(Card).filter(Card.user_id == g.current_user.id).all()
     return (
@@ -264,7 +263,7 @@ def list_cards() -> Any:
 
 @card_bp.route("/<card_id>", methods=["GET"])
 @token_required
-def get_card(card_id: str) -> Any:
+def get_card(card_id: str) -> "flask.Response":
     """Get card details."""
     card = db.session.get(Card, card_id)
     if not card:

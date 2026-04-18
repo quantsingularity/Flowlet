@@ -83,7 +83,7 @@ class ExchangeRateManager:
 
 @multicurrency_bp.route("/rate", methods=["GET"])
 @token_required
-def get_rate() -> Any:
+def get_rate() -> "flask.Response":
     """Get the exchange rate between two currencies."""
     try:
         from_currency = request.args.get("from", "USD").upper()
@@ -121,7 +121,7 @@ def get_rate() -> Any:
 
 @multicurrency_bp.route("/convert", methods=["POST"])
 @token_required
-def convert_funds() -> Any:
+def convert_funds() -> object:
     """Convert funds between two currencies."""
     try:
         data = request.get_json()

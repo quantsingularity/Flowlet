@@ -49,7 +49,7 @@ def _get_risk_level(risk_score: int) -> str:
 
 @ai_service_bp.route("/fraud-detection/analyze", methods=["POST"])
 @token_required
-def analyze_transaction_fraud() -> Any:
+def analyze_transaction_fraud() -> object:
     """Analyze a transaction for potential fraud using AI algorithms (simulated)"""
     try:
         data = request.get_json()
@@ -189,7 +189,7 @@ def analyze_transaction_fraud() -> Any:
 
 @ai_service_bp.route("/fraud-detection/alerts", methods=["GET"])
 @admin_required
-def get_fraud_alerts() -> Any:
+def get_fraud_alerts() -> "flask.Response":
     """Get fraud alerts with filtering (Admin only)"""
     try:
         page = request.args.get("page", 1, type=int)
@@ -266,7 +266,7 @@ def get_fraud_alerts() -> Any:
 
 @ai_service_bp.route("/fraud-detection/alerts/<alert_id>/resolve", methods=["POST"])
 @admin_required
-def resolve_fraud_alert(alert_id: Any) -> Any:
+def resolve_fraud_alert(alert_id: Any) -> object:
     """Resolve a fraud alert (Admin only)"""
     try:
         data = request.get_json()
@@ -321,7 +321,7 @@ def resolve_fraud_alert(alert_id: Any) -> Any:
 
 @ai_service_bp.route("/chatbot/query", methods=["POST"])
 @token_required
-def chatbot_query() -> Any:
+def chatbot_query() -> object:
     """AI Support Chatbot for user assistance"""
     if not openai_client:
         return (

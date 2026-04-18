@@ -22,7 +22,7 @@ fraud_detection_bp = Blueprint("fraud", __name__, url_prefix="/fraud")
 
 @fraud_detection_bp.route("/detect", methods=["POST"])
 @cross_origin()
-def detect_fraud() -> Any:
+def detect_fraud() -> object:
     """Detect fraud for a single transaction"""
     try:
         data = request.get_json()
@@ -73,7 +73,7 @@ def detect_fraud() -> Any:
 
 @fraud_detection_bp.route("/detect/batch", methods=["POST"])
 @cross_origin()
-def detect_fraud_batch() -> Any:
+def detect_fraud_batch() -> object:
     """Detect fraud for multiple transactions"""
     try:
         data = request.get_json()
@@ -133,7 +133,7 @@ def detect_fraud_batch() -> Any:
 
 @fraud_detection_bp.route("/model/train", methods=["POST"])
 @cross_origin()
-def train_model() -> Any:
+def train_model() -> object:
     """Train the fraud detection model"""
     try:
         data = request.get_json()
@@ -170,7 +170,7 @@ def train_model() -> Any:
 
 @fraud_detection_bp.route("/model/status", methods=["GET"])
 @cross_origin()
-def get_model_status() -> Any:
+def get_model_status() -> "flask.Response":
     """Get fraud detection model status"""
     try:
         fraud_service = get_fraud_service()
@@ -189,7 +189,7 @@ def get_model_status() -> Any:
 
 @fraud_detection_bp.route("/alerts", methods=["GET"])
 @cross_origin()
-def get_recent_alerts() -> Any:
+def get_recent_alerts() -> "flask.Response":
     """Get recent fraud alerts"""
     try:
         hours = request.args.get("hours", 24, type=int)
@@ -241,7 +241,7 @@ def get_recent_alerts() -> Any:
 
 @fraud_detection_bp.route("/statistics", methods=["GET"])
 @cross_origin()
-def get_fraud_statistics() -> Any:
+def get_fraud_statistics() -> "flask.Response":
     """Get fraud detection statistics"""
     try:
         hours = request.args.get("hours", 24, type=int)
@@ -260,7 +260,7 @@ def get_fraud_statistics() -> Any:
 
 @fraud_detection_bp.route("/feedback", methods=["POST"])
 @cross_origin()
-def submit_feedback() -> Any:
+def submit_feedback() -> object:
     """Submit feedback on fraud detection results"""
     try:
         data = request.get_json()
@@ -294,7 +294,7 @@ def submit_feedback() -> Any:
 
 @fraud_detection_bp.route("/model/retrain/check", methods=["GET"])
 @cross_origin()
-def check_retrain_needed() -> Any:
+def check_retrain_needed() -> None:
     """Check if model retraining is needed"""
     try:
         fraud_service = get_fraud_service()
@@ -319,7 +319,7 @@ def check_retrain_needed() -> Any:
 
 @fraud_detection_bp.route("/health", methods=["GET"])
 @cross_origin()
-def health_check() -> Any:
+def health_check() -> "flask.Response":
     """Health check endpoint for fraud detection service"""
     try:
         fraud_service = get_fraud_service()
@@ -346,7 +346,7 @@ def health_check() -> Any:
 
 
 @fraud_detection_bp.errorhandler(FraudDetectionError)
-def handle_fraud_detection_error(e: Any) -> Any:
+def handle_fraud_detection_error(e: Any) -> "flask.Response":
     return (
         jsonify(
             {"success": False, "error": "Fraud detection error", "details": str(e)}

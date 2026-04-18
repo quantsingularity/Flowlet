@@ -196,14 +196,14 @@ class WorkflowBuilder:
         self._execution_tasks = {}
         self._initialize_workflow_builder()
 
-    def _initialize_workflow_builder(self) -> Any:
+    def _initialize_workflow_builder(self) -> object:
         """Initialize the workflow builder."""
         self._register_default_node_handlers()
         self._create_default_templates()
         self._start_execution_engine()
         self.logger.info("Workflow builder initialized successfully")
 
-    def _register_default_node_handlers(self) -> Any:
+    def _register_default_node_handlers(self) -> object:
         """Register default node execution handlers."""
         self._node_handlers[NodeType.START] = self._handle_start_node
         self._node_handlers[NodeType.END] = self._handle_end_node
@@ -217,7 +217,7 @@ class WorkflowBuilder:
         self._node_handlers[NodeType.APPROVAL] = self._handle_approval_node
         self._node_handlers[NodeType.API_CALL] = self._handle_api_call_node
 
-    def _create_default_templates(self) -> Any:
+    def _create_default_templates(self) -> object:
         """Create default workflow templates."""
         payment_workflow = self._create_payment_processing_template()
         self._templates[payment_workflow.workflow_id] = payment_workflow
@@ -554,7 +554,7 @@ class WorkflowBuilder:
             tags=["loan", "approval", "underwriting", "credit"],
         )
 
-    def _start_execution_engine(self) -> Any:
+    def _start_execution_engine(self) -> object:
         """Start the workflow execution engine."""
 
     def create_workflow(
@@ -710,7 +710,7 @@ class WorkflowBuilder:
         self.logger.info(f"Started workflow execution: {execution_id}")
         return execution_id
 
-    def _start_workflow_execution(self, execution_id: str) -> Any:
+    def _start_workflow_execution(self, execution_id: str) -> object:
         """Start workflow execution (simplified implementation)."""
         execution = self._executions.get(execution_id)
         if not execution:
@@ -726,7 +726,7 @@ class WorkflowBuilder:
         start_node = start_nodes[0]
         self._execute_node(execution_id, start_node.node_id)
 
-    def _execute_node(self, execution_id: str, node_id: str) -> Any:
+    def _execute_node(self, execution_id: str, node_id: str) -> object:
         """Execute a single workflow node."""
         execution = self._executions.get(execution_id)
         workflow = self._workflows.get(execution.workflow_id)
@@ -763,7 +763,7 @@ class WorkflowBuilder:
             execution.status = WorkflowStatus.FAILED
             execution.error_message = f"Node {node_id} failed: {str(e)}"
 
-    def _continue_execution(self, execution_id: str, completed_node_id: str) -> Any:
+    def _continue_execution(self, execution_id: str, completed_node_id: str) -> object:
         """Continue workflow execution to next nodes."""
         execution = self._executions.get(execution_id)
         workflow = self._workflows.get(execution.workflow_id)

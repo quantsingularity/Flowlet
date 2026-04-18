@@ -2,7 +2,6 @@
 
 import uuid
 from datetime import datetime, timezone
-from typing import Any
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, String
 
@@ -22,7 +21,7 @@ class APIKey(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     expires_at = Column(DateTime)
 
-    def to_dict(self) -> Any:
+    def to_dict(self) -> dict:
         return {
             "id": self.id,
             "name": self.name,

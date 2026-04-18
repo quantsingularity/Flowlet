@@ -92,7 +92,7 @@ class OpenBankingIntegration(
             self.logger.error(f"Open Banking authentication error: {str(e)}")
             raise AuthenticationError(f"Open Banking authentication error: {str(e)}")
 
-    def _create_ssl_context(self) -> Any:
+    def _create_ssl_context(self) -> object:
         """Create SSL context with client certificate for mutual TLS"""
         import ssl
 
@@ -453,7 +453,7 @@ class OpenBankingIntegration(
         if self.session:
             await self.session.close()
 
-    def __del__(self) -> Any:
+    def __del__(self) -> object:
         """Cleanup on deletion"""
         if self.session and (not self.session.closed):
             asyncio.create_task(self.session.close())

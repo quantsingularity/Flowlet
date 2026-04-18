@@ -12,18 +12,19 @@ Get started with Flowlet in three simple steps:
 
 ## 📚 Table of Contents
 
-| Document                                 | Description                                                                 |
-| ---------------------------------------- | --------------------------------------------------------------------------- |
-| [Installation Guide](INSTALLATION.md)    | Complete installation instructions for different platforms and environments |
-| [Usage Guide](USAGE.md)                  | Common usage patterns, CLI commands, and library integration                |
-| [API Reference](API.md)                  | Comprehensive REST API documentation with endpoints and examples            |
-| [CLI Reference](CLI.md)                  | Command-line interface documentation with all available commands            |
-| [Configuration Guide](CONFIGURATION.md)  | Environment variables, config files, and feature flags                      |
-| [Feature Matrix](FEATURE_MATRIX.md)      | Complete list of features, modules, and capabilities                        |
-| [Architecture Overview](ARCHITECTURE.md) | System design, components, and infrastructure patterns                      |
-| [Examples](examples/)                    | Working code examples demonstrating key features                            |
-| [Contributing Guide](CONTRIBUTING.md)    | How to contribute, code style, and development workflow                     |
-| [Troubleshooting](TROUBLESHOOTING.md)    | Common issues, solutions, and debugging tips                                |
+| Document                                        | Description                                                                                  |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| [Installation Guide](INSTALLATION.md)           | Complete installation instructions for different platforms and environments                  |
+| [Usage Guide](USAGE.md)                         | Common usage patterns, CLI commands, and library integration                                 |
+| [API Reference](API.md)                         | Comprehensive REST API documentation with endpoints and examples                             |
+| [CLI Reference](CLI.md)                         | Command-line interface documentation with all available commands                             |
+| [Configuration Guide](CONFIGURATION.md)         | Environment variables, config files, and feature flags                                       |
+| [Feature Matrix](FEATURE_MATRIX.md)             | Complete list of features, modules, and capabilities                                         |
+| [ML Model Performance](ML_MODEL_PERFORMANCE.md) | AUC-ROC, precision/recall, confusion matrices, walk-forward validation and fairness analysis |
+| [Architecture Overview](ARCHITECTURE.md)        | System design, components, and infrastructure patterns                                       |
+| [Examples](examples/)                           | Working code examples demonstrating key features                                             |
+| [Contributing Guide](CONTRIBUTING.md)           | How to contribute, code style, and development workflow                                      |
+| [Troubleshooting](TROUBLESHOOTING.md)           | Common issues, solutions, and debugging tips                                                 |
 
 ## Core Features
 

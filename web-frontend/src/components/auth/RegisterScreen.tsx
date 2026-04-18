@@ -109,8 +109,10 @@ const RegisterScreen: React.FC = () => {
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
-      const { confirmPassword: _cp, acceptTerms: _at, ...registerData } = data;
-      await dispatch(registerUser(registerData)).unwrap();
+      const { confirmPassword: _cp, ...registerData } = data;
+      await dispatch(
+        registerUser({ ...registerData, acceptPrivacy: true }),
+      ).unwrap();
       toast.success("Account created successfully!");
       navigate("/onboarding");
     } catch (error: unknown) {

@@ -103,7 +103,7 @@ class AdvancedAuthenticationService:
         self._locked_accounts = {}
         self._initialize_auth_service()
 
-    def _initialize_auth_service(self) -> Any:
+    def _initialize_auth_service(self) -> object:
         """Initialize the authentication service."""
         self.logger.info("Advanced authentication service initialized")
 

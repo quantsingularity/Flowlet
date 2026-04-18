@@ -14,7 +14,7 @@ class TestExternalAPIIntegrations:
     """Test external API integrations with proper mocking"""
 
     @pytest.fixture
-    def mock_plaid_client(self) -> Any:
+    def mock_plaid_client(self) -> None:
         """Mock Plaid client for testing"""
         with patch(
             "src.integrations.banking.plaid_integration.PlaidIntegration._plaid_client",
@@ -23,12 +23,12 @@ class TestExternalAPIIntegrations:
             yield mock
 
     @pytest.fixture
-    def mock_requests(self) -> Any:
+    def mock_requests(self) -> None:
         """Mock requests for external API calls"""
         with patch("requests.post") as mock_post, patch("requests.get") as mock_get:
             yield {"post": mock_post, "get": mock_get}
 
-    def test_plaid_link_token_creation(self, mock_plaid_client: Any) -> Any:
+    def test_plaid_link_token_creation(self, mock_plaid_client: Any) -> None:
         """Test Plaid link token creation"""
         plaid_integration = PlaidIntegration()
         result = plaid_integration.create_link_token("user_123")
@@ -36,7 +36,7 @@ class TestExternalAPIIntegrations:
         assert result["status"] == "success"
         assert result["link_token"].startswith("link-")
 
-    def test_plaid_account_balance_retrieval(self, mock_plaid_client: Any) -> Any:
+    def test_plaid_account_balance_retrieval(self, mock_plaid_client: Any) -> None:
         """Test Plaid account balance retrieval"""
         plaid_integration = PlaidIntegration()
         result = plaid_integration.get_account_balance("access_token_123")
@@ -44,7 +44,7 @@ class TestExternalAPIIntegrations:
         assert result["accounts"][0]["available_balance"] is not None
         assert result["accounts"][0]["currency"] == "USD"
 
-    def test_open_banking_account_info(self, mock_requests: Any) -> Any:
+    def test_open_banking_account_info(self, mock_requests: Any) -> None:
         """Test Open Banking account information retrieval"""
         mock_response = Mock()
         mock_response.status_code = 200
@@ -68,7 +68,7 @@ class TestExternalAPIIntegrations:
         assert len(result["accounts"]) == 1
         assert result["accounts"][0]["account_id"] == "ob_account_456"
 
-    def test_fdx_transaction_history(self, mock_requests: Any) -> Any:
+    def test_fdx_transaction_history(self, mock_requests: Any) -> None:
         """Test FDX transaction history retrieval"""
         mock_response = Mock()
         mock_response.status_code = 200
@@ -102,11 +102,11 @@ class TestFraudDetectionIntegration:
     """Test fraud detection ML service integration"""
 
     @pytest.fixture
-    def fraud_service(self) -> Any:
+    def fraud_service(self) -> None:
         """Create fraud detection service instance"""
         return FraudDetectionService()
 
-    def test_transaction_risk_scoring(self, fraud_service: Any) -> Any:
+    def test_transaction_risk_scoring(self, fraud_service: Any) -> None:
         """Test transaction risk scoring"""
         transaction_data = {
             "amount": 100.0,
@@ -124,7 +124,7 @@ class TestFraudDetectionIntegration:
         assert 0 <= result["risk_score"] <= 1
         assert result["risk_level"] in ["low", "medium", "high"]
 
-    def test_anomaly_detection(self, fraud_service: Any) -> Any:
+    def test_anomaly_detection(self, fraud_service: Any) -> None:
         """Test anomaly detection for unusual patterns"""
         unusual_transaction = {
             "amount": 5000.0,
@@ -140,7 +140,7 @@ class TestFraudDetectionIntegration:
         assert "anomaly_score" in result
         assert result["anomaly_score"] > 0.7
 
-    def test_velocity_checking(self, fraud_service: Any) -> Any:
+    def test_velocity_checking(self, fraud_service: Any) -> None:
         """Test velocity checking for rapid transactions"""
         transactions = [
             {"amount": 100.0, "timestamp": "2024-01-15T10:00:00Z"},
@@ -160,14 +160,14 @@ class TestComplianceIntegration:
     """Test compliance service integrations"""
 
     @pytest.fixture
-    def sanctions_service(self) -> Any:
+    def sanctions_service(self) -> None:
         """Create sanctions screening service instance"""
         return SanctionsScreeningService()
 
     @patch("requests.post")
     def test_sanctions_screening_clear(
         self, mock_post: Any, sanctions_service: Any
-    ) -> Any:
+    ) -> None:
         """Test sanctions screening with clear result"""
         mock_response = Mock()
         mock_response.status_code = 200
@@ -194,7 +194,7 @@ class TestComplianceIntegration:
     @patch("requests.post")
     def test_sanctions_screening_match(
         self, mock_post: Any, sanctions_service: Any
-    ) -> Any:
+    ) -> None:
         """Test sanctions screening with potential match"""
         mock_response = Mock()
         mock_response.status_code = 200
@@ -230,7 +230,7 @@ class TestPaymentProcessorIntegration:
     """Test payment processor integrations"""
 
     @patch("stripe.PaymentIntent.create")
-    def test_stripe_payment_processing(self, mock_stripe_create: Any) -> Any:
+    def test_stripe_payment_processing(self, mock_stripe_create: Any) -> None:
         """Test Stripe payment processing integration"""
         mock_payment_intent = Mock()
         mock_payment_intent.id = "pi_test_123"
@@ -253,7 +253,7 @@ class TestPaymentProcessorIntegration:
         assert result["amount"] == 100.0
 
     @patch("requests.post")
-    def test_ach_payment_processing(self, mock_post: Any) -> Any:
+    def test_ach_payment_processing(self, mock_post: Any) -> None:
         """Test ACH payment processing integration"""
         mock_response = Mock()
         mock_response.status_code = 200
@@ -284,7 +284,7 @@ class TestNotificationIntegration:
     """Test notification service integrations"""
 
     @patch("twilio.rest.Client")
-    def test_sms_notification(self, mock_twilio: Any) -> Any:
+    def test_sms_notification(self, mock_twilio: Any) -> None:
         """Test SMS notification integration"""
         mock_message = Mock()
         mock_message.sid = "SM123456789"
@@ -301,7 +301,7 @@ class TestNotificationIntegration:
         assert result["message_id"] == "SM123456789"
 
     @patch("sendgrid.SendGridAPIClient")
-    def test_email_notification(self, mock_sendgrid: Any) -> Any:
+    def test_email_notification(self, mock_sendgrid: Any) -> None:
         """Test email notification integration"""
         mock_response = Mock()
         mock_response.status_code = 202
@@ -321,7 +321,7 @@ class TestNotificationIntegration:
 class TestDatabaseIntegration:
     """Test database integration and performance"""
 
-    def test_database_connection_pool(self) -> Any:
+    def test_database_connection_pool(self) -> None:
         """Test database connection pooling"""
         from app import create_app
         from sqlalchemy import text
@@ -339,7 +339,7 @@ class TestDatabaseIntegration:
             for conn in connections:
                 conn.close()
 
-    def test_database_transaction_rollback(self) -> Any:
+    def test_database_transaction_rollback(self) -> None:
         """Test database transaction rollback functionality"""
         import os
 
@@ -373,7 +373,7 @@ class TestCacheIntegration:
     """Test cache integration (Redis)"""
 
     @patch("redis.Redis")
-    def test_redis_cache_operations(self, mock_redis: Any) -> Any:
+    def test_redis_cache_operations(self, mock_redis: Any) -> None:
         """Test Redis cache operations"""
         mock_redis_client = Mock()
         mock_redis.return_value = mock_redis_client
@@ -394,7 +394,7 @@ class TestCacheIntegration:
 class TestMonitoringIntegration:
     """Test monitoring and logging integration"""
 
-    def test_application_metrics_collection(self) -> Any:
+    def test_application_metrics_collection(self) -> None:
         """Test application metrics collection"""
         from src.services.monitoring.metrics_service import MetricsService
 
@@ -409,7 +409,7 @@ class TestMonitoringIntegration:
         assert "request_duration_seconds" in metrics
         assert "active_connections" in metrics
 
-    def test_error_logging_integration(self) -> Any:
+    def test_error_logging_integration(self) -> None:
         """Test error logging integration"""
         from src.services.monitoring.error_tracking import ErrorTracker
 

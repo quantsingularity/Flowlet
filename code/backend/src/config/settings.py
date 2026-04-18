@@ -1,5 +1,4 @@
 import os
-from typing import Any
 
 from dotenv import load_dotenv
 
@@ -111,7 +110,7 @@ class Config:
     BACKUP_RETENTION_DAYS = 90
 
     @staticmethod
-    def validate_config() -> Any:
+    def validate_config() -> None:
         """Validate critical configuration settings"""
         return True
 
@@ -142,7 +141,7 @@ class TestingConfig(Config):
     RATELIMIT_ENABLED = False
 
     @staticmethod
-    def validate_config() -> Any:
+    def validate_config() -> None:
         """Skip validation in testing"""
         return True
 
@@ -165,7 +164,7 @@ class ProductionConfig(Config):
     }
 
     @staticmethod
-    def validate_config() -> Any:
+    def validate_config() -> None:
         """Validate critical configuration in production"""
         errors = []
         secret = os.environ.get("SECRET_KEY", "")

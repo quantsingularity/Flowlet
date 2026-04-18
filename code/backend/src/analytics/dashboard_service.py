@@ -51,7 +51,7 @@ class Widget:
     position: Dict[str, int]
     filters: Dict[str, Any] = None
 
-    def __post_init__(self) -> Any:
+    def __post_init__(self) -> object:
         if self.filters is None:
             self.filters = {}
 
@@ -70,7 +70,7 @@ class Dashboard:
     created_at: datetime = None
     updated_at: datetime = None
 
-    def __post_init__(self) -> Any:
+    def __post_init__(self) -> object:
         if self.created_at is None:
             self.created_at = datetime.now(timezone.utc)
         if self.updated_at is None:

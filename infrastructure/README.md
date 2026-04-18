@@ -10,7 +10,6 @@ infrastructure/
 ├── terraform/                # Terraform configurations for cloud resources
 ├── kubernetes/               # Kubernetes manifests and Helm charts
 ├── ansible/                  # Ansible playbooks for configuration management
-├── ci-cd/                    # CI/CD pipeline definitions
 ├── docker/                   # Docker Compose for local development
 ├── scripts/                  # Utility scripts for deployment and validation
 └── validation_logs/          # Validation output logs

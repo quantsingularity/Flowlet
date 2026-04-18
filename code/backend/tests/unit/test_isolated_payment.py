@@ -23,7 +23,7 @@ class TestStripeClient(unittest.TestCase):
         return client
 
     @patch("stripe.Charge.create")
-    def test_create_charge_success(self, mock_stripe_create: Any) -> Any:
+    def test_create_charge_success(self, mock_stripe_create: Any) -> None:
         mock_charge = MagicMock(
             id="ch_123",
             status="succeeded",
@@ -49,7 +49,7 @@ class TestStripeClient(unittest.TestCase):
         )
 
     @patch("stripe.Charge.create")
-    def test_create_charge_card_error(self, mock_stripe_create: Any) -> Any:
+    def test_create_charge_card_error(self, mock_stripe_create: Any) -> None:
         mock_stripe_create.side_effect = stripe.error.CardError(
             message="Your card was declined.",
             param="source",
@@ -64,7 +64,7 @@ class TestStripeClient(unittest.TestCase):
             client.create_charge(Decimal("10.00"), "USD", "tok_visa", "test charge")
 
     @patch("stripe.Charge.create")
-    def test_create_charge_api_error(self, mock_stripe_create: Any) -> Any:
+    def test_create_charge_api_error(self, mock_stripe_create: Any) -> None:
         mock_stripe_create.side_effect = stripe.error.StripeError(
             message="Invalid API Key provided.",
             http_status=500,

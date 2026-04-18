@@ -3,7 +3,6 @@
 import uuid
 from datetime import datetime, timezone
 from enum import Enum as PyEnum
-from typing import Any
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Index, String, Text
 
@@ -83,7 +82,7 @@ class KYCRecord(Base):
         Index("idx_kyc_created_at", "created_at"),
     )
 
-    def to_dict(self) -> Any:
+    def to_dict(self) -> dict:
         """Convert to dictionary for API responses"""
         return {
             "id": self.id,
@@ -104,5 +103,5 @@ class KYCRecord(Base):
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<KYCRecord {self.id} user={self.user_id} status={self.status.value if self.status else 'N/A'}>"

@@ -711,12 +711,12 @@ class ComplianceEngine:
             "monitoring_enabled": self._monitoring_enabled,
         }
 
-    def enable_monitoring(self) -> Any:
+    def enable_monitoring(self) -> object:
         """Enable compliance monitoring."""
         self._monitoring_enabled = True
         self.logger.info("Compliance monitoring enabled")
 
-    def disable_monitoring(self) -> Any:
+    def disable_monitoring(self) -> object:
         """Disable compliance monitoring."""
         self._monitoring_enabled = False
         self.logger.info("Compliance monitoring disabled")

@@ -1,6 +1,7 @@
 import { ArrowLeft, CreditCard } from "lucide-react";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,8 +33,13 @@ export default function IssueCard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    navigate("/cards");
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      navigate("/cards");
+    } catch {
+      toast.error("Failed to issue card. Please try again.");
+      setLoading(false);
+    }
   };
 
   return (

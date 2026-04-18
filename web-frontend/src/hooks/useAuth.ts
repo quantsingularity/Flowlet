@@ -16,7 +16,7 @@ export const useAuth = () => {
         try {
           await dispatch(validateToken()).unwrap();
         } catch {
-          authService.logout();
+          await authService.logout();
         }
       }
       setInitialized(true);

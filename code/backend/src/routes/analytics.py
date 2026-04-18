@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
-from typing import Any
 
 from flask import Blueprint, g, jsonify, request
 from sqlalchemy import func, select
@@ -34,7 +33,7 @@ def _get_date_range(period: str) -> datetime:
 
 @analytics_bp.route("/dashboard", methods=["GET"])
 @token_required
-def get_dashboard_analytics() -> Any:
+def get_dashboard_analytics() -> "flask.Response":
     """Get dashboard analytics for the current user"""
     try:
         user_id = g.current_user.id
@@ -106,7 +105,7 @@ def get_dashboard_analytics() -> Any:
 
 @analytics_bp.route("/spending", methods=["GET"])
 @token_required
-def get_spending_analytics() -> Any:
+def get_spending_analytics() -> "flask.Response":
     """Get spending analytics for the current user"""
     try:
         user_id = g.current_user.id
@@ -166,7 +165,7 @@ def get_spending_analytics() -> Any:
 
 @analytics_bp.route("/income", methods=["GET"])
 @token_required
-def get_income_analytics() -> Any:
+def get_income_analytics() -> "flask.Response":
     """Get income analytics for the current user"""
     try:
         user_id = g.current_user.id
@@ -226,7 +225,7 @@ def get_income_analytics() -> Any:
 
 @analytics_bp.route("/balance-history", methods=["GET"])
 @token_required
-def get_balance_history() -> Any:
+def get_balance_history() -> "flask.Response":
     """Get balance history for the current user (simplified simulation)"""
     try:
         user_id = g.current_user.id

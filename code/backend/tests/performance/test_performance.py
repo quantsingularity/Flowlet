@@ -16,17 +16,17 @@ class TestPerformanceMetrics:
     """Test performance metrics and benchmarks"""
 
     @pytest.fixture
-    def app(self) -> Any:
+    def app(self) -> None:
         """Create application for performance testing"""
         app = create_app("testing")
         return app
 
     @pytest.fixture
-    def client(self, app: Any) -> Any:
+    def client(self, app: Any) -> None:
         """Create test client for performance testing"""
         return app.test_client()
 
-    def test_api_response_time_benchmarks(self, client: Any) -> Any:
+    def test_api_response_time_benchmarks(self, client: Any) -> None:
         """Test API response time benchmarks"""
         endpoints = ["/health", "/api/v1/info"]
         response_times = {}
@@ -52,7 +52,7 @@ class TestPerformanceMetrics:
                 metrics["max"] < 1.0
             ), f"{endpoint} max response time too slow: {metrics['max']:.3f}s"
 
-    def test_concurrent_request_handling(self, client: Any) -> Any:
+    def test_concurrent_request_handling(self, client: Any) -> None:
         """Test handling of concurrent requests"""
 
         def make_request():
@@ -75,7 +75,7 @@ class TestPerformanceMetrics:
         ), "Average response time under load too slow"
         assert max(response_times) < 2.0, "Maximum response time under load too slow"
 
-    def test_memory_usage_under_load(self, client: Any) -> Any:
+    def test_memory_usage_under_load(self, client: Any) -> None:
         """Test memory usage under load"""
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss / 1024 / 1024
@@ -93,7 +93,7 @@ class TestDatabasePerformance:
     """Test database performance under various conditions"""
 
     @pytest.fixture
-    def app_with_db(self) -> Any:
+    def app_with_db(self) -> None:
         """Create application with database for performance testing"""
         app = create_app("testing")
         with app.app_context():
@@ -104,7 +104,7 @@ class TestDatabasePerformance:
             db.session.remove()
             db.drop_all()
 
-    def test_database_query_performance(self, app_with_db: Any) -> Any:
+    def test_database_query_performance(self, app_with_db: Any) -> None:
         """Test database query performance"""
         with app_with_db.app_context():
             from src.models.database import db
@@ -132,7 +132,7 @@ class TestDatabasePerformance:
             assert query_time < 1.0, f"Database query too slow: {query_time:.3f}s"
             assert len(result) > 0, "Query should return results"
 
-    def test_database_connection_pool_performance(self, app_with_db: Any) -> Any:
+    def test_database_connection_pool_performance(self, app_with_db: Any) -> None:
         """Test database connection pool performance"""
         from sqlalchemy import text
 
@@ -160,7 +160,7 @@ class TestDatabasePerformance:
 class TestAPIGatewayPerformance:
     """Test API Gateway performance and optimization"""
 
-    def test_request_routing_performance(self, client: Any) -> Any:
+    def test_request_routing_performance(self, client: Any) -> None:
         """Test request routing performance"""
         routes = [
             "/health",
@@ -181,7 +181,7 @@ class TestAPIGatewayPerformance:
         for route, avg_time in routing_times.items():
             assert avg_time < 0.1, f"Route {route} processing too slow: {avg_time:.3f}s"
 
-    def test_middleware_performance(self, client: Any) -> Any:
+    def test_middleware_performance(self, client: Any) -> None:
         """Test middleware performance impact"""
         start_time = time.time()
         for _ in range(50):
@@ -199,7 +199,7 @@ class TestCachePerformance:
     """Test caching performance and effectiveness"""
 
     @patch("redis.Redis")
-    def test_cache_hit_performance(self, mock_redis: Any, client: Any) -> Any:
+    def test_cache_hit_performance(self, mock_redis: Any, client: Any) -> None:
         """Test cache hit performance"""
         mock_redis_client = Mock()
         mock_redis.return_value = mock_redis_client
@@ -216,7 +216,7 @@ class TestCachePerformance:
         assert avg_hit_time < 0.001, f"Cache hit time too slow: {avg_hit_time:.6f}s"
 
     @patch("redis.Redis")
-    def test_cache_miss_performance(self, mock_redis: Any, client: Any) -> Any:
+    def test_cache_miss_performance(self, mock_redis: Any, client: Any) -> None:
         """Test cache miss and set performance"""
         mock_redis_client = Mock()
         mock_redis.return_value = mock_redis_client
@@ -241,7 +241,7 @@ class TestCachePerformance:
 class TestSecurityPerformance:
     """Test security feature performance impact"""
 
-    def test_rate_limiting_performance(self, client: Any) -> Any:
+    def test_rate_limiting_performance(self, client: Any) -> None:
         """Test rate limiting performance impact"""
         start_time = time.time()
         for _ in range(50):
@@ -254,7 +254,7 @@ class TestSecurityPerformance:
             avg_time < 0.05
         ), f"Rate limiting overhead too high: {avg_time:.3f}s per request"
 
-    def test_authentication_performance(self, client: Any) -> Any:
+    def test_authentication_performance(self, client: Any) -> None:
         """Test authentication performance"""
         auth_headers = {
             "Authorization": "Bearer test-token",
@@ -275,7 +275,7 @@ class TestSecurityPerformance:
 class TestScalabilityMetrics:
     """Test scalability metrics and limits"""
 
-    def test_concurrent_user_simulation(self, client: Any) -> Any:
+    def test_concurrent_user_simulation(self, client: Any) -> None:
         """Simulate concurrent users and measure performance"""
 
         def simulate_user_session():
@@ -304,7 +304,7 @@ class TestScalabilityMetrics:
             statistics.mean(avg_request_times) < 0.2
         ), "Average request time under load too slow"
 
-    def test_throughput_measurement(self, client: Any) -> Any:
+    def test_throughput_measurement(self, client: Any) -> None:
         """Measure API throughput (requests per second)"""
         request_count = 200
         start_time = time.time()
@@ -320,7 +320,7 @@ class TestScalabilityMetrics:
 class TestResourceUtilization:
     """Test resource utilization under load"""
 
-    def test_cpu_usage_under_load(self, client: Any) -> Any:
+    def test_cpu_usage_under_load(self, client: Any) -> None:
         """Test CPU usage under load"""
         process = psutil.Process(os.getpid())
 
@@ -340,7 +340,7 @@ class TestResourceUtilization:
         avg_cpu = sum(cpu_samples) / len(cpu_samples) if cpu_samples else 0.0
         assert avg_cpu < 90, f"CPU usage too high under load: {avg_cpu:.1f}%"
 
-    def test_file_descriptor_usage(self, client: Any) -> Any:
+    def test_file_descriptor_usage(self, client: Any) -> None:
         """Test file descriptor usage"""
         process = psutil.Process(os.getpid())
         initial_fds = process.num_fds() if hasattr(process, "num_fds") else 0
@@ -356,7 +356,7 @@ class TestResourceUtilization:
 class TestErrorHandlingPerformance:
     """Test error handling performance"""
 
-    def test_error_response_time(self, client: Any) -> Any:
+    def test_error_response_time(self, client: Any) -> None:
         """Test error response time"""
         error_endpoints = [
             "/api/v1/nonexistent",

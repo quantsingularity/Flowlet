@@ -260,7 +260,7 @@ class BankingIntegrationManager:
             }
         return health_status
 
-    def __del__(self) -> Any:
+    def __del__(self) -> object:
         """Cleanup on deletion - safe during interpreter shutdown."""
         try:
             import sys

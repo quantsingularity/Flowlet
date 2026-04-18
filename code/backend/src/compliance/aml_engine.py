@@ -141,7 +141,7 @@ class AMLEngine:
         self._date_match_threshold = 0.9
         self._initialize_aml_engine()
 
-    def _initialize_aml_engine(self) -> Any:
+    def _initialize_aml_engine(self) -> object:
         """Initialize the AML engine with default configurations."""
         self._load_sanctions_lists()
         self._load_pep_lists()
@@ -149,7 +149,7 @@ class AMLEngine:
         self._initialize_risk_rules()
         self.logger.info("AML engine initialized successfully")
 
-    def _load_sanctions_lists(self) -> Any:
+    def _load_sanctions_lists(self) -> object:
         """Load sanctions lists from various sources."""
         self._sanctions_lists[SanctionsListType.OFAC_SDN] = {
             "name": "OFAC Specially Designated Nationals",
@@ -186,7 +186,7 @@ class AMLEngine:
             ],
         }
 
-    def _load_pep_lists(self) -> Any:
+    def _load_pep_lists(self) -> object:
         """Load Politically Exposed Person lists."""
         self._pep_lists = {
             "global_peps": {
@@ -209,7 +209,7 @@ class AMLEngine:
             }
         }
 
-    def _initialize_transaction_patterns(self) -> Any:
+    def _initialize_transaction_patterns(self) -> object:
         """Initialize suspicious transaction patterns."""
         self._transaction_patterns["structuring"] = TransactionPattern(
             pattern_id="structuring",
@@ -255,7 +255,7 @@ class AMLEngine:
             time_window=timedelta(days=1),
         )
 
-    def _initialize_risk_rules(self) -> Any:
+    def _initialize_risk_rules(self) -> object:
         """Initialize risk scoring rules."""
         self._risk_rules = {
             "customer_risk_factors": {
@@ -897,7 +897,7 @@ class AMLEngine:
 
     def update_sanctions_lists(
         self, list_type: SanctionsListType, new_data: Dict[str, Any]
-    ) -> Any:
+    ) -> None:
         """Update sanctions lists with new data."""
         self._sanctions_lists[list_type] = new_data
         self.logger.info(f"Updated sanctions list: {list_type.value}")

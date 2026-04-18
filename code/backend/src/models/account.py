@@ -3,7 +3,6 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum as PyEnum
-from typing import Any
 
 from sqlalchemy import (
     BigInteger,
@@ -129,7 +128,7 @@ class Account(Base):
             self.pending_balance = Decimal("0.00000000")
 
     @staticmethod
-    def generate_account_number() -> Any:
+    def generate_account_number() -> str:
         return "".join([str(random.randint(0, 9)) for _ in range(16)])
 
     @property
@@ -229,7 +228,7 @@ class Account(Base):
         """Freeze the account"""
         self.status = AccountStatus.FROZEN
 
-    def to_dict(self, include_sensitive: Any = False) -> Any:
+    def to_dict(self, include_sensitive: bool = False) -> dict:
         """Convert to dictionary with optional sensitive data - Merged from both"""
         data = {
             "id": self.id,
@@ -270,7 +269,7 @@ class Account(Base):
             )
         return data
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<Account {self.account_number} ({self.account_type.value})>"
 
     def can_debit(self, amount: Decimal) -> bool:

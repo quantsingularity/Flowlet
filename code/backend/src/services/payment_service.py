@@ -44,7 +44,7 @@ def get_account_by_id(session: Session, account_id: str) -> Account:
     return account
 
 
-def check_account_status(account: Account) -> Any:
+def check_account_status(account: Account) -> None:
     """Checks if an account is active."""
     if account.status != AccountStatus.ACTIVE:
         raise PaymentServiceError(
@@ -52,7 +52,7 @@ def check_account_status(account: Account) -> Any:
         )
 
 
-def check_funds_and_limits(account: Account, amount: Decimal) -> Any:
+def check_funds_and_limits(account: Account, amount: Decimal) -> None:
     """Checks for sufficient funds and transaction limits."""
     if not account.can_debit(amount):
         raise InsufficientFunds()

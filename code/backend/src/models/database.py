@@ -1,6 +1,6 @@
 import os
-from typing import Any
 
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 
@@ -12,10 +12,10 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 
-def init_db(app: Any) -> Any:
-    """Initializes the database and creates all tables."""
+def init_db(app: Flask) -> None:
+    """Initialise the database connection and create all tables."""
     with app.app_context():
-        db_uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+        db_uri: str = app.config.get("SQLALCHEMY_DATABASE_URI", "")
         if db_uri.startswith("sqlite:///"):
             db_path = db_uri.replace("sqlite:///", "")
             if not os.path.isabs(db_path):

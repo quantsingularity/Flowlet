@@ -118,7 +118,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
         ) : (
           <div className="divide-y divide-border/50">
             {transactions.map((tx) => (
-              <TransactionItem key={tx.id} transaction={tx} />
+              <TransactionItem key={String(tx.id)} transaction={tx} />
             ))}
           </div>
         )}

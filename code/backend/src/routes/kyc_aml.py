@@ -74,7 +74,7 @@ def simulate_sanctions_screening(user: User) -> Dict:
 
 @kyc_aml_bp.route("/verification/start", methods=["POST"])
 @token_required
-def start_kyc_verification() -> Any:
+def start_kyc_verification() -> None:
     """Start KYC verification process"""
     try:
         data = request.get_json()
@@ -174,7 +174,7 @@ def start_kyc_verification() -> Any:
 
 @kyc_aml_bp.route("/verification/<kyc_record_id>/document", methods=["POST"])
 @token_required
-def submit_kyc_document(kyc_record_id: Any) -> Any:
+def submit_kyc_document(kyc_record_id: Any) -> object:
     """Submit a document for a specific KYC record"""
     try:
         data = request.get_json()
@@ -258,7 +258,7 @@ def submit_kyc_document(kyc_record_id: Any) -> Any:
 
 @kyc_aml_bp.route("/verification/<kyc_record_id>/approve", methods=["POST"])
 @admin_required
-def approve_kyc_record(kyc_record_id: Any) -> Any:
+def approve_kyc_record(kyc_record_id: Any) -> object:
     """Manually approve a KYC record (Admin only)"""
     try:
         kyc_record = db.session.get(KYCRecord, kyc_record_id)

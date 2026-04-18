@@ -41,11 +41,11 @@ token_manager = TokenManager()
 rate_limiter = RateLimiter()
 
 
-def token_required(f: Any) -> Any:
+def token_required(f: Any) -> object:
     """JWT token validation decorator"""
 
     @wraps(f)
-    def decorated(*args: Any, **kwargs: Any) -> Any:
+    def decorated(*args: Any, **kwargs: Any) -> object:
         token = None
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
@@ -126,12 +126,12 @@ def token_required(f: Any) -> Any:
     return decorated
 
 
-def admin_required(f: Any) -> Any:
+def admin_required(f: Any) -> object:
     """Decorator to require admin privileges"""
 
     @wraps(f)
     @token_required
-    def decorated(*args: Any, **kwargs: Any) -> Any:
+    def decorated(*args: Any, **kwargs: Any) -> object:
         if not g.current_user.is_admin:
             audit_logger.log_event(
                 event_type=AuditEventType.SECURITY_ALERT,
@@ -156,7 +156,7 @@ def admin_required(f: Any) -> Any:
 
 @auth_bp.route("/register", methods=["POST"])
 @rate_limiter.limit("5 per minute")
-def register() -> Any:
+def register() -> object:
     """
     User registration with comprehensive validation
     """
@@ -296,7 +296,7 @@ def register() -> Any:
 
 @auth_bp.route("/login", methods=["POST"])
 @rate_limiter.limit("10 per minute")
-def login() -> Any:
+def login() -> object:
     """
     User login endpoint with enhanced security features (2FA, brute-force protection)
     """
@@ -433,7 +433,7 @@ def login() -> Any:
 
 @auth_bp.route("/2fa/verify", methods=["POST"])
 @rate_limiter.limit("10 per minute")
-def verify_2fa() -> Any:
+def verify_2fa() -> None:
     """Verify 2FA code and issue final tokens"""
     try:
         data = request.get_json()
@@ -518,7 +518,7 @@ def verify_2fa() -> Any:
 
 @auth_bp.route("/refresh", methods=["POST"])
 @rate_limiter.limit("5 per minute")
-def refresh_token() -> Any:
+def refresh_token() -> object:
     """Refresh access token using refresh token"""
     try:
         data = request.get_json()
@@ -576,7 +576,7 @@ def refresh_token() -> Any:
 
 @auth_bp.route("/logout", methods=["POST"])
 @token_required
-def logout() -> Any:
+def logout() -> object:
     """User logout (optional: blacklist token)"""
     audit_logger.log_event(
         event_type=AuditEventType.USER_LOGOUT,
@@ -590,7 +590,7 @@ def logout() -> Any:
 
 @auth_bp.route("/2fa/setup", methods=["POST"])
 @token_required
-def setup_2fa() -> Any:
+def setup_2fa() -> None:
     """Initiate 2FA setup by generating a secret and QR code"""
     try:
         user = g.current_user
@@ -635,7 +635,7 @@ def setup_2fa() -> Any:
 
 @auth_bp.route("/2fa/enable", methods=["POST"])
 @token_required
-def enable_2fa() -> Any:
+def enable_2fa() -> object:
     """Finalize 2FA setup by verifying the code and saving the secret"""
     try:
         data = request.get_json()
@@ -704,7 +704,7 @@ def enable_2fa() -> Any:
 
 @auth_bp.route("/2fa/disable", methods=["POST"])
 @token_required
-def disable_2fa() -> Any:
+def disable_2fa() -> object:
     """Disable 2FA by verifying the code"""
     try:
         data = request.get_json()
@@ -765,7 +765,7 @@ def disable_2fa() -> Any:
 
 @auth_bp.route("/password/change", methods=["POST"])
 @token_required
-def change_password() -> Any:
+def change_password() -> object:
     """Change user password"""
     try:
         data = request.get_json()
@@ -833,7 +833,7 @@ def change_password() -> Any:
 
 @auth_bp.route("/password/reset/request", methods=["POST"])
 @rate_limiter.limit("3 per hour")
-def request_password_reset() -> Any:
+def request_password_reset() -> object:
     """Request a password reset token via email"""
     try:
         data = request.get_json()
@@ -894,7 +894,7 @@ def request_password_reset() -> Any:
 
 @auth_bp.route("/password/reset/confirm", methods=["POST"])
 @rate_limiter.limit("5 per hour")
-def confirm_password_reset() -> Any:
+def confirm_password_reset() -> object:
     """Confirm password reset with token and new password"""
     try:
         data = request.get_json()
@@ -969,7 +969,7 @@ def confirm_password_reset() -> Any:
 @auth_bp.route("/verify/email/request", methods=["POST"])
 @token_required
 @rate_limiter.limit("1 per minute")
-def request_email_verification() -> Any:
+def request_email_verification() -> object:
     """Request a new email verification token"""
     try:
         user = g.current_user
@@ -1012,7 +1012,7 @@ def request_email_verification() -> Any:
 
 @auth_bp.route("/verify/email/confirm", methods=["POST"])
 @rate_limiter.limit("5 per hour")
-def confirm_email_verification() -> Any:
+def confirm_email_verification() -> object:
     """Confirm email verification with token"""
     try:
         data = request.get_json()
@@ -1076,7 +1076,7 @@ def confirm_email_verification() -> Any:
 
 @auth_bp.route("/status", methods=["GET"])
 @token_required
-def status() -> Any:
+def status() -> "flask.Response":
     """Check user authentication status"""
     user = g.current_user
     return (

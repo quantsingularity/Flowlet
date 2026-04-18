@@ -4,7 +4,6 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum as PyEnum
-from typing import Any
 
 from sqlalchemy import Column, DateTime, ForeignKey, Index, Numeric, String, Text
 
@@ -64,7 +63,7 @@ class LedgerEntry(Base):
         Index("idx_ledger_created_at", "created_at"),
     )
 
-    def to_dict(self) -> Any:
+    def to_dict(self) -> dict:
         """Convert to dictionary"""
         return {
             "id": self.id,
@@ -81,5 +80,5 @@ class LedgerEntry(Base):
             "posted_at": self.posted_at.isoformat() if self.posted_at else None,
         }
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<LedgerEntry {self.account_name} D:{self.debit_amount} C:{self.credit_amount}>"

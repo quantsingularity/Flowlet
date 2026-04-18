@@ -44,7 +44,7 @@ class ETLJob:
     next_run: Optional[datetime] = None
     error_message: Optional[str] = None
 
-    def __post_init__(self) -> Any:
+    def __post_init__(self) -> object:
         if self.last_run is None:
             self.last_run = datetime.now(timezone.utc)
 
@@ -85,13 +85,13 @@ class DataWarehouse:
         self._data_quality_rules = []
         self._initialize_warehouse()
 
-    def _initialize_warehouse(self) -> Any:
+    def _initialize_warehouse(self) -> object:
         """Initialize the data warehouse with default configurations."""
         self._setup_default_etl_jobs()
         self._setup_data_quality_rules()
         self.logger.info("Data warehouse initialized successfully")
 
-    def _setup_default_etl_jobs(self) -> Any:
+    def _setup_default_etl_jobs(self) -> object:
         """Set up default ETL jobs for common data sources."""
         transaction_etl = ETLJob(
             id="transaction_analytics_etl",
@@ -133,7 +133,7 @@ class DataWarehouse:
         )
         self._etl_jobs[performance_etl.id] = performance_etl
 
-    def _setup_data_quality_rules(self) -> Any:
+    def _setup_data_quality_rules(self) -> object:
         """Set up data quality validation rules."""
         self._data_quality_rules.extend(
             [
@@ -576,7 +576,9 @@ class DataWarehouse:
             return result.last_processed
         return datetime.now(timezone.utc) - timedelta(hours=1)
 
-    def _update_last_processed_timestamp(self, job_id: str, timestamp: datetime) -> Any:
+    def _update_last_processed_timestamp(
+        self, job_id: str, timestamp: datetime
+    ) -> object:
         """Update the last processed timestamp for an ETL job."""
         query = text(
             "\n            INSERT INTO etl_job_status (job_id, last_processed)\n            VALUES (:job_id, :timestamp)\n            ON CONFLICT (job_id) DO UPDATE SET last_processed = :timestamp\n        "

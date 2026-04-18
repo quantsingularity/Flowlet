@@ -4,7 +4,6 @@ Tests fraud detection models, feature engineering, and service functionality.
 """
 
 from datetime import datetime, timezone
-from typing import Any
 
 import pytest
 
@@ -35,7 +34,7 @@ class TestFraudDetection:
     """Test suite for fraud detection models"""
 
     @pytest.fixture
-    def sample_features_data(self) -> Any:
+    def sample_features_data(self) -> None:
         """Generate sample feature data for testing"""
         if pd is None or np is None:
             pytest.skip("numpy/pandas not available")
@@ -62,7 +61,7 @@ class TestFraudDetection:
         return pd.DataFrame(data)
 
     @pytest.fixture
-    def sample_labels(self, sample_features_data: Any) -> Any:
+    def sample_labels(self, sample_features_data: Any) -> None:
         """Generate sample labels (fraud/not fraud)"""
         if np is None:
             pytest.skip("numpy not available")
@@ -75,7 +74,7 @@ class TestFraudDetection:
         labels[fraud_indices] = 1
         return pd.Series(labels)
 
-    def test_risk_level_calculation(self) -> Any:
+    def test_risk_level_calculation(self) -> None:
         """Test risk level calculation from FraudModelBase"""
         model = IsolationForestModel({})
         assert model.calculate_risk_level(0.1) == RiskLevel.LOW
@@ -83,7 +82,7 @@ class TestFraudDetection:
         assert model.calculate_risk_level(0.7) == RiskLevel.HIGH
         assert model.calculate_risk_level(0.9) == RiskLevel.CRITICAL
 
-    def test_isolation_forest_model_init(self) -> Any:
+    def test_isolation_forest_model_init(self) -> None:
         """Test IsolationForest model initialization"""
         config = {"contamination": 0.1, "n_estimators": 50, "random_state": 42}
         model = IsolationForestModel(config)
@@ -91,7 +90,7 @@ class TestFraudDetection:
         assert not model.is_trained
         assert model.model_version is not None
 
-    def test_xgboost_model_init(self) -> Any:
+    def test_xgboost_model_init(self) -> None:
         """Test XGBoost model initialization"""
         config = {
             "n_estimators": 50,
@@ -103,7 +102,7 @@ class TestFraudDetection:
         assert model is not None
         assert not model.is_trained
 
-    def test_ensemble_model_init(self) -> Any:
+    def test_ensemble_model_init(self) -> None:
         """Test ensemble model initialization"""
         config = {
             "voting_strategy": "weighted",
@@ -121,7 +120,7 @@ class TestFraudDetection:
         assert model is not None
         assert model.voting_strategy == "weighted"
 
-    def test_isolation_forest_train(self, sample_features_data: Any) -> Any:
+    def test_isolation_forest_train(self, sample_features_data: Any) -> None:
         """Test IsolationForest model training"""
         if pd is None:
             pytest.skip("pandas not available")
@@ -131,7 +130,7 @@ class TestFraudDetection:
         assert model.is_trained
         assert model.training_timestamp is not None
 
-    def test_feature_engineer_basic(self) -> Any:
+    def test_feature_engineer_basic(self) -> None:
         """Test feature engineer with minimal transaction data"""
         fe = FeatureEngineer()
         tx_data = {
@@ -148,7 +147,7 @@ class TestFraudDetection:
         assert features.hour_of_day is not None
         assert features.day_of_week is not None
 
-    def test_real_time_detector_detect_fraud(self) -> Any:
+    def test_real_time_detector_detect_fraud(self) -> None:
         """Test real-time fraud detector"""
         detector = RealTimeFraudDetector()
         tx_data = {
@@ -166,7 +165,7 @@ class TestFraudDetection:
         assert isinstance(alert.fraud_types, list)
         assert alert.confidence >= 0.0
 
-    def test_real_time_detector_high_amount(self) -> Any:
+    def test_real_time_detector_high_amount(self) -> None:
         """Test that high-amount transactions get elevated risk"""
         detector = RealTimeFraudDetector()
         tx_data = {
@@ -180,7 +179,7 @@ class TestFraudDetection:
         assert isinstance(alert, FraudAlert)
         assert alert.risk_score >= 0.3
 
-    def test_fraud_explainer(self) -> Any:
+    def test_fraud_explainer(self) -> None:
         """Test fraud explainer"""
         explainer = FraudExplainer()
         fe = FeatureEngineer()
@@ -199,7 +198,7 @@ class TestFraudDetection:
         assert "summary" in explanation
         assert "primary_risk_factors" in explanation
 
-    def test_fraud_detection_service_init(self) -> Any:
+    def test_fraud_detection_service_init(self) -> None:
         """Test fraud detection service initialization"""
         config = {
             "model_config": {
@@ -218,7 +217,7 @@ class TestFraudDetection:
         assert service.ensemble_model is not None
         assert service.real_time_detector is not None
 
-    def test_fraud_service_model_status(self) -> Any:
+    def test_fraud_service_model_status(self) -> None:
         """Test getting model status from service"""
         service = FraudDetectionService({})
         status = service.get_model_status()
@@ -226,7 +225,7 @@ class TestFraudDetection:
         assert "model_trained" in status
         assert "performance_metrics" in status
 
-    def test_fraud_service_statistics_empty(self) -> Any:
+    def test_fraud_service_statistics_empty(self) -> None:
         """Test fraud statistics when no alerts"""
         service = FraudDetectionService({})
         stats = service.get_fraud_statistics(hours=1)
@@ -236,7 +235,7 @@ class TestFraudDetection:
         assert stats["total_transactions"] == 0
 
     @pytest.mark.asyncio
-    async def test_fraud_service_detect(self) -> Any:
+    async def test_fraud_service_detect(self) -> None:
         """Test async fraud detection"""
         service = FraudDetectionService({})
         tx_data = {

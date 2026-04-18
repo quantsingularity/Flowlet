@@ -60,7 +60,7 @@ class CardService:
         """Generates a mock 3-digit CVV."""
         return "".join((str(secrets.randbelow(10)) for _ in range(3)))
 
-    def _validate_card_input(self, data: Dict[str, Any]) -> Any:
+    def _validate_card_input(self, data: Dict[str, Any]) -> object:
         """Validates input data for card issuance."""
         required_fields = ["account_id", "card_type"]
         missing_fields = [field for field in required_fields if field not in data]

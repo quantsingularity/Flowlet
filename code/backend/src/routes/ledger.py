@@ -37,7 +37,7 @@ CHART_OF_ACCOUNTS = {
 
 @ledger_bp.route("/entry", methods=["POST"])
 @admin_required
-def create_journal_entry() -> Any:
+def create_journal_entry() -> "flask.Response":
     """Create a journal entry with multiple ledger entries (double-entry bookkeeping)"""
     try:
         data = request.get_json()
@@ -147,7 +147,7 @@ def create_journal_entry() -> Any:
 
 @ledger_bp.route("/balance/<account_name>", methods=["GET"])
 @admin_required
-def get_account_balance(account_name: Any) -> Any:
+def get_account_balance(account_name: Any) -> "flask.Response":
     """Get the current balance for a specific ledger account"""
     try:
         if account_name not in CHART_OF_ACCOUNTS:
@@ -203,7 +203,7 @@ def get_account_balance(account_name: Any) -> Any:
 
 @ledger_bp.route("/entries", methods=["GET"])
 @admin_required
-def get_ledger_entries() -> Any:
+def get_ledger_entries() -> "flask.Response":
     """Get all ledger entries (Admin only)"""
     try:
         page = request.args.get("page", 1, type=int)

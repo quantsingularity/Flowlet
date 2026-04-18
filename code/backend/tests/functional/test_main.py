@@ -25,7 +25,7 @@ def client(app):
     return app.test_client()
 
 
-def test_app_creation() -> Any:
+def test_app_creation() -> None:
     """Test that the app can be created."""
     from app import create_app
 
@@ -34,7 +34,7 @@ def test_app_creation() -> Any:
     assert application.config["TESTING"] is True
 
 
-def test_health_check(client: Any) -> Any:
+def test_health_check(client: Any) -> None:
     """Test the health check endpoint."""
     response = client.get("/health")
     assert response.status_code == 200
@@ -45,7 +45,7 @@ def test_health_check(client: Any) -> Any:
     assert "services" in data
 
 
-def test_api_info(client: Any) -> Any:
+def test_api_info(client: Any) -> None:
     """Test the API info endpoint."""
     response = client.get("/api/v1/info")
     assert response.status_code == 200
@@ -56,7 +56,7 @@ def test_api_info(client: Any) -> Any:
     assert "security_features" in data
 
 
-def test_security_headers(client: Any) -> Any:
+def test_security_headers(client: Any) -> None:
     """Test that security headers are present."""
     response = client.get("/api/v1/info")
     assert "X-Content-Type-Options" in response.headers
@@ -68,7 +68,7 @@ def test_security_headers(client: Any) -> Any:
     assert "Content-Security-Policy" in response.headers
 
 
-def test_404_error_handling(client: Any) -> Any:
+def test_404_error_handling(client: Any) -> None:
     """Test 404 error handling."""
     response = client.get("/nonexistent-endpoint-that-does-not-exist-xyz")
     assert response.status_code == 404
@@ -76,7 +76,7 @@ def test_404_error_handling(client: Any) -> Any:
     assert "error" in data or "status" in data
 
 
-def test_cors_headers(client: Any) -> Any:
+def test_cors_headers(client: Any) -> None:
     """Test CORS headers are present."""
     response = client.options(
         "/api/v1/info",
@@ -88,7 +88,7 @@ def test_cors_headers(client: Any) -> Any:
     assert response.status_code in (200, 204)
 
 
-def test_json_content_type_validation(client: Any) -> Any:
+def test_json_content_type_validation(client: Any) -> None:
     """Test that non-JSON requests to POST endpoints are handled."""
     response = client.post(
         "/api/v1/auth/login", data="not json", content_type="text/plain"

@@ -38,12 +38,12 @@ wallet_bp = Blueprint("account", __name__, url_prefix="/accounts")
 logger = logging.getLogger(__name__)
 
 
-def account_access_required(f: Any) -> Any:
+def account_access_required(f: Any) -> object:
     """Decorator to ensure user has access to the account"""
 
     @wraps(f)
     @token_required
-    def decorated(account_id: str, *args: Any, **kwargs: Any) -> Any:
+    def decorated(account_id: str, *args: Any, **kwargs: Any) -> object:
         account = db.session.get(Account, account_id)
         if not account:
             return (
@@ -68,7 +68,7 @@ def account_access_required(f: Any) -> Any:
 
 @wallet_bp.route("/", methods=["GET"])
 @token_required
-def get_user_accounts() -> Any:
+def get_user_accounts() -> "flask.Response":
     """Get all accounts (wallets) for the current user"""
     try:
         user_id = g.current_user.id
@@ -83,7 +83,7 @@ def get_user_accounts() -> Any:
 
 @wallet_bp.route("/<account_id>", methods=["GET"])
 @account_access_required
-def get_account_details(account_id: Any) -> Any:
+def get_account_details(account_id: Any) -> "flask.Response":
     """Get details for a specific account (wallet)"""
     try:
         account, recent_transactions = get_account_details_with_transactions(
@@ -104,7 +104,7 @@ def get_account_details(account_id: Any) -> Any:
 
 @wallet_bp.route("/<account_id>/deposit", methods=["POST"])
 @account_access_required
-def deposit_funds(account_id: Any) -> Any:
+def deposit_funds(account_id: Any) -> object:
     """Deposit funds into an account"""
     try:
         data = request.get_json()
@@ -141,7 +141,7 @@ def deposit_funds(account_id: Any) -> Any:
 
 @wallet_bp.route("/<account_id>/withdraw", methods=["POST"])
 @account_access_required
-def withdraw_funds(account_id: Any) -> Any:
+def withdraw_funds(account_id: Any) -> object:
     """Withdraw funds from an account"""
     try:
         data = request.get_json()
@@ -178,7 +178,7 @@ def withdraw_funds(account_id: Any) -> Any:
 
 @wallet_bp.route("/<account_id>/transfer", methods=["POST"])
 @account_access_required
-def transfer_funds(account_id: Any) -> Any:
+def transfer_funds(account_id: Any) -> object:
     """Transfer funds from one account to another (internal transfer)"""
     try:
         data = request.get_json()

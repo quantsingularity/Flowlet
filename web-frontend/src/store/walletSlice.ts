@@ -8,6 +8,7 @@ import {
   type Account,
   type Card,
   type Transaction,
+  type TransactionFilters,
   walletService,
 } from "@/lib/api/walletService";
 
@@ -100,10 +101,7 @@ export const createAccount = createAsyncThunk(
 export const fetchTransactions = createAsyncThunk(
   "wallet/fetchTransactions",
   async (
-    {
-      accountId,
-      filters,
-    }: { accountId: string; filters?: Record<string, unknown> },
+    { accountId, filters }: { accountId: string; filters?: TransactionFilters },
     { rejectWithValue },
   ) => {
     try {

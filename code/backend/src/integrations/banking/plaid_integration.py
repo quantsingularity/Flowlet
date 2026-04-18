@@ -365,7 +365,7 @@ class PlaidIntegration(BankingIntegrationBase):
         if self.session:
             await self.session.close()
 
-    def __del__(self) -> Any:
+    def __del__(self) -> object:
         """Cleanup on deletion"""
         if self.session and (not self.session.closed):
             asyncio.create_task(self.session.close())

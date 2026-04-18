@@ -39,7 +39,7 @@ def _parse_amount(value: Any) -> Decimal:
 
 @wallet_compat_bp.route("/create", methods=["POST"])
 @token_required
-def create_wallet_endpoint() -> Any:
+def create_wallet_endpoint() -> "flask.Response":
     """Create a new wallet for the authenticated user."""
     data = request.get_json() or {}
     currency = data.get("currency", "USD").upper()
@@ -80,7 +80,7 @@ def create_wallet_endpoint() -> Any:
 
 @wallet_compat_bp.route("/<wallet_id>/balance", methods=["GET"])
 @token_required
-def get_wallet_balance(wallet_id: str) -> Any:
+def get_wallet_balance(wallet_id: str) -> "flask.Response":
     """Get balance for a wallet."""
     account = db.session.get(Account, wallet_id)
     if not account:
@@ -102,7 +102,7 @@ def get_wallet_balance(wallet_id: str) -> Any:
 
 @wallet_compat_bp.route("/<wallet_id>/deposit", methods=["POST"])
 @token_required
-def wallet_deposit(wallet_id: str) -> Any:
+def wallet_deposit(wallet_id: str) -> object:
     """Deposit funds into a wallet."""
     account = db.session.get(Account, wallet_id)
     if not account:
@@ -143,7 +143,7 @@ def wallet_deposit(wallet_id: str) -> Any:
 
 @wallet_compat_bp.route("/<wallet_id>/withdraw", methods=["POST"])
 @token_required
-def wallet_withdraw(wallet_id: str) -> Any:
+def wallet_withdraw(wallet_id: str) -> object:
     """Withdraw funds from a wallet."""
     account = db.session.get(Account, wallet_id)
     if not account:
@@ -196,7 +196,7 @@ def wallet_withdraw(wallet_id: str) -> Any:
 
 @wallet_compat_bp.route("/<wallet_id>/transactions", methods=["GET"])
 @token_required
-def wallet_transactions(wallet_id: str) -> Any:
+def wallet_transactions(wallet_id: str) -> object:
     """Get transaction history for a wallet."""
     account = db.session.get(Account, wallet_id)
     if not account:

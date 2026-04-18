@@ -3,7 +3,6 @@
 import logging
 import os
 import sys
-from typing import Any
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,7 +23,7 @@ os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
 os.environ.setdefault("JWT_SECRET_KEY", "test-jwt-secret-for-testing-only")
 
 
-def test_app_creation() -> Any:
+def test_app_creation() -> None:
     """Test that the Flask app can be created"""
     from app import create_app
 
@@ -34,7 +33,7 @@ def test_app_creation() -> Any:
     return True
 
 
-def test_database_models() -> Any:
+def test_database_models() -> None:
     """Test database model creation"""
     try:
         from app import create_app
@@ -50,7 +49,7 @@ def test_database_models() -> Any:
         return False
 
 
-def test_route_imports() -> Any:
+def test_route_imports() -> None:
     """Test that all route blueprints can be imported"""
     try:
         from src.routes import api_bp
@@ -63,7 +62,7 @@ def test_route_imports() -> Any:
         return False
 
 
-def test_service_functionality() -> Any:
+def test_service_functionality() -> None:
     """Test basic service functionality without HTTP requests"""
     try:
         import uuid
@@ -105,7 +104,7 @@ def test_service_functionality() -> Any:
         return False
 
 
-def test_ai_algorithms() -> Any:
+def test_ai_algorithms() -> None:
     """Test AI service algorithms"""
     try:
         from ml_services.fraud_detection import FeatureEngineer
@@ -119,7 +118,7 @@ def test_ai_algorithms() -> Any:
         return False
 
 
-def test_security_functions() -> Any:
+def test_security_functions() -> None:
     """Test security service functions"""
     try:
         from src.security.password_security import check_password, hash_password
@@ -133,7 +132,7 @@ def test_security_functions() -> Any:
         return False
 
 
-def main() -> Any:
+def main() -> None:
     """Run all offline tests"""
     logger.info("Running Flowlet Backend Offline Tests")
     tests = [

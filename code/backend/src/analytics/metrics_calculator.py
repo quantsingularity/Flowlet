@@ -50,7 +50,7 @@ class MetricDefinition:
     filters: Dict[str, Any] = None
     parameters: Dict[str, Any] = None
 
-    def __post_init__(self) -> Any:
+    def __post_init__(self) -> object:
         if self.filters is None:
             self.filters = {}
         if self.parameters is None:
@@ -70,7 +70,7 @@ class MetricResult:
     period_end: datetime
     metadata: Dict[str, Any] = None
 
-    def __post_init__(self) -> Any:
+    def __post_init__(self) -> object:
         if self.metadata is None:
             self.metadata = {}
 
@@ -715,7 +715,7 @@ class MetricsCalculator:
         )
         return metrics
 
-    def add_custom_metric(self, metric_definition: MetricDefinition) -> Any:
+    def add_custom_metric(self, metric_definition: MetricDefinition) -> object:
         """Add a custom metric definition."""
         self._metric_definitions[metric_definition.name] = metric_definition
         self.logger.info(f"Added custom metric: {metric_definition.name}")

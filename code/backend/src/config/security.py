@@ -41,7 +41,7 @@ class SecurityConfig:
     METRICS_PORT = 9090
 
     @classmethod
-    def validate_config(cls: Any) -> Any:
+    def validate_config(cls: Any) -> None:
         """Validate security configuration"""
         errors = []
         if not cls.JWT_SECRET_KEY or len(cls.JWT_SECRET_KEY) < 32:

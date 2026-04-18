@@ -135,24 +135,24 @@ class Card(Base):
             self.card_token = self.generate_card_token()
 
     @staticmethod
-    def generate_card_token() -> Any:
+    def generate_card_token() -> str:
         """Generate a secure card token"""
         return "CTK_" + "".join(
             (secrets.choice(string.ascii_uppercase + string.digits) for _ in range(32))
         )
 
-    def set_card_number(self, card_number: Any) -> Any:
+    def set_card_number(self, card_number: Any) -> None:
         """Set card number with proper tokenization and hashing"""
         self.last_four_digits = card_number[-4:]
         self.card_hash = hashlib.sha256(card_number.encode()).hexdigest()
         if not self.card_token:
             self.card_token = self.generate_card_token()
 
-    def verify_card_number(self, card_number: Any) -> Any:
+    def verify_card_number(self, card_number: Any) -> None:
         """Verify card number against stored hash"""
         return hashlib.sha256(card_number.encode()).hexdigest() == self.card_hash
 
-    def set_pin(self, pin: Any) -> Any:
+    def set_pin(self, pin: Any) -> None:
         """Set card PIN with proper hashing"""
         if len(pin) != 4 or not pin.isdigit():
             raise ValueError("PIN must be exactly 4 digits")
@@ -160,7 +160,7 @@ class Card(Base):
         self.pin_attempts = 0
         self.pin_locked_until = None
 
-    def verify_pin(self, pin: Any) -> Any:
+    def verify_pin(self, pin: Any) -> None:
         """Verify PIN and handle failed attempts"""
         if self.is_pin_locked():
             return (False, "PIN is locked due to too many failed attempts")
@@ -177,7 +177,7 @@ class Card(Base):
             self.pin_attempts = 0
             return (True, "PIN verified")
 
-    def is_pin_locked(self) -> Any:
+    def is_pin_locked(self) -> bool:
         """Check if PIN is currently locked"""
         if self.pin_locked_until:
             if datetime.now(timezone.utc) < self.pin_locked_until:
@@ -187,13 +187,13 @@ class Card(Base):
                 self.pin_attempts = 0
         return False
 
-    def lock_pin(self, duration_minutes: Any = 30) -> Any:
+    def lock_pin(self, duration_minutes: Any = 30) -> object:
         """Lock PIN for specified duration"""
         self.pin_locked_until = datetime.now(timezone.utc) + timedelta(
             minutes=duration_minutes
         )
 
-    def is_expired(self) -> Any:
+    def is_expired(self) -> bool:
         """Check if card is expired"""
         now = datetime.now(timezone.utc)
         last_day = monthrange(self.expiry_year, self.expiry_month)[1]
@@ -208,35 +208,35 @@ class Card(Base):
         )
         return now > expiry_date
 
-    def block_card(self, reason: Any = None) -> Any:
+    def block_card(self, reason: Any = None) -> object:
         """Block the card"""
         self.status = CardStatus.BLOCKED
         self.blocked_reason = reason
         self.blocked_at = datetime.now(timezone.utc)
 
-    def unblock_card(self) -> Any:
+    def unblock_card(self) -> object:
         """Unblock the card"""
         if self.status == CardStatus.BLOCKED:
             self.status = CardStatus.ACTIVE
             self.blocked_reason = None
             self.blocked_at = None
 
-    def record_transaction(self, amount: Any) -> Any:
+    def record_transaction(self, amount: Any) -> object:
         """Record a transaction against the card limits"""
         amount_decimal = Decimal(str(amount))
         self.total_spent_today += amount_decimal
         self.total_spent_month += amount_decimal
         self.last_used_at = datetime.now(timezone.utc)
 
-    def reset_daily_limits(self) -> Any:
+    def reset_daily_limits(self) -> None:
         """Reset daily spending limits (called by scheduled job)"""
         self.total_spent_today = Decimal("0.00")
 
-    def reset_monthly_limits(self) -> Any:
+    def reset_monthly_limits(self) -> None:
         """Reset monthly spending limits (called by scheduled job)"""
         self.total_spent_month = Decimal("0.00")
 
-    def to_dict(self, include_sensitive: Any = False) -> Any:
+    def to_dict(self, include_sensitive: bool = False) -> dict:
         """Convert card to dictionary for API responses"""
         data = {
             "id": self.id,
@@ -272,5 +272,5 @@ class Card(Base):
             )
         return data
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<Card {self.last_four_digits} ({self.card_type.value})>"

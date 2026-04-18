@@ -185,7 +185,7 @@ class SecurityMonitoringService:
         self._processing_task = None
         self._initialize_monitoring_service()
 
-    def _initialize_monitoring_service(self) -> Any:
+    def _initialize_monitoring_service(self) -> object:
         """Initialize the security monitoring service."""
         self._setup_default_alert_rules()
         self._setup_correlation_rules()
@@ -193,7 +193,7 @@ class SecurityMonitoringService:
         self._start_event_processing()
         self.logger.info("Security monitoring service initialized successfully")
 
-    def _setup_default_alert_rules(self) -> Any:
+    def _setup_default_alert_rules(self) -> object:
         """Set up default security alert rules."""
         self._alert_rules["failed_login_attempts"] = AlertRule(
             rule_id="failed_login_attempts",
@@ -246,7 +246,7 @@ class SecurityMonitoringService:
             max_events=1,
         )
 
-    def _setup_correlation_rules(self) -> Any:
+    def _setup_correlation_rules(self) -> object:
         """Set up event correlation rules."""
         self._correlation_rules = {
             "account_takeover_pattern": {
@@ -273,7 +273,7 @@ class SecurityMonitoringService:
             },
         }
 
-    def _register_default_handlers(self) -> Any:
+    def _register_default_handlers(self) -> object:
         """Register default event handlers."""
         self.register_event_handler("login_success", self._handle_login_success)
         self.register_event_handler("login_failed", self._handle_login_failed)
@@ -291,7 +291,7 @@ class SecurityMonitoringService:
             "configuration_change", self._handle_configuration_change
         )
 
-    def _start_event_processing(self) -> Any:
+    def _start_event_processing(self) -> object:
         """Start asynchronous event processing."""
         if self._processing_task is None or self._processing_task.done():
             self._processing_task = asyncio.create_task(self._process_events())
@@ -610,7 +610,7 @@ class SecurityMonitoringService:
             )
             self._incidents[incident.incident_id] = incident
 
-    def register_event_handler(self, event_type: str, handler: Callable) -> Any:
+    def register_event_handler(self, event_type: str, handler: Callable) -> object:
         """Register a custom event handler."""
         if event_type not in self._event_handlers:
             self._event_handlers[event_type] = []

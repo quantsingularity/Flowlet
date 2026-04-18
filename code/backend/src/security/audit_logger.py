@@ -16,7 +16,7 @@ class AuditLogger:
     def __init__(self, app: Any = None) -> None:
         self.app = app
 
-    def _log_to_db(self, audit_log_instance: AuditLog) -> Any:
+    def _log_to_db(self, audit_log_instance: AuditLog) -> object:
         """Internal function to commit the AuditLog instance to the database."""
         try:
             from flask import has_app_context, has_request_context
@@ -57,7 +57,7 @@ class AuditLogger:
         severity: AuditSeverity = AuditSeverity.LOW,
         details: Optional[Dict[str, Any]] = None,
         **kwargs,
-    ) -> Any:
+    ) -> object:
         """
         Creates and logs a new audit event.
 
@@ -92,7 +92,7 @@ class AuditLogger:
         resource_type: Optional[str] = None,
         resource_id: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
-    ) -> Any:
+    ) -> object:
         """Log a user action."""
         return self.log_event(
             event_type=AuditEventType.DATA_ACCESS,
@@ -110,7 +110,7 @@ class AuditLogger:
         user_id: Optional[str] = None,
         severity: AuditSeverity = AuditSeverity.HIGH,
         details: Optional[Dict[str, Any]] = None,
-    ) -> Any:
+    ) -> object:
         """Log a security-related event."""
         return self.log_event(
             event_type=AuditEventType.SECURITY_ALERT,
@@ -126,7 +126,7 @@ class AuditLogger:
         action: str,
         user_id: Optional[str] = None,
         details: Optional[Dict[str, Any]] = None,
-    ) -> Any:
+    ) -> object:
         """Log a transaction-related event."""
         event_type = (
             AuditEventType.TRANSACTION_CREATED

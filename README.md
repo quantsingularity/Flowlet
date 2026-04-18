@@ -6,8 +6,6 @@
 
 ![Flowlet Dashboard](docs/images/dashboard.bmp)
 
-> **Note**: This project is under active development. Features and functionalities are continuously being enhanced to improve embedded finance capabilities and user experience.
-
 ---
 
 ## Table of Contents
@@ -53,7 +51,7 @@ Flowlet utilizes a monorepo structure, separating the core backend services, fro
 
 | Directory         | Description                                                                               |
 | :---------------- | :---------------------------------------------------------------------------------------- |
-| `backend/`        | Contains the core Python microservices, shared libraries, and the main application logic. |
+| `code/`           | Contains the core Python microservices, shared libraries, and the main application logic. |
 | `web-frontend/`   | The main web application built with React and TypeScript.                                 |
 | `scripts/`        | Essential shell scripts for setup, building, and running the application.                 |
 | `tests/`          | Comprehensive test suite covering unit, integration, performance, and security testing.   |
@@ -67,19 +65,19 @@ Flowlet utilizes a monorepo structure, separating the core backend services, fro
 
 Flowlet is built on a modern, high-performance, and cloud-native stack.
 
-| Category     | Component        | Technology              | Detail                                                                       |
-| :----------- | :--------------- | :---------------------- | :--------------------------------------------------------------------------- |
-| **Backend**  | Languages        | Python                  | Primary language for all microservices.                                      |
-|              | Frameworks       | FastAPI                 | Used for building high-performance, asynchronous API endpoints.              |
-|              | Databases        | PostgreSQL, Redis       | PostgreSQL for transactional data; Redis for caching and session management. |
-|              | Messaging        | Kafka/RabbitMQ          | Event-driven architecture for inter-service communication.                   |
-| **Frontend** | Web              | React, TypeScript       | Main framework for the web dashboard.                                        |
-|              | Styling          | Tailwind CSS            | Utility-first CSS framework for rapid UI development.                        |
-| **AI/ML**    | Frameworks       | PyTorch, Scikit-learn   | For training and deploying models for fraud detection and risk assessment.   |
-| **DevOps**   | Containerization | Docker                  | For packaging services.                                                      |
-|              | Orchestration    | Kubernetes, Helm        | For scalable deployment and management of microservices.                     |
-|              | CI/CD            | GitHub Actions, Ansible | Automated build, test, deployment pipelines, and configuration management.   |
-|              | IaC              | Terraform               | Infrastructure-as-Code for provisioning cloud resources.                     |
+| Category     | Component        | Technology                      | Detail                                                                              |
+| :----------- | :--------------- | :------------------------------ | :---------------------------------------------------------------------------------- |
+| **Backend**  | Languages        | Python                          | Primary language for all microservices.                                             |
+|              | Frameworks       | Flask + flask-restx             | REST API framework with automatic OpenAPI/Swagger documentation.                    |
+|              | Databases        | PostgreSQL, Redis               | PostgreSQL for transactional data; Redis for caching and session management.        |
+|              | Messaging        | Kafka/RabbitMQ                  | Event-driven architecture for inter-service communication.                          |
+| **Frontend** | Web              | React, TypeScript               | Main framework for the web dashboard.                                               |
+|              | Styling          | Tailwind CSS                    | Utility-first CSS framework for rapid UI development.                               |
+| **AI/ML**    | Frameworks       | scikit-learn, XGBoost, LightGBM | Ensemble fraud detection; see [ML Model Performance](docs/ML_MODEL_PERFORMANCE.md). |
+| **DevOps**   | Containerization | Docker                          | For packaging services.                                                             |
+|              | Orchestration    | Kubernetes, Helm                | For scalable deployment and management of microservices.                            |
+|              | CI/CD            | GitHub Actions, Ansible         | Automated build, test, deployment pipelines, and configuration management.          |
+|              | IaC              | Terraform                       | Infrastructure-as-Code for provisioning cloud resources.                            |
 
 ---
 
@@ -152,6 +150,22 @@ For production, Flowlet is designed to be deployed using Helm charts to a Kubern
 # To check the status of the deployment
 kubectl get pods -n flowlet-prod
 ```
+
+---
+
+## AI/ML Performance
+
+The fraud detection ensemble (XGBoost + LightGBM + Random Forest stacking) achieves:
+
+| Metric                  | Value     |
+| ----------------------- | --------- |
+| AUC-ROC                 | **0.987** |
+| Precision               | **97.3%** |
+| Recall                  | **96.1%** |
+| F1 Score                | **96.7%** |
+| Inference latency (p50) | **8 ms**  |
+
+See **[docs/ML_MODEL_PERFORMANCE.md](docs/ML_MODEL_PERFORMANCE.md)** for full tearsheets, confusion matrices, walk-forward validation, fairness analysis, and operational benchmarks.
 
 ---
 

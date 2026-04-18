@@ -119,12 +119,12 @@ class AuditLog(Base):
         Index("idx_audit_created_at", "created_at"),
     )
 
-    def set_details(self, details_dict: Any) -> Any:
+    def set_details(self, details_dict: Any) -> None:
         """Set details as JSON string"""
         if details_dict:
             self.details = json.dumps(details_dict, default=str)
 
-    def get_details(self) -> Any:
+    def get_details(self) -> "flask.Response":
         """Get details as dictionary"""
         if self.details:
             try:
@@ -133,12 +133,12 @@ class AuditLog(Base):
                 return {}
         return {}
 
-    def is_expired(self) -> Any:
+    def is_expired(self) -> bool:
         """Check if audit log has exceeded retention period"""
         expiry_date = self.created_at + timedelta(days=self.retention_period_days)
         return datetime.now(timezone.utc) > expiry_date
 
-    def to_dict(self) -> Any:
+    def to_dict(self) -> dict:
         """Convert audit log to dictionary for API responses"""
         return {
             "id": self.id,
@@ -159,5 +159,5 @@ class AuditLog(Base):
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<AuditLog {self.event_type.value}: {self.description}>"

@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime, timezone
 from enum import Enum as PyEnum
-from typing import Any
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
@@ -61,5 +60,5 @@ class SecurityEvent(Base):
             "is_alert": self.is_alert,
         }
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<SecurityEvent {self.event_type.value} for {self.user_email or 'System'} at {self.timestamp}>"

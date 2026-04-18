@@ -19,21 +19,21 @@ security_bp = Blueprint("security", __name__, url_prefix="/security")
 logger = logging.getLogger(__name__)
 
 
-def generate_api_key() -> Any:
+def generate_api_key() -> str:
     """Generate a secure API key"""
     return "flw_" + "".join(
         (secrets.choice(string.ascii_letters + string.digits) for _ in range(32))
     )
 
 
-def hash_api_key(api_key: Any) -> Any:
+def hash_api_key(api_key: Any) -> str:
     """Hash API key for secure storage"""
     return hashlib.sha256(api_key.encode()).hexdigest()
 
 
 @security_bp.route("/api-keys", methods=["POST"])
 @admin_required
-def create_api_key() -> Any:
+def create_api_key() -> "flask.Response":
     """Create a new API key (Admin only)"""
     try:
         data = request.get_json()
@@ -94,7 +94,7 @@ def create_api_key() -> Any:
 
 @security_bp.route("/api-keys", methods=["GET"])
 @admin_required
-def list_api_keys() -> Any:
+def list_api_keys() -> "flask.Response":
     """List all API keys (Admin only)"""
     try:
         page = request.args.get("page", 1, type=int)
@@ -131,7 +131,7 @@ def list_api_keys() -> Any:
 
 @security_bp.route("/api-keys/<key_id>/revoke", methods=["POST"])
 @admin_required
-def revoke_api_key(key_id: Any) -> Any:
+def revoke_api_key(key_id: Any) -> object:
     """Revoke an API key (Admin only)"""
     try:
         key_record = db.session.get(APIKey, key_id)
@@ -168,7 +168,7 @@ def revoke_api_key(key_id: Any) -> Any:
 
 @security_bp.route("/audit-logs", methods=["GET"])
 @admin_required
-def get_audit_logs() -> Any:
+def get_audit_logs() -> "flask.Response":
     """Get audit logs with filtering (Admin only)"""
     try:
         page = request.args.get("page", 1, type=int)

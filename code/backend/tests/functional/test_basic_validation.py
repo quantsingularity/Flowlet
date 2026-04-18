@@ -5,7 +5,6 @@ Tests file existence and structural content without importing heavy ML dependenc
 
 import sys
 from pathlib import Path
-from typing import Any
 
 import pytest
 
@@ -22,7 +21,7 @@ if str(code_dir) not in sys.path:
 class TestModuleStructure:
     """Test that all modules can be imported and have correct structure"""
 
-    def test_banking_integration_files_exist(self) -> Any:
+    def test_banking_integration_files_exist(self) -> None:
         """Test that banking integration files exist"""
         banking_dir = src_dir / "integrations" / "banking"
         required_files = [
@@ -37,7 +36,7 @@ class TestModuleStructure:
             assert file_path.exists(), f"Missing file: {file_path}"
             assert file_path.stat().st_size > 0, f"Empty file: {file_path}"
 
-    def test_fraud_detection_files_exist(self) -> Any:
+    def test_fraud_detection_files_exist(self) -> None:
         """Test that fraud detection files exist in ml_services/fraud_detection"""
         required_files = [
             "__init__.py",
@@ -53,7 +52,7 @@ class TestModuleStructure:
             ), f"Missing file: {file_name} in ml_services/fraud_detection"
             assert file_path.stat().st_size > 0, f"Empty file: {file_path}"
 
-    def test_routes_files_exist(self) -> Any:
+    def test_routes_files_exist(self) -> None:
         """Test that route files exist"""
         routes_dir = src_dir / "routes"
         required_files = ["banking_integrations.py", "fraud_detection.py"]
@@ -66,7 +65,7 @@ class TestModuleStructure:
 class TestCodeQuality:
     """Test code quality and structure"""
 
-    def test_banking_integration_classes_defined(self) -> Any:
+    def test_banking_integration_classes_defined(self) -> None:
         """Test that banking integration classes are properly defined"""
         manager_file = src_dir / "integrations" / "banking" / "manager.py"
         content = manager_file.read_text()
@@ -76,7 +75,7 @@ class TestCodeQuality:
         assert "def authenticate_all" in content
         assert "def get_accounts_from_all" in content
 
-    def test_plaid_integration_structure(self) -> Any:
+    def test_plaid_integration_structure(self) -> None:
         """Test Plaid integration structure"""
         plaid_file = src_dir / "integrations" / "banking" / "plaid_integration.py"
         content = plaid_file.read_text()
@@ -86,7 +85,7 @@ class TestCodeQuality:
         assert "async def get_transactions" in content
         assert "async def initiate_payment" in content
 
-    def test_fraud_detection_models_structure(self) -> Any:
+    def test_fraud_detection_models_structure(self) -> None:
         """Test fraud detection models structure"""
         fraud_init = ml_fraud_dir / "__init__.py"
         content = fraud_init.read_text()
@@ -102,7 +101,7 @@ class TestCodeQuality:
         assert "class LightGBMFraudModel" in content
         assert "class NeuralNetworkFraudModel" in content
 
-    def test_ensemble_model_structure(self) -> Any:
+    def test_ensemble_model_structure(self) -> None:
         """Test ensemble model structure"""
         fraud_init = ml_fraud_dir / "__init__.py"
         content = fraud_init.read_text()
@@ -112,7 +111,7 @@ class TestCodeQuality:
         assert "def _weighted_voting" in content
         assert "def _average_voting" in content
 
-    def test_service_structure(self) -> Any:
+    def test_service_structure(self) -> None:
         """Test fraud detection service structure"""
         service_file = ml_fraud_dir / "__init__.py"
         content = service_file.read_text()
@@ -121,27 +120,27 @@ class TestCodeQuality:
         assert "async def detect_fraud" in content
         assert "async def batch_detect_fraud" in content
 
-    def test_fraud_detection_init(self) -> Any:
+    def test_fraud_detection_init(self) -> None:
         """Test fraud detection __init__ exports"""
         fraud_init = ml_fraud_dir / "__init__.py"
         content = fraud_init.read_text()
         assert "FraudDetectionError" in content
         assert "ModelNotTrainedError" in content
 
-    def test_input_validation(self) -> Any:
+    def test_input_validation(self) -> None:
         """Test input validation module"""
         validator_file = src_dir / "security" / "input_validator.py"
         content = validator_file.read_text()
         assert "class ValidationError" in content
         assert "class InputValidator" in content
 
-    def test_banking_auth_logging(self) -> Any:
+    def test_banking_auth_logging(self) -> None:
         """Test banking routes contain auth logging"""
         banking_routes = src_dir / "routes" / "banking_integrations.py"
         content = banking_routes.read_text()
         assert "log_authentication" in content
 
-    def test_fraud_detection_compliance(self) -> Any:
+    def test_fraud_detection_compliance(self) -> None:
         """Test fraud detection compliance features"""
         service_file = ml_fraud_dir / "__init__.py"
         content = service_file.read_text()
@@ -153,7 +152,7 @@ class TestCodeQuality:
 class TestAPIEndpoints:
     """Test API endpoint structure"""
 
-    def test_banking_api_endpoints(self) -> Any:
+    def test_banking_api_endpoints(self) -> None:
         """Test banking API endpoints are properly defined"""
         banking_routes = src_dir / "routes" / "banking_integrations.py"
         content = banking_routes.read_text()
@@ -168,7 +167,7 @@ class TestAPIEndpoints:
         for endpoint in endpoints:
             assert endpoint in content, f"Missing endpoint: {endpoint}"
 
-    def test_fraud_api_endpoints(self) -> Any:
+    def test_fraud_api_endpoints(self) -> None:
         """Test fraud detection API endpoints are properly defined"""
         fraud_routes = src_dir / "routes" / "fraud_detection.py"
         content = fraud_routes.read_text()
@@ -185,7 +184,7 @@ class TestAPIEndpoints:
         for endpoint in endpoints:
             assert endpoint in content, f"Missing endpoint: {endpoint}"
 
-    def test_cors_configuration(self) -> Any:
+    def test_cors_configuration(self) -> None:
         """Test CORS configuration"""
         banking_routes = src_dir / "routes" / "banking_integrations.py"
         content = banking_routes.read_text()

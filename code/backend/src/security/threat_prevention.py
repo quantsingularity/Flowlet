@@ -151,7 +151,7 @@ class ThreatPreventionService:
         }
         self._initialize_threat_prevention()
 
-    def _initialize_threat_prevention(self) -> Any:
+    def _initialize_threat_prevention(self) -> object:
         """Initialize the threat prevention service."""
         self._load_threat_signatures()
         self._initialize_security_rules()
@@ -160,7 +160,7 @@ class ThreatPreventionService:
         self._initialize_behavioral_baselines()
         self.logger.info("Threat prevention service initialized successfully")
 
-    def _load_threat_signatures(self) -> Any:
+    def _load_threat_signatures(self) -> object:
         """Load threat detection signatures."""
         self._threat_signatures[ThreatType.SQL_INJECTION] = [
             "(\\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\\b)",
@@ -205,7 +205,7 @@ class ThreatPreventionService:
             "(update.{0,20}payment.{0,20}information)",
         ]
 
-    def _initialize_security_rules(self) -> Any:
+    def _initialize_security_rules(self) -> object:
         """Initialize security rules and policies."""
         self._security_rules = {
             "rate_limiting": {
@@ -242,7 +242,7 @@ class ThreatPreventionService:
             },
         }
 
-    def _load_threat_intelligence(self) -> Any:
+    def _load_threat_intelligence(self) -> object:
         """Load threat intelligence data."""
         self._threat_intelligence = {
             "malicious_ips": {
@@ -283,7 +283,7 @@ class ThreatPreventionService:
             },
         }
 
-    def _initialize_rate_limiters(self) -> Any:
+    def _initialize_rate_limiters(self) -> object:
         """Initialize rate limiting mechanisms."""
         self._rate_limiters = {
             "api_requests": defaultdict(lambda: deque()),
@@ -292,7 +292,7 @@ class ThreatPreventionService:
             "transaction_requests": defaultdict(lambda: deque()),
         }
 
-    def _initialize_behavioral_baselines(self) -> Any:
+    def _initialize_behavioral_baselines(self) -> object:
         """Initialize behavioral analysis baselines."""
         self._behavioral_baselines = {
             "normal_request_patterns": {

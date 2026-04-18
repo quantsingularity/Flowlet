@@ -11,11 +11,11 @@ from ..models.database import db
 from ..models.user import User
 
 
-def token_required(f: Any) -> Any:
+def token_required(f: Any) -> object:
     """Decorator to require valid JWT token and populate g.current_user"""
 
     @wraps(f)
-    def decorated(*args: Any, **kwargs: Any) -> Any:
+    def decorated(*args: Any, **kwargs: Any) -> object:
         token = request.headers.get("Authorization")
         if not token:
             return jsonify({"message": "Token is missing"}), 401
@@ -43,11 +43,11 @@ def token_required(f: Any) -> Any:
     return decorated
 
 
-def admin_required(f: Any) -> Any:
+def admin_required(f: Any) -> object:
     """Decorator to require admin role"""
 
     @wraps(f)
-    def decorated(*args: Any, **kwargs: Any) -> Any:
+    def decorated(*args: Any, **kwargs: Any) -> object:
         token = request.headers.get("Authorization")
         if not token:
             return jsonify({"message": "Token is missing"}), 401

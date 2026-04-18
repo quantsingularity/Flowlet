@@ -33,7 +33,7 @@ class TokenManager:
         self._redis_client = None
 
     @property
-    def redis_client(self) -> Any:
+    def redis_client(self) -> object:
         """Lazy load and configure Redis client"""
         if self._redis_client is None:
             try:
@@ -58,7 +58,7 @@ class TokenManager:
                 self._redis_client = None
         return self._redis_client
 
-    def _get_config(self, key: Any, default: Any = None) -> Any:
+    def _get_config(self, key: Any, default: Any = None) -> object:
         """Helper to get config values safely"""
         try:
             from flask import has_app_context
@@ -72,7 +72,7 @@ class TokenManager:
             pass
         return os.environ.get(key, default)
 
-    def init_app(self, app: Any) -> Any:
+    def init_app(self, app: Any) -> None:
         """Initialize the TokenManager with the Flask application"""
         self.app = app
         _ = self.redis_client
@@ -190,7 +190,7 @@ class TokenManager:
         new_refresh_token = self.generate_refresh_token(user_id)
         return (new_access_token, new_refresh_token, user_id)
 
-    def blacklist_token(self, jti: str) -> Any:
+    def blacklist_token(self, jti: str) -> object:
         """Add token JTI to blacklist"""
         if self.redis_client:
             expiry = self.REFRESH_TOKEN_EXPIRY
@@ -207,7 +207,7 @@ class TokenManager:
             return self.redis_client.exists(f"blacklist:{jti}")
         return False
 
-    def revoke_all_user_tokens(self, user_id: str) -> Any:
+    def revoke_all_user_tokens(self, user_id: str) -> object:
         """Revoke all refresh tokens for a user"""
         if self.redis_client:
             for key in self.redis_client.scan_iter(match="refresh_jti:*"):

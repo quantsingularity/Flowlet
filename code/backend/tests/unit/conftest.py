@@ -21,7 +21,7 @@ import pytest
 
 
 @pytest.fixture
-def app() -> Any:
+def app() -> None:
     """Create and configure a new app instance for each test."""
     os.environ.setdefault("SECRET_KEY", "test-secret-key-for-testing-only")
     os.environ.setdefault("JWT_SECRET_KEY", "test-jwt-secret-for-testing-only")
@@ -49,25 +49,25 @@ def app() -> Any:
 
 
 @pytest.fixture
-def client(app: Any) -> Any:
+def client(app: Any) -> None:
     """A test client for the app."""
     return app.test_client()
 
 
 @pytest.fixture
-def runner(app: Any) -> Any:
+def runner(app: Any) -> None:
     """A test runner for the app's Click commands."""
     return app.test_cli_runner()
 
 
 @pytest.fixture
-def auth_headers() -> Any:
+def auth_headers() -> None:
     """Sample authentication headers for testing."""
     return {"Authorization": "Bearer test-token", "Content-Type": "application/json"}
 
 
 @pytest.fixture
-def sample_user_data() -> Any:
+def sample_user_data() -> None:
     """Sample user data for testing."""
     return {
         "email": "test@example.com",
@@ -79,7 +79,7 @@ def sample_user_data() -> Any:
 
 
 @pytest.fixture
-def sample_transaction_data() -> Any:
+def sample_transaction_data() -> None:
     """Sample transaction data for testing."""
     return {
         "amount": 100.0,

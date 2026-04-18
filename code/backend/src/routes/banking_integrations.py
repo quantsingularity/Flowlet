@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timezone
-from typing import Any
 
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
@@ -16,7 +15,7 @@ _registered_integrations = {}
 
 @banking_integrations_bp.route("/health", methods=["GET"])
 @cross_origin()
-def health_check() -> Any:
+def health_check() -> "flask.Response":
     """Health check endpoint for banking integrations"""
     try:
         status = {
@@ -51,7 +50,7 @@ def health_check() -> Any:
 
 @banking_integrations_bp.route("/integrations", methods=["GET"])
 @cross_origin()
-def list_integrations() -> Any:
+def list_integrations() -> "flask.Response":
     """List all configured banking integrations"""
     try:
         integrations = [
@@ -84,7 +83,7 @@ def list_integrations() -> Any:
 
 @banking_integrations_bp.route("/accounts/<customer_id>", methods=["GET"])
 @cross_origin()
-def get_customer_accounts(customer_id: str) -> Any:
+def get_customer_accounts(customer_id: str) -> "flask.Response":
     """Get accounts for a customer from all connected banking integrations"""
     try:
         logger.info(f"Fetching accounts for customer {customer_id}")
@@ -114,7 +113,7 @@ def get_customer_accounts(customer_id: str) -> Any:
 
 @banking_integrations_bp.route("/transactions", methods=["GET"])
 @cross_origin()
-def get_transactions() -> Any:
+def get_transactions() -> "flask.Response":
     """Get transactions from connected banking integrations"""
     try:
         customer_id = request.args.get("customer_id")
@@ -152,7 +151,7 @@ def get_transactions() -> Any:
 
 @banking_integrations_bp.route("/payments", methods=["POST"])
 @cross_origin()
-def initiate_payment() -> Any:
+def initiate_payment() -> object:
     """Initiate a payment via a banking integration"""
     try:
         data = request.get_json(silent=True) or {}
@@ -190,7 +189,7 @@ def initiate_payment() -> Any:
 
 @banking_integrations_bp.route("/payments/status", methods=["GET"])
 @cross_origin()
-def get_payment_status() -> Any:
+def get_payment_status() -> "flask.Response":
     """Get the status of a payment initiated via a banking integration"""
     try:
         payment_id = request.args.get("payment_id")
@@ -228,7 +227,7 @@ def get_payment_status() -> Any:
 
 @banking_integrations_bp.route("/integrations/register", methods=["POST"])
 @cross_origin()
-def register_integration() -> Any:
+def register_integration() -> object:
     """Register a new banking integration"""
     try:
         data = request.get_json(silent=True) or {}

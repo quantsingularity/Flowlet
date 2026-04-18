@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 @user_bp.route("/", methods=["GET"])
 @admin_required
-def get_users() -> Any:
+def get_users() -> "flask.Response":
     """
     Get all users with pagination and filtering (Admin only)
     """
@@ -123,7 +123,7 @@ def get_users() -> Any:
 
 @user_bp.route("/<user_id>", methods=["GET"])
 @token_required
-def get_user(user_id: Any) -> Any:
+def get_user(user_id: Any) -> "flask.Response":
     """Get user details by ID (Admin or own profile)"""
     try:
         current_user = g.current_user
@@ -254,7 +254,7 @@ def get_user(user_id: Any) -> Any:
 
 @user_bp.route("/<user_id>", methods=["PUT"])
 @token_required
-def update_user(user_id: Any) -> Any:
+def update_user(user_id: Any) -> None:
     """Update user details (Admin or own profile)"""
     try:
         current_user = g.current_user
@@ -343,7 +343,7 @@ def update_user(user_id: Any) -> Any:
 
 @user_bp.route("/<user_id>", methods=["DELETE"])
 @admin_required
-def delete_user(user_id: Any) -> Any:
+def delete_user(user_id: Any) -> "flask.Response":
     """Delete a user (Admin only)"""
     try:
         user = db.session.get(User, user_id)

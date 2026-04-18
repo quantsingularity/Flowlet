@@ -49,7 +49,7 @@ class PerformanceOptimizedGateway:
         self._setup_request_batching()
         self._setup_performance_monitoring()
 
-    def _setup_redis(self) -> Any:
+    def _setup_redis(self) -> object:
         """Setup Redis connection with connection pooling"""
         try:
             redis_pool = redis.ConnectionPool(
@@ -68,7 +68,7 @@ class PerformanceOptimizedGateway:
             self.app.logger.warning(f"Redis connection failed: {e}")
             self.redis_client = None
 
-    def _setup_connection_pool(self) -> Any:
+    def _setup_connection_pool(self) -> object:
         """Setup HTTP connection pool for external API calls"""
         connector = aiohttp.TCPConnector(
             limit=100,
@@ -85,7 +85,7 @@ class PerformanceOptimizedGateway:
             headers={"User-Agent": "Flowlet-Gateway/2.0"},
         )
 
-    def _setup_caching(self) -> Any:
+    def _setup_caching(self) -> object:
         """Setup intelligent caching system"""
         self.cache_config = {
             "default_ttl": 300,
@@ -99,7 +99,7 @@ class PerformanceOptimizedGateway:
             },
         }
 
-    def _setup_circuit_breakers(self) -> Any:
+    def _setup_circuit_breakers(self) -> object:
         """Setup circuit breakers for external services"""
         self.circuit_breaker_config = {
             "failure_threshold": 5,
@@ -115,7 +115,7 @@ class PerformanceOptimizedGateway:
                 "success_count": 0,
             }
 
-    def _setup_request_batching(self) -> Any:
+    def _setup_request_batching(self) -> object:
         """Setup request batching for bulk operations"""
         self.batch_config = {
             "batch_size": 50,
@@ -131,7 +131,7 @@ class PerformanceOptimizedGateway:
         )
         self.batch_processor.start()
 
-    def _setup_performance_monitoring(self) -> Any:
+    def _setup_performance_monitoring(self) -> object:
         """Setup real-time performance monitoring"""
         self.monitoring_config = {
             "metrics_retention": 3600,
@@ -153,12 +153,12 @@ class CacheManager:
         self.local_cache = {}
         self.cache_stats = defaultdict(int)
 
-    def get_cache_key(self, endpoint: Any, params: Any) -> Any:
+    def get_cache_key(self, endpoint: Any, params: Any) -> "flask.Response":
         """Generate cache key based on endpoint and parameters"""
         key_data = f"{endpoint}:{json.dumps(params, sort_keys=True)}"
         return hashlib.md5(key_data.encode()).hexdigest()
 
-    def get(self, key: Any, endpoint_type: Any = "default") -> Any:
+    def get(self, key: Any, endpoint_type: Any = "default") -> object:
         """Get value from cache with fallback to local cache"""
         try:
             if self.redis_client:
@@ -179,7 +179,7 @@ class CacheManager:
             logging.error(f"Cache get error: {e}")
             return None
 
-    def set(self, key: Any, value: Any, endpoint_type: Any = "default") -> Any:
+    def set(self, key: Any, value: Any, endpoint_type: Any = "default") -> object:
         """Set value in cache with appropriate TTL"""
         try:
             ttl = self.config["cache_strategies"].get(
@@ -193,7 +193,7 @@ class CacheManager:
         except Exception as e:
             logging.error(f"Cache set error: {e}")
 
-    def invalidate_pattern(self, pattern: Any) -> Any:
+    def invalidate_pattern(self, pattern: Any) -> object:
         """Invalidate cache entries matching pattern"""
         try:
             if self.redis_client:
@@ -206,7 +206,7 @@ class CacheManager:
         except Exception as e:
             logging.error(f"Cache invalidation error: {e}")
 
-    def _cleanup_local_cache(self) -> Any:
+    def _cleanup_local_cache(self) -> object:
         """Remove expired entries from local cache"""
         current_time = time.time()
         expired_keys = [
@@ -227,7 +227,7 @@ class CircuitBreaker:
         self.last_failure_time = None
         self.success_count = 0
 
-    def call(self, func: Any, *args, **kwargs) -> Any:
+    def call(self, func: Any, *args, **kwargs) -> object:
         """Execute function with circuit breaker protection"""
         if self.state == "open":
             if self._should_attempt_reset():
@@ -243,7 +243,7 @@ class CircuitBreaker:
             self._on_failure()
             raise e
 
-    def _on_success(self) -> Any:
+    def _on_success(self) -> object:
         """Handle successful call"""
         if self.state == "half_open":
             self.success_count += 1
@@ -253,14 +253,14 @@ class CircuitBreaker:
         elif self.state == "closed":
             self.failure_count = 0
 
-    def _on_failure(self) -> Any:
+    def _on_failure(self) -> object:
         """Handle failed call"""
         self.failure_count += 1
         self.last_failure_time = time.time()
         if self.failure_count >= self.config["failure_threshold"]:
             self.state = "open"
 
-    def _should_attempt_reset(self) -> Any:
+    def _should_attempt_reset(self) -> object:
         """Check if circuit breaker should attempt reset"""
         if self.last_failure_time is None:
             return False
@@ -275,7 +275,7 @@ class RequestBatcher:
         self.pending_batches = defaultdict(list)
         self.batch_timers = {}
 
-    def add_request(self, endpoint: Any, request_data: Any, callback: Any) -> Any:
+    def add_request(self, endpoint: Any, request_data: Any, callback: Any) -> object:
         """Add request to batch"""
         if endpoint not in self.config["batch_endpoints"]:
             callback(self._execute_single_request(endpoint, request_data))
@@ -295,7 +295,7 @@ class RequestBatcher:
         if len(self.pending_batches[batch_key]) >= self.config["batch_size"]:
             self._execute_batch(batch_key)
 
-    def _get_batch_key(self, endpoint: Any, request_data: Any) -> Any:
+    def _get_batch_key(self, endpoint: Any, request_data: Any) -> object:
         """Generate batch key for grouping similar requests"""
         common_params = {
             "user_id": request_data.get("user_id"),
@@ -303,7 +303,7 @@ class RequestBatcher:
         }
         return f"{endpoint}:{json.dumps(common_params, sort_keys=True)}"
 
-    def _execute_batch(self, batch_key: Any) -> Any:
+    def _execute_batch(self, batch_key: Any) -> object:
         """Execute batched requests"""
         if batch_key not in self.pending_batches:
             return
@@ -323,11 +323,11 @@ class RequestBatcher:
             for request in requests:
                 request["callback"]({"error": str(e)})
 
-    def _execute_single_request(self, endpoint: Any, request_data: Any) -> Any:
+    def _execute_single_request(self, endpoint: Any, request_data: Any) -> object:
         """Execute single request"""
         return {"status": "success", "data": request_data}
 
-    def _execute_batch_request(self, endpoint: Any, batch_data: Any) -> Any:
+    def _execute_batch_request(self, endpoint: Any, batch_data: Any) -> object:
         """Execute batch request"""
         return [{"status": "success", "data": data} for data in batch_data]
 
@@ -343,7 +343,7 @@ class PerformanceMonitor:
 
     def record_request(
         self, endpoint: Any, response_time: Any, status_code: Any
-    ) -> Any:
+    ) -> object:
         """Record request metrics"""
         current_time = time.time()
         self.metrics["response_times"].append(
@@ -357,7 +357,7 @@ class PerformanceMonitor:
         self._cleanup_old_metrics()
         self._check_alerts()
 
-    def get_metrics_summary(self) -> Any:
+    def get_metrics_summary(self) -> "flask.Response":
         """Get current metrics summary"""
         current_time = time.time()
         recent_requests = [
@@ -386,7 +386,7 @@ class PerformanceMonitor:
             "uptime": current_time - self.start_time,
         }
 
-    def _cleanup_old_metrics(self) -> Any:
+    def _cleanup_old_metrics(self) -> object:
         """Remove metrics older than retention period"""
         current_time = time.time()
         retention_time = current_time - self.config["metrics_retention"]
@@ -396,7 +396,7 @@ class PerformanceMonitor:
         ):
             self.metrics["response_times"].popleft()
 
-    def _check_alerts(self) -> Any:
+    def _check_alerts(self) -> object:
         """Check for performance alerts"""
         metrics = self.get_metrics_summary()
         if metrics.get("status") == "no_data":
@@ -444,7 +444,7 @@ class PerformanceMonitor:
 
 def optimize_performance(
     cache_type: Any = "default", batch_enabled: Any = False
-) -> Any:
+) -> object:
     """Decorator to add performance optimizations to endpoints"""
 
     def decorator(func):
@@ -477,18 +477,18 @@ def optimize_performance(
     return decorator
 
 
-def create_optimized_gateway(app: Any) -> Any:
+def create_optimized_gateway(app: Any) -> "flask.Response":
     """Create and configure optimized API gateway"""
     gateway = PerformanceOptimizedGateway(app)
 
     @app.before_request
-    def setup_request_context() -> Any:
+    def setup_request_context() -> None:
         g.cache_manager = CacheManager(gateway.redis_client, gateway.cache_config)
         g.performance_monitor = PerformanceMonitor(gateway.monitoring_config)
         g.request_start_time = time.time()
 
     @app.route("/api/v1/gateway/metrics", methods=["GET"])
-    def gateway_metrics() -> Any:
+    def gateway_metrics() -> object:
         """Get gateway performance metrics"""
         if hasattr(g, "performance_monitor"):
             metrics = g.performance_monitor.get_metrics_summary()
@@ -496,7 +496,7 @@ def create_optimized_gateway(app: Any) -> Any:
         return (jsonify({"error": "Metrics not available"}), 500)
 
     @app.route("/api/v1/gateway/cache/clear", methods=["POST"])
-    def clear_cache() -> Any:
+    def clear_cache() -> object:
         """Clear cache for specific pattern"""
         pattern = request.json.get("pattern", "*")
         if hasattr(g, "cache_manager"):

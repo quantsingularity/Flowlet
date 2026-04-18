@@ -1,12 +1,10 @@
 """Luhn algorithm for card validation"""
 
-from typing import Any
-
 
 def validate_luhn(card_number: str) -> bool:
     """Validate card number using Luhn algorithm"""
 
-    def digits_of(n: str) -> Any:
+    def digits_of(n: str) -> object:
         return [int(d) for d in str(n)]
 
     digits = digits_of(card_number.replace(" ", "").replace("-", ""))

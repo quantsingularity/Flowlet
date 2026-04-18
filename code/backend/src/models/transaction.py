@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum as PyEnum
-from typing import Any
+from typing import Optional
 
 from sqlalchemy import (
     BigInteger,
@@ -146,7 +146,7 @@ class Transaction(Base):
             self.transaction_id = self.generate_transaction_id()
 
     @staticmethod
-    def generate_transaction_id() -> Any:
+    def generate_transaction_id() -> str:
         """Generate a unique transaction ID"""
         date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
         random_str = "".join(
@@ -154,63 +154,63 @@ class Transaction(Base):
         )
         return f"TXN-{date_str}-{random_str}"
 
-    def get_amount_decimal(self) -> Any:
+    def get_amount_decimal(self) -> "Decimal":
         """Get transaction amount as Decimal"""
         if self.amount_cents is not None:
             return Decimal(self.amount_cents) / 100
         return self.amount
 
-    def set_amount(self, amount: Any) -> Any:
+    def set_amount(self, amount: "Decimal") -> None:
         """Set transaction amount from Decimal"""
         self.amount = amount
         self.amount_cents = int(amount * 100)
 
-    def get_original_amount_decimal(self) -> Any:
+    def get_original_amount_decimal(self) -> "Decimal":
         """Get original amount as Decimal"""
         if self.original_amount_cents is not None:
             return Decimal(self.original_amount_cents) / 100
         return self.original_amount
 
-    def set_original_amount(self, amount: Any) -> Any:
+    def set_original_amount(self, amount: "Decimal") -> None:
         """Set original amount from Decimal"""
         self.original_amount = amount
         self.original_amount_cents = int(amount * 100)
 
-    def get_fee_amount_decimal(self) -> Any:
+    def get_fee_amount_decimal(self) -> "Decimal":
         """Get fee amount as Decimal"""
         if self.fee_amount_cents is not None:
             return Decimal(self.fee_amount_cents) / 100
         return self.fee_amount
 
-    def set_fee_amount(self, amount: Any) -> Any:
+    def set_fee_amount(self, amount: "Decimal") -> None:
         """Set fee amount from Decimal"""
         self.fee_amount = amount
         self.fee_amount_cents = int(amount * 100)
 
-    def get_balance_before_decimal(self) -> Any:
+    def get_balance_before_decimal(self) -> "Decimal":
         """Get balance before transaction as Decimal"""
         if self.balance_before_cents is not None:
             return Decimal(self.balance_before_cents) / 100
         return self.balance_before
 
-    def get_balance_after_decimal(self) -> Any:
+    def get_balance_after_decimal(self) -> "Decimal":
         """Get balance after transaction as Decimal"""
         if self.balance_after_cents is not None:
             return Decimal(self.balance_after_cents) / 100
         return self.balance_after
 
-    def mark_as_completed(self) -> Any:
+    def mark_as_completed(self) -> None:
         """Mark transaction as completed"""
         self.status = TransactionStatus.COMPLETED
         self.processed_at = datetime.now(timezone.utc)
 
-    def mark_as_failed(self, reason: Any = None) -> Any:
+    def mark_as_failed(self, reason: Optional[str] = None) -> None:
         """Mark transaction as failed"""
         self.status = TransactionStatus.FAILED
         if reason:
             self.compliance_notes = reason
 
-    def reverse_transaction(self, reason: Any = None) -> Any:
+    def reverse_transaction(self, reason: Optional[str] = None) -> None:
         """Create a reversal transaction"""
         if self.status != TransactionStatus.COMPLETED:
             raise ValueError("Can only reverse completed transactions")
@@ -230,14 +230,14 @@ class Transaction(Base):
         self.status = TransactionStatus.REVERSED
         return reversal
 
-    def flag_as_suspicious(self, reason: Any = None) -> Any:
+    def flag_as_suspicious(self, reason: Optional[str] = None) -> None:
         """Flag transaction as suspicious for AML review"""
         self.is_suspicious = True
         self.aml_flagged = True
         if reason:
             self.compliance_notes = reason
 
-    def calculate_risk_score(self) -> Any:
+    def calculate_risk_score(self) -> int:
         """Calculate risk score based on various factors"""
         risk_score = 0
         amount = self.get_amount_decimal()
@@ -256,11 +256,11 @@ class Transaction(Base):
         self.risk_score = min(risk_score, 100)
         return self.risk_score
 
-    def is_high_risk(self) -> Any:
+    def is_high_risk(self) -> bool:
         """Check if transaction is high risk"""
         return self.risk_score >= 70 or self.is_suspicious or self.aml_flagged
 
-    def to_dict(self, include_sensitive: Any = False) -> Any:
+    def to_dict(self, include_sensitive: bool = False) -> dict:
         """Convert transaction to dictionary for API responses"""
         data = {
             "id": self.id,
@@ -319,5 +319,5 @@ class Transaction(Base):
                 )
         return data
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<Transaction {self.transaction_id} ({self.transaction_type.value}: {self.amount} {self.currency})>"

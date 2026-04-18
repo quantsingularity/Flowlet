@@ -21,7 +21,7 @@ class TestBankingIntegrations:
     """Test suite for banking integrations"""
 
     @pytest.fixture
-    def sample_config(self) -> Any:
+    def sample_config(self) -> None:
         return {
             "client_id": "test_client_id",
             "secret": "test_secret",
@@ -30,7 +30,7 @@ class TestBankingIntegrations:
         }
 
     @pytest.fixture
-    def sample_account(self) -> Any:
+    def sample_account(self) -> None:
         return BankAccount(
             account_id="acc_123",
             account_number="1234567890",
@@ -44,7 +44,7 @@ class TestBankingIntegrations:
         )
 
     @pytest.fixture
-    def sample_transaction(self) -> Any:
+    def sample_transaction(self) -> None:
         return Transaction(
             transaction_id="txn_123",
             account_id="acc_123",
@@ -58,7 +58,7 @@ class TestBankingIntegrations:
         )
 
     @pytest.fixture
-    def sample_payment_request(self) -> Any:
+    def sample_payment_request(self) -> None:
         return PaymentRequest(
             amount=100.0,
             currency="USD",
@@ -67,7 +67,7 @@ class TestBankingIntegrations:
             description="Test payment",
         )
 
-    def test_banking_integration_manager_initialization(self) -> Any:
+    def test_banking_integration_manager_initialization(self) -> None:
         """Test banking integration manager initialization"""
         manager = BankingIntegrationManager()
         assert len(manager.integrations) == 0
@@ -76,14 +76,14 @@ class TestBankingIntegrations:
         assert IntegrationType.OPEN_BANKING in manager.integration_classes
         assert IntegrationType.FDX in manager.integration_classes
 
-    def test_register_plaid_integration(self, sample_config: Any) -> Any:
+    def test_register_plaid_integration(self, sample_config: Any) -> None:
         """Test registering Plaid integration"""
         manager = BankingIntegrationManager()
         manager.register_integration("test_plaid", IntegrationType.PLAID, sample_config)
         assert "test_plaid" in manager.integrations
         assert isinstance(manager.integrations["test_plaid"], PlaidIntegration)
 
-    def test_register_open_banking_integration(self, sample_config: Any) -> Any:
+    def test_register_open_banking_integration(self, sample_config: Any) -> None:
         """Test registering Open Banking integration"""
         manager = BankingIntegrationManager()
         manager.register_integration(
@@ -94,14 +94,14 @@ class TestBankingIntegrations:
             manager.integrations["test_open_banking"], OpenBankingIntegration
         )
 
-    def test_register_fdx_integration(self, sample_config: Any) -> Any:
+    def test_register_fdx_integration(self, sample_config: Any) -> None:
         """Test registering FDX integration"""
         manager = BankingIntegrationManager()
         manager.register_integration("test_fdx", IntegrationType.FDX, sample_config)
         assert "test_fdx" in manager.integrations
         assert isinstance(manager.integrations["test_fdx"], FDXIntegration)
 
-    def test_get_integration_health(self, sample_config: Any) -> Any:
+    def test_get_integration_health(self, sample_config: Any) -> None:
         """Test getting integration health status"""
         manager = BankingIntegrationManager()
         manager.register_integration("test_plaid", IntegrationType.PLAID, sample_config)
@@ -121,7 +121,7 @@ class TestBankingIntegrations:
             result = await plaid.authenticate()
             assert result is True
 
-    def test_account_validation(self) -> Any:
+    def test_account_validation(self) -> None:
         """Test account number validation"""
         from src.integrations.banking import ConcreteBankingBase
 
@@ -131,7 +131,7 @@ class TestBankingIntegrations:
         assert base.validate_account_number("1234567") is False
         assert base.validate_account_number("12345abc") is False
 
-    def test_routing_number_validation(self) -> Any:
+    def test_routing_number_validation(self) -> None:
         """Test routing number validation"""
         from src.integrations.banking import ConcreteBankingBase
 

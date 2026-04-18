@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Any
 
 import pytest
 from src.security.encryption_manager import EncryptionManager, TokenizationManager
@@ -11,7 +10,7 @@ from src.security.rate_limiter import RateLimiter
 class TestPasswordSecurity:
     """Test password security functionality"""
 
-    def test_password_hashing(self) -> Any:
+    def test_password_hashing(self) -> None:
         """Test password hashing and verification"""
         password = "TestPassword123!"
         hashed = PasswordSecurity.hash_password(password)
@@ -19,7 +18,7 @@ class TestPasswordSecurity:
         assert PasswordSecurity.verify_password(password, hashed)
         assert not PasswordSecurity.verify_password("wrong_password", hashed)
 
-    def test_password_strength_validation(self) -> Any:
+    def test_password_strength_validation(self) -> None:
         """Test password strength validation"""
         strong_password = "StrongP@ssw0rd123"
         is_valid, errors = PasswordSecurity.validate_password_strength(strong_password)
@@ -30,14 +29,14 @@ class TestPasswordSecurity:
         assert not is_valid
         assert len(errors) > 0
 
-    def test_password_generation(self) -> Any:
+    def test_password_generation(self) -> None:
         """Test secure password generation"""
         password = PasswordSecurity.generate_secure_password(16)
         assert len(password) == 16
         is_valid, errors = PasswordSecurity.validate_password_strength(password)
         assert is_valid
 
-    def test_password_entropy_calculation(self) -> Any:
+    def test_password_entropy_calculation(self) -> None:
         """Test password entropy calculation"""
         simple_password = "password"
         complex_password = "C0mpl3x!P@ssw0rd"
@@ -49,7 +48,7 @@ class TestPasswordSecurity:
 class TestInputValidator:
     """Test input validation functionality"""
 
-    def test_string_validation(self) -> Any:
+    def test_string_validation(self) -> None:
         """Test string validation"""
         result = InputValidator.validate_string(
             "test", "field", min_length=1, max_length=10
@@ -60,14 +59,14 @@ class TestInputValidator:
         with pytest.raises(ValidationError):
             InputValidator.validate_string("too_long_string", "field", max_length=5)
 
-    def test_email_validation(self) -> Any:
+    def test_email_validation(self) -> None:
         """Test email validation"""
         result = InputValidator.validate_email("test@example.com", "email")
         assert result == "test@example.com"
         with pytest.raises(ValidationError):
             InputValidator.validate_email("invalid_email", "email")
 
-    def test_decimal_validation(self) -> Any:
+    def test_decimal_validation(self) -> None:
         """Test decimal validation"""
         result = InputValidator.validate_decimal("123.45", "amount")
         assert result == Decimal("123.45")
@@ -78,7 +77,7 @@ class TestInputValidator:
                 "5.00", "amount", min_value=Decimal("10.00")
             )
 
-    def test_card_number_validation(self) -> Any:
+    def test_card_number_validation(self) -> None:
         """Test credit card number validation"""
         valid_card = "4532015112830366"
         result = InputValidator.validate_card_number(valid_card, "card_number")
@@ -86,7 +85,7 @@ class TestInputValidator:
         with pytest.raises(ValidationError):
             InputValidator.validate_card_number("1234567890123456", "card_number")
 
-    def test_currency_validation(self) -> Any:
+    def test_currency_validation(self) -> None:
         """Test currency code validation"""
         result = InputValidator.validate_currency_code("USD", "currency")
         assert result == "USD"
@@ -97,7 +96,7 @@ class TestInputValidator:
 class TestEncryptionManager:
     """Test encryption and tokenization functionality"""
 
-    def test_field_encryption(self) -> Any:
+    def test_field_encryption(self) -> None:
         """Test field encryption and decryption"""
         encryption_manager = EncryptionManager()
         original_data = "sensitive_information"
@@ -106,7 +105,7 @@ class TestEncryptionManager:
         assert encrypted_data != original_data
         assert decrypted_data == original_data
 
-    def test_pii_encryption(self) -> Any:
+    def test_pii_encryption(self) -> None:
         """Test PII encryption"""
         encryption_manager = EncryptionManager()
         pii_data = {
@@ -125,7 +124,7 @@ class TestEncryptionManager:
 class TestTokenizationManager:
     """Test tokenization functionality"""
 
-    def test_card_tokenization(self) -> Any:
+    def test_card_tokenization(self) -> None:
         """Test card number tokenization"""
         tokenization_manager = TokenizationManager()
         card_number = "4532015112830366"
@@ -148,7 +147,7 @@ class TestTokenizationManager:
 class TestRateLimiter:
     """Test rate limiting functionality"""
 
-    def test_rate_limit_parsing(self) -> Any:
+    def test_rate_limit_parsing(self) -> None:
         """Test rate limit string parsing"""
         rate_limiter = RateLimiter()
         count, period = rate_limiter._parse_limit_string("100 per hour")
@@ -158,7 +157,7 @@ class TestRateLimiter:
         assert count == 10
         assert period == 60
 
-    def test_rate_limit_enforcement(self) -> Any:
+    def test_rate_limit_enforcement(self) -> None:
         """Test rate limit enforcement"""
         rate_limiter = RateLimiter()
         allowed, info = rate_limiter.is_allowed(

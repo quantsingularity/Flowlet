@@ -183,13 +183,13 @@ class DataProtectionService:
         self._retention_policies = {}
         self._initialize_data_protection_service()
 
-    def _initialize_data_protection_service(self) -> Any:
+    def _initialize_data_protection_service(self) -> object:
         """Initialize the data protection service."""
         self._setup_jurisdiction_requirements()
         self._setup_retention_policies()
         self.logger.info("Data protection service initialized successfully")
 
-    def _setup_jurisdiction_requirements(self) -> Any:
+    def _setup_jurisdiction_requirements(self) -> object:
         """Set up jurisdiction-specific data protection requirements."""
         self._jurisdiction_requirements[Jurisdiction.EU] = {
             "regulation_name": "GDPR",
@@ -286,7 +286,7 @@ class DataProtectionService:
             "purpose_limitation": True,
         }
 
-    def _setup_retention_policies(self) -> Any:
+    def _setup_retention_policies(self) -> object:
         """Set up data retention policies by category and purpose."""
         self._retention_policies = {
             DataCategory.PERSONAL_IDENTIFIERS: {

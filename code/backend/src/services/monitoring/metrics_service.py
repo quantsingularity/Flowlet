@@ -269,7 +269,7 @@ class TimerContext:
         self.tags = tags
         self.start_time = None
 
-    def __enter__(self) -> Any:
+    def __enter__(self) -> object:
         self.start_time = time.time()
         return self
 

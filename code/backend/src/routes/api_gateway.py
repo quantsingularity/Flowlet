@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timezone
-from typing import Any
 
 from flask import Blueprint, jsonify
 
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 @api_gateway_bp.route("/status", methods=["GET"])
-def gateway_status() -> Any:
+def gateway_status() -> object:
     """Get API Gateway status and health information"""
     try:
         health_status = {
@@ -50,7 +49,7 @@ def gateway_status() -> Any:
 
 
 @api_gateway_bp.route("/documentation", methods=["GET"])
-def api_documentation() -> Any:
+def api_documentation() -> object:
     """Provides a high-level overview of the API structure."""
     return (
         jsonify(

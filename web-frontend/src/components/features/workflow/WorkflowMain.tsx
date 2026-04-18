@@ -10,7 +10,7 @@ import WorkflowDesigner from "./WorkflowDesigner";
 import WorkflowList from "./WorkflowList";
 import WorkflowTemplates from "./WorkflowTemplates";
 
-type ViewMode = "list" | "designer" | "analytics" | "templates";
+type ViewMode = "list" | "designer" | "analytics" | "templates" | "settings";
 
 const WorkflowMain: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewMode>("list");
@@ -80,6 +80,17 @@ const WorkflowMain: React.FC = () => {
 
       case "templates":
         return <WorkflowTemplates onUseTemplate={handleCreateNew} />;
+
+      case "settings":
+        return (
+          <div className="p-6">
+            <h2 className="text-xl font-semibold mb-4">Workflow Settings</h2>
+            <p className="text-muted-foreground text-sm">
+              Configure default workflow behavior, notifications, and execution
+              policies.
+            </p>
+          </div>
+        );
 
       default:
         return null;

@@ -114,12 +114,12 @@ class User(Base):
         Index("idx_user_risk_score", "risk_score"),
     )
 
-    def set_password(self, password: Any) -> Any:
+    def set_password(self, password: Any) -> None:
         """Sets the password hash securely"""
         self.password_hash = hash_password(password)
         self.password_changed_at = datetime.now(timezone.utc)
 
-    def check_password(self, password: Any) -> Any:
+    def check_password(self, password: Any) -> None:
         """Checks the password against the stored hash"""
         return check_password(self.password_hash, password)
 
@@ -236,5 +236,5 @@ class User(Base):
             )
         return data
 
-    def __repr__(self) -> Any:
+    def __repr__(self) -> str:
         return f"<User {self.email}>"

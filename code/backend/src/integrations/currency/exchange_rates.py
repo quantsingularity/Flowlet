@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from decimal import ROUND_HALF_UP, Decimal
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 try:
     import redis
@@ -176,7 +176,7 @@ class CurrencyExchangeService:
             logger.error(f"Error getting cached rate: {str(e)}")
         return None
 
-    def _cache_rate(self, rate: ExchangeRate) -> Any:
+    def _cache_rate(self, rate: ExchangeRate) -> object:
         """Cache exchange rate"""
         if not self.redis_client:
             return

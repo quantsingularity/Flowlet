@@ -9,7 +9,7 @@ if _code_root not in sys.path:
     sys.path.insert(0, _code_root)
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import Any
+from typing import Optional
 
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
@@ -22,7 +22,7 @@ from src.routes import api_bp
 from src.utils.error_handlers import register_error_handlers
 
 
-def create_app(config_name: str = None) -> Any:
+def create_app(config_name: Optional[str] = None) -> Flask:
     """Create and configure the Flask application."""
     static_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "..", "web-frontend", "dist"

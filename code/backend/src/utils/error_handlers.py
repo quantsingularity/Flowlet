@@ -4,7 +4,6 @@ Provides centralized error handling for common HTTP errors and exceptions
 """
 
 from datetime import datetime, timezone
-from typing import Any
 
 from flask import jsonify
 from werkzeug.exceptions import HTTPException
@@ -19,14 +18,14 @@ def register_error_handlers(app):
     """Register error handlers with the Flask app"""
 
     @app.errorhandler(400)
-    def bad_request(error: Exception) -> Any:
+    def bad_request(error: Exception) -> object:
         return (
             jsonify({"status": "error", "message": "Bad request", "error": str(error)}),
             400,
         )
 
     @app.errorhandler(401)
-    def unauthorized(error: Exception) -> Any:
+    def unauthorized(error: Exception) -> object:
         return (
             jsonify(
                 {
@@ -39,14 +38,14 @@ def register_error_handlers(app):
         )
 
     @app.errorhandler(403)
-    def forbidden(error: Exception) -> Any:
+    def forbidden(error: Exception) -> object:
         return (
             jsonify({"status": "error", "message": "Forbidden", "error": str(error)}),
             403,
         )
 
     @app.errorhandler(404)
-    def not_found(error: Exception) -> Any:
+    def not_found(error: Exception) -> object:
         return (
             jsonify(
                 {
@@ -59,7 +58,7 @@ def register_error_handlers(app):
         )
 
     @app.errorhandler(405)
-    def method_not_allowed(error: Exception) -> Any:
+    def method_not_allowed(error: Exception) -> object:
         return (
             jsonify(
                 {
@@ -72,7 +71,7 @@ def register_error_handlers(app):
         )
 
     @app.errorhandler(429)
-    def too_many_requests(error: Exception) -> Any:
+    def too_many_requests(error: Exception) -> object:
         return (
             jsonify(
                 {"status": "error", "message": "Too many requests", "error": str(error)}
@@ -81,12 +80,12 @@ def register_error_handlers(app):
         )
 
     @app.errorhandler(500)
-    def internal_server_error(error: Exception) -> Any:
+    def internal_server_error(error: Exception) -> object:
         app.logger.error(f"Internal server error: {error}", exc_info=True)
         return jsonify({"status": "error", "message": "Internal server error"}), 500
 
     @app.errorhandler(HTTPException)
-    def handle_http_exception(error: Exception) -> Any:
+    def handle_http_exception(error: Exception) -> "flask.Response":
         return jsonify({"status": "error", "message": error.description}), error.code
 
 
@@ -116,7 +115,7 @@ def handle_validation_error(error):
     )
 
 
-def handle_wallet_service_error(error: Exception) -> Any:
+def handle_wallet_service_error(error: Exception) -> "flask.Response":
     """Handle wallet service errors"""
     return jsonify(
         {"status": "error", "message": error.message, "code": error.error_code}

@@ -21,6 +21,9 @@ import HomePage from "@/components/pages/public/HomePage";
 import PaymentsPage from "@/components/pages/public/PaymentsPage";
 import CompliancePage from "@/components/pages/public/CompliancePage";
 import DeveloperPortalPage from "@/components/pages/public/DeveloperPortalPage";
+import ProfilePage from "@/components/pages/ProfilePage";
+import NotificationsPage from "@/components/pages/NotificationsPage";
+import NotFoundPage from "@/components/pages/NotFoundPage";
 
 import Dashboard from "@/components/features/dashboard/Dashboard";
 import WalletScreen from "@/components/features/wallet/WalletScreen";
@@ -45,7 +48,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAppSelector } from "@/hooks/redux";
 
 const AppInner: React.FC = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   const isOnline = useOnlineStatus();
   const { isMobile } = useResponsive();
   const theme = useAppSelector((state) => state.ui.theme);
@@ -173,18 +176,11 @@ const AppInner: React.FC = () => {
             />
             <Route path="workflows" element={<WorkflowMain />} />
             <Route path="settings" element={<SettingsScreen />} />
+            <Route path="profile" element={<ProfilePage />} />
+            <Route path="notifications" element={<NotificationsPage />} />
           </Route>
 
-          <Route
-            path="*"
-            element={
-              isAuthenticated ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
-                <Navigate to="/home" replace />
-              )
-            }
-          />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
 
         <Toaster

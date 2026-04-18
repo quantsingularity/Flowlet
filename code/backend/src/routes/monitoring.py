@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timezone
-from typing import Any
 
 from flask import Blueprint, jsonify
 from sqlalchemy import text
@@ -13,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @monitoring_bp.route("/health", methods=["GET"])
-def system_health() -> Any:
+def system_health() -> object:
     """Get overall system health status"""
     try:
         db_status = "unhealthy"

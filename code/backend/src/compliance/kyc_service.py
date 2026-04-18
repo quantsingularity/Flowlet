@@ -171,7 +171,7 @@ class KYCService:
         }
         self._initialize_kyc_service()
 
-    def _initialize_kyc_service(self) -> Any:
+    def _initialize_kyc_service(self) -> object:
         """Initialize the KYC service with default configurations."""
         self._setup_verification_requirements()
         self._initialize_document_validators()
@@ -179,7 +179,7 @@ class KYCService:
         self._initialize_risk_rules()
         self.logger.info("KYC service initialized successfully")
 
-    def _setup_verification_requirements(self) -> Any:
+    def _setup_verification_requirements(self) -> object:
         """Set up verification requirements for different levels."""
         self._verification_requirements = {
             VerificationLevel.BASIC: {
@@ -231,7 +231,7 @@ class KYCService:
             },
         }
 
-    def _initialize_document_validators(self) -> Any:
+    def _initialize_document_validators(self) -> object:
         """Initialize document validation configurations."""
         self._document_validators = {
             DocumentType.PASSPORT: {
@@ -276,7 +276,7 @@ class KYCService:
             },
         }
 
-    def _setup_third_party_providers(self) -> Any:
+    def _setup_third_party_providers(self) -> object:
         """Set up third-party verification providers."""
         self._third_party_providers = {
             "email_verification": {
@@ -301,7 +301,7 @@ class KYCService:
             },
         }
 
-    def _initialize_risk_rules(self) -> Any:
+    def _initialize_risk_rules(self) -> object:
         """Initialize risk assessment rules."""
         self._risk_rules = {
             "document_risk_factors": {

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { theme, unreadNotifications } = useAppSelector((state) => state.ui);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -132,6 +134,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
             size="sm"
             className="relative p-2"
             aria-label="Notifications"
+            onClick={() => navigate("/notifications")}
           >
             <Bell className="h-4 w-4" />
             {unreadNotifications > 0 && (
@@ -166,7 +169,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </DropdownMenuItem>

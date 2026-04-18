@@ -1,12 +1,9 @@
-from typing import Any
-
-
 class WalletServiceError(Exception):
     """Base exception for wallet service errors."""
 
     def __init__(
         self, message: str, error_code: str = "WALLET_ERROR", status_code: int = 400
-    ) -> Any:
+    ) -> object:
         self.message = message
         self.error_code = error_code
         self.status_code = status_code
@@ -24,7 +21,7 @@ class PaymentProcessorError(PaymentServiceError):
         message: str,
         error_code: str = "PAYMENT_PROCESSOR_ERROR",
         status_code: int = 400,
-    ) -> Any:
+    ) -> object:
         super().__init__(message, error_code, status_code)
 
 
