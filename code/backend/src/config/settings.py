@@ -35,7 +35,8 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = _get_engine_options()
     REDIS_URL = os.environ.get("REDIS_URL") or "redis://localhost:6379/0"
     JWT_SECRET_KEY = (
-        os.environ.get("JWT_SECRET_KEY") or "dev-jwt-secret-change-in-production"  # noqa: S105
+        os.environ.get("JWT_SECRET_KEY")
+        or "dev-jwt-secret-change-in-production"  # noqa: S105
     )
     JWT_ACCESS_TOKEN_EXPIRES = SecurityConfig.JWT_ACCESS_TOKEN_EXPIRES
     JWT_REFRESH_TOKEN_EXPIRES = SecurityConfig.JWT_REFRESH_TOKEN_EXPIRES
@@ -126,6 +127,7 @@ class DevelopmentConfig(Config):
 
     def __init__(self) -> None:
         import logging
+
         _log = logging.getLogger(__name__)
         if self.SECRET_KEY == self._SECRET_KEY_DEFAULT:
             _log.warning(

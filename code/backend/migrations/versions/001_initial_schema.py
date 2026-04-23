@@ -4,8 +4,9 @@ Revision ID: 001_initial
 Revises:
 Create Date: 2025-01-01 00:00:00.000000
 """
-from alembic import op
+
 import sqlalchemy as sa
+from alembic import op
 
 revision = "001_initial"
 down_revision = None
@@ -30,8 +31,18 @@ def upgrade():
         sa.Column("mfa_enabled", sa.Boolean(), server_default="0"),
         sa.Column("is_email_verified", sa.Boolean(), server_default="0"),
         sa.Column("last_login_at", sa.DateTime()),
-        sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
-        sa.Column("updated_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
     )
     # Accounts
     op.create_table(
@@ -42,18 +53,32 @@ def upgrade():
         sa.Column("account_type", sa.String(50), nullable=False),
         sa.Column("currency", sa.String(3), nullable=False, server_default="USD"),
         sa.Column("balance", sa.Numeric(18, 2), nullable=False, server_default="0"),
-        sa.Column("available_balance", sa.Numeric(18, 2), nullable=False, server_default="0"),
+        sa.Column(
+            "available_balance", sa.Numeric(18, 2), nullable=False, server_default="0"
+        ),
         sa.Column("status", sa.String(50), nullable=False, server_default="active"),
         sa.Column("daily_limit", sa.Numeric(18, 2), server_default="10000"),
         sa.Column("monthly_limit", sa.Numeric(18, 2), server_default="50000"),
-        sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
-        sa.Column("updated_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
     )
     # Transactions
     op.create_table(
         "transactions",
         sa.Column("id", sa.String(36), primary_key=True),
-        sa.Column("account_id", sa.String(36), sa.ForeignKey("accounts.id"), nullable=False),
+        sa.Column(
+            "account_id", sa.String(36), sa.ForeignKey("accounts.id"), nullable=False
+        ),
         sa.Column("from_account_id", sa.String(36)),
         sa.Column("to_account_id", sa.String(36)),
         sa.Column("type", sa.String(50), nullable=False),
@@ -63,14 +88,26 @@ def upgrade():
         sa.Column("description", sa.Text()),
         sa.Column("reference", sa.String(100)),
         sa.Column("metadata_json", sa.Text()),
-        sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
-        sa.Column("updated_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
     )
     # Cards
     op.create_table(
         "cards",
         sa.Column("id", sa.String(36), primary_key=True),
-        sa.Column("account_id", sa.String(36), sa.ForeignKey("accounts.id"), nullable=False),
+        sa.Column(
+            "account_id", sa.String(36), sa.ForeignKey("accounts.id"), nullable=False
+        ),
         sa.Column("card_number_masked", sa.String(20), nullable=False),
         sa.Column("card_number_encrypted", sa.Text()),
         sa.Column("card_type", sa.String(50), nullable=False),
@@ -83,7 +120,12 @@ def upgrade():
         sa.Column("contactless_enabled", sa.Boolean(), server_default="1"),
         sa.Column("online_enabled", sa.Boolean(), server_default="1"),
         sa.Column("international_enabled", sa.Boolean(), server_default="0"),
-        sa.Column("created_at", sa.DateTime(), nullable=False, server_default=sa.text("CURRENT_TIMESTAMP")),
+        sa.Column(
+            "created_at",
+            sa.DateTime(),
+            nullable=False,
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+        ),
     )
     # Indexes
     op.create_index("ix_users_email", "users", ["email"])

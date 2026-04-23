@@ -7,7 +7,6 @@ from typing import Any
 
 from flask import Blueprint, g, jsonify, request
 
-from ..models.database import db
 from ..utils.auth import token_required
 
 kyc_bp = Blueprint("kyc", __name__, url_prefix="/kyc")
@@ -22,6 +21,7 @@ def get_kyc_status() -> Any:
         user_id = g.current_user.id
         # Use the compliance KYC service for detailed status
         from ..compliance.kyc_service import KYCService
+
         svc = KYCService()
         result = svc.get_kyc_status(user_id)
         return jsonify(result), 200
@@ -59,15 +59,14 @@ def submit_kyc() -> Any:
             )
         user_id = g.current_user.id
         from ..compliance.kyc_service import KYCService
+
         svc = KYCService()
         result = svc.initiate_kyc(user_id, data)
         return jsonify({"message": "KYC submission received", "record": result}), 201
     except Exception as exc:
         logger.error("KYC submission error: %s", exc, exc_info=True)
         return (
-            jsonify(
-                {"error": "KYC submission failed", "code": "KYC_SUBMISSION_ERROR"}
-            ),
+            jsonify({"error": "KYC submission failed", "code": "KYC_SUBMISSION_ERROR"}),
             500,
         )
 
