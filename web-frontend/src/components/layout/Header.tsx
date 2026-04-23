@@ -1,3 +1,5 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Bell,
   LogOut,
@@ -9,9 +11,6 @@ import {
   User,
   X,
 } from "lucide-react";
-import React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,161 +48,161 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
   const handleThemeChange = (newTheme: "light" | "dark" | "system") =>
     dispatch(setTheme(newTheme));
 
-  const getThemeIcon = () => {
-    switch (theme) {
-      case "light":
-        return <Sun className="h-4 w-4" />;
-      case "dark":
-        return <Moon className="h-4 w-4" />;
-      default:
-        return <Monitor className="h-4 w-4" />;
-    }
-  };
-
-  const displayName =
-    user?.fullName ||
-    `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
-    "User";
-  const initials =
-    [user?.firstName?.[0], user?.lastName?.[0]]
-      .filter(Boolean)
-      .join("")
-      .toUpperCase() || "U";
+  const initials = user
+    ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() ||
+      "U"
+    : "U";
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
-      <div className="flex items-center justify-between h-full px-4 gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onMenuClick}
-            className="p-2 shrink-0"
-            aria-label="Toggle menu"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-
-          <div className="flex items-center gap-2.5 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">
-                F
-              </span>
-            </div>
-            <span className="text-lg font-semibold tracking-tight hidden sm:block">
-              Flowlet
-            </span>
-          </div>
-        </div>
-
-        {/* Search */}
-        <div
-          className={cn(
-            "flex-1 max-w-sm transition-all duration-200",
-            isMobile && searchOpen ? "flex" : isMobile ? "hidden" : "flex",
-          )}
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-4 border-b border-border/60 bg-background/80 px-4 backdrop-blur-md lg:px-6">
+      {/* Mobile menu button */}
+      {isMobile && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onMenuClick}
+          className="h-9 w-9 shrink-0"
         >
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-            <Input
-              placeholder="Search..."
-              className="pl-9 h-8 text-sm bg-muted/50 border-0 focus-visible:ring-1 focus-visible:bg-background"
-            />
-          </div>
-        </div>
+          <Menu className="h-5 w-5" />
+        </Button>
+      )}
 
-        <div className="flex items-center gap-1 shrink-0">
-          {isMobile && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2"
-              onClick={() => setSearchOpen(!searchOpen)}
-              aria-label="Search"
+      {/* Desktop logo spacer — sidebar handles logo */}
+      {!isMobile && <div className="hidden lg:block" />}
+
+      {/* Search */}
+      <div
+        className={cn(
+          "flex-1 transition-all",
+          searchOpen ? "max-w-md" : "max-w-xs",
+        )}
+      >
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search transactions, cards..."
+            className="h-9 pl-9 text-sm bg-secondary/60 border-transparent focus:border-border focus:bg-background transition-all"
+            onFocus={() => setSearchOpen(true)}
+            onBlur={() => setSearchOpen(false)}
+          />
+          {searchOpen && (
+            <button
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              onMouseDown={() => setSearchOpen(false)}
             >
-              {searchOpen ? (
-                <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="ml-auto flex items-center gap-1.5">
+        {/* Notifications */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-9 w-9"
+          onClick={() => navigate("/notifications")}
+        >
+          <Bell className="h-4.5 w-4.5" />
+          {(unreadNotifications ?? 0) > 0 && (
+            <Badge
+              variant="destructive"
+              className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full p-0 text-[9px] font-bold flex items-center justify-center"
+            >
+              {unreadNotifications}
+            </Badge>
+          )}
+        </Button>
+
+        {/* Theme picker */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-9 w-9">
+              {theme === "dark" ? (
+                <Moon className="h-4 w-4" />
+              ) : theme === "light" ? (
+                <Sun className="h-4 w-4" />
               ) : (
-                <Search className="h-4 w-4" />
+                <Monitor className="h-4 w-4" />
               )}
             </Button>
-          )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-36">
+            <DropdownMenuItem
+              onClick={() => handleThemeChange("light")}
+              className="gap-2"
+            >
+              <Sun className="h-4 w-4" /> Light
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleThemeChange("dark")}
+              className="gap-2"
+            >
+              <Moon className="h-4 w-4" /> Dark
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => handleThemeChange("system")}
+              className="gap-2"
+            >
+              <Monitor className="h-4 w-4" /> System
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="relative p-2"
-            aria-label="Notifications"
-            onClick={() => navigate("/notifications")}
-          >
-            <Bell className="h-4 w-4" />
-            {unreadNotifications > 0 && (
-              <span className="absolute top-1 right-1 h-4 w-4 bg-destructive rounded-full flex items-center justify-center text-[10px] text-destructive-foreground font-semibold">
-                {unreadNotifications > 9 ? "9+" : unreadNotifications}
-              </span>
-            )}
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full p-0 ml-1"
-                aria-label="User menu"
-              >
-                <Avatar className="h-8 w-8 ring-2 ring-border">
-                  <AvatarImage src={user?.profilePicture} alt={displayName} />
-                  <AvatarFallback className="text-xs font-semibold bg-primary text-primary-foreground">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col gap-0.5">
-                  <p className="text-sm font-semibold">{displayName}</p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {user?.email}
+        {/* User menu */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center gap-2.5 rounded-xl px-2 py-1.5 hover:bg-secondary transition-colors outline-none">
+              <Avatar className="h-7 w-7 ring-2 ring-primary/20">
+                <AvatarImage src={user?.profilePicture} />
+                <AvatarFallback className="bg-gradient-brand text-white text-xs font-semibold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              {!isMobile && (
+                <div className="text-left">
+                  <p className="text-[13px] font-medium leading-none">
+                    {user?.firstName ?? "User"}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 leading-none">
+                    {user?.email ?? ""}
                   </p>
                 </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  {getThemeIcon()}
-                  <span className="ml-2">Theme</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={() => handleThemeChange("light")}>
-                    <Sun className="mr-2 h-4 w-4" />
-                    Light
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
-                    <Moon className="mr-2 h-4 w-4" />
-                    Dark
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleThemeChange("system")}>
-                    <Monitor className="mr-2 h-4 w-4" />
-                    System
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="text-destructive focus:text-destructive"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuLabel>
+              <p className="font-medium">
+                {user?.firstName} {user?.lastName}
+              </p>
+              <p className="text-xs font-normal text-muted-foreground truncate">
+                {user?.email}
+              </p>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => navigate("/profile")}
+              className="gap-2"
+            >
+              <User className="h-4 w-4" /> Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => navigate("/settings")}
+              className="gap-2"
+            >
+              <Monitor className="h-4 w-4" /> Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="gap-2 text-destructive focus:text-destructive"
+            >
+              <LogOut className="h-4 w-4" /> Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

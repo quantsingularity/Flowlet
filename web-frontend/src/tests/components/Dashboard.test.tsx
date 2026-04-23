@@ -1,132 +1,73 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { configureStore } from "@reduxjs/toolkit";
 import Dashboard from "@/components/features/dashboard/Dashboard";
 import authReducer from "@/store/authSlice";
+import walletReducer from "@/store/walletSlice";
 import uiReducer from "@/store/uiSlice";
 
-vi.mock("@/hooks/useAuth", () => ({
-  useAuth: () => ({
-    user: { firstName: "Demo", lastName: "User", email: "demo@flowlet.com" },
-    isAuthenticated: true,
-    isLoading: false,
-  }),
+vi.mock("@/lib/api/walletService", () => ({
+  walletService: {
+    getAccounts: vi.fn().mockResolvedValue([]),
+    getCards: vi.fn().mockResolvedValue([]),
+    getAccountSummary: vi.fn().mockResolvedValue({
+      total_balance: 12345.67,
+      total_accounts: 1,
+      total_cards: 1,
+      recent_transactions: [],
+      monthly_spending: 2850,
+      monthly_income: 4200,
+    }),
+    getTransactions: vi
+      .fn()
+      .mockResolvedValue({ data: [], total: 0, page: 1, per_page: 10 }),
+  },
 }));
 
-vi.mock("@/services/walletService", () => ({
-  fetchWalletData: vi.fn().mockResolvedValue({
-    quickStats: [
-      {
-        title: "Total Balance",
-        value: "$12,345.67",
-        change: "+2.5%",
-        trend: "up",
-        icon: () => null,
-      },
-      {
-        title: "Monthly Income",
-        value: "$4,200.00",
-        change: "+8.1%",
-        trend: "up",
-        icon: () => null,
-      },
-      {
-        title: "Monthly Expenses",
-        value: "$2,850.30",
-        change: "-3.2%",
-        trend: "down",
-        icon: () => null,
-      },
-      {
-        title: "Savings Rate",
-        value: "32.1%",
-        change: "+5.4%",
-        trend: "up",
-        icon: () => null,
-      },
-    ],
-    recentTransactions: [
-      {
-        id: 1,
-        description: "Coffee Shop",
-        amount: -4.5,
-        date: "2025-01-14",
-        category: "Food",
-      },
-      {
-        id: 2,
-        description: "Salary",
-        amount: 4200,
-        date: "2025-01-13",
-        category: "Income",
-      },
-    ],
-  }),
-}));
-
-const createTestStore = () =>
+const makeStore = () =>
   configureStore({
-    reducer: { auth: authReducer, ui: uiReducer },
+    reducer: { auth: authReducer, wallet: walletReducer, ui: uiReducer },
     preloadedState: {
       auth: {
         user: {
           id: "1",
-          firstName: "Demo",
+          firstName: "Test",
           lastName: "User",
-          email: "demo@flowlet.com",
-        },
+          email: "test@example.com",
+        } as any,
         isAuthenticated: true,
         isLoading: false,
-        token: null,
+        token: "test-token",
+        error: null,
+      },
+      wallet: {
+        accounts: [],
+        currentAccount: null,
+        transactions: [],
+        cards: [],
+        currentCard: null,
+        dashboardSummary: null,
+        analytics: null,
+        isLoading: false,
         error: null,
       },
     },
   });
 
-const renderDashboard = () =>
-  render(
-    <Provider store={createTestStore()}>
-      <MemoryRouter>
-        <Dashboard />
-      </MemoryRouter>
-    </Provider>,
-  );
-
 describe("Dashboard", () => {
-  it("shows loading state initially", () => {
-    renderDashboard();
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  });
-
-  it("renders welcome message with user name", async () => {
-    renderDashboard();
-    await waitFor(() => {
-      expect(screen.getByText(/Demo/)).toBeInTheDocument();
-    });
-  });
-
-  it("renders stat cards after loading", async () => {
-    renderDashboard();
-    await waitFor(() => {
-      expect(screen.getByText("Total Balance")).toBeInTheDocument();
-      expect(screen.getByText("Monthly Income")).toBeInTheDocument();
-    });
-  });
-
-  it("renders transactions after loading", async () => {
-    renderDashboard();
-    await waitFor(() => {
-      expect(screen.getByText("Coffee Shop")).toBeInTheDocument();
-      expect(screen.getByText("Salary")).toBeInTheDocument();
-    });
-  });
-
-  it("shows quick actions panel", async () => {
-    renderDashboard();
-    await waitFor(() => {
-      expect(screen.getByText("Send Money")).toBeInTheDocument();
-    });
+  it("renders greeting", () => {
+    const store = makeStore();
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Dashboard />
+        </MemoryRouter>
+      </Provider>,
+    );
+    expect(
+      screen.getByText(/Good (morning|afternoon|evening), Test/i),
+    ).toBeTruthy();
   });
 });

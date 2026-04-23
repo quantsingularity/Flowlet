@@ -1,3 +1,6 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -5,271 +8,425 @@ import {
   Eye,
   EyeOff,
   Plus,
+  RefreshCw,
   Send,
+  Wallet,
 } from "lucide-react";
-import React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import {
+  fetchAccounts,
+  fetchTransactions,
+  depositFunds,
+  withdrawFunds,
+} from "@/store/walletSlice";
 import { cn } from "@/lib/utils";
 
-interface Transaction {
-  id: string;
-  description: string;
-  amount: number;
-  type: "credit" | "debit";
-  date: string;
-  category?: string;
-  status?: "completed" | "pending";
-}
+const fmt = (n: number, currency = "USD") =>
+  n.toLocaleString("en-US", {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 2,
+  });
 
-interface WalletScreenProps {
-  balance?: number;
-  recentTransactions?: Transaction[];
-}
+// ── Account card (bank-card style) ──────────────────────────────────────────
+const AccountCard: React.FC<{
+  account: {
+    id: string;
+    account_type: string;
+    account_number: string;
+    currency: string;
+    balance: number;
+    available_balance: number;
+    status: string;
+  };
+  active: boolean;
+  onClick: () => void;
+}> = ({ account, active, onClick }) => {
+  const [masked, setMasked] = useState(true);
+  const last4 = account.account_number.slice(-4);
+  const display = masked ? `•••• •••• •••• ${last4}` : account.account_number;
 
-const WalletScreen: React.FC<WalletScreenProps> = ({
-  balance = 12345.67,
-  recentTransactions = [
-    {
-      id: "1",
-      description: "Coffee Shop",
-      amount: -4.5,
-      type: "debit",
-      date: "2025-01-14",
-      category: "Food",
-      status: "completed",
-    },
-    {
-      id: "2",
-      description: "Salary Deposit",
-      amount: 4200.0,
-      type: "credit",
-      date: "2025-01-13",
-      category: "Income",
-      status: "completed",
-    },
-    {
-      id: "3",
-      description: "Online Purchase",
-      amount: -75.0,
-      type: "debit",
-      date: "2025-01-12",
-      category: "Shopping",
-      status: "completed",
-    },
-    {
-      id: "4",
-      description: "Gas Station",
-      amount: -45.2,
-      type: "debit",
-      date: "2025-01-11",
-      category: "Transport",
-      status: "pending",
-    },
-  ],
-}) => {
-  const [balanceVisible, setBalanceVisible] = useState(true);
+  const gradients: Record<string, string> = {
+    checking:
+      "from-[hsl(250,73%,36%)] via-[hsl(250,67%,28%)] to-[hsl(222,47%,14%)]",
+    savings:
+      "from-[hsl(142,60%,28%)] via-[hsl(142,55%,22%)] to-[hsl(222,47%,14%)]",
+    business:
+      "from-[hsl(38,80%,35%)]  via-[hsl(38,75%,28%)]  to-[hsl(222,47%,14%)]",
+  };
+  const grad = gradients[account.account_type] ?? gradients.checking;
+
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "relative w-full rounded-2xl bg-gradient-to-br p-5 text-left transition-all",
+        grad,
+        active
+          ? "ring-2 ring-white/30 shadow-xl scale-[1.01]"
+          : "opacity-80 hover:opacity-100",
+      )}
+    >
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <p className="text-xs font-medium text-white/60 uppercase tracking-widest">
+            {account.account_type}
+          </p>
+          <p className="text-sm font-semibold text-white mt-0.5">Flowlet</p>
+        </div>
+        <Wallet className="h-6 w-6 text-white/40" />
+      </div>
+
+      <div className="mb-5">
+        <div className="flex items-center gap-2">
+          <p className="font-mono text-sm text-white/80 tracking-widest">
+            {display}
+          </p>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setMasked((v) => !v);
+            }}
+            className="text-white/40 hover:text-white/80 transition-colors"
+          >
+            {masked ? (
+              <Eye className="h-3.5 w-3.5" />
+            ) : (
+              <EyeOff className="h-3.5 w-3.5" />
+            )}
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(account.account_number);
+              toast.success("Copied!");
+            }}
+            className="text-white/40 hover:text-white/80 transition-colors"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-xs text-white/50 mb-0.5">Available</p>
+          <p className="text-2xl font-bold text-white tabular-nums">
+            {fmt(account.available_balance, account.currency)}
+          </p>
+        </div>
+        <Badge
+          className={cn(
+            "text-[10px] font-semibold border-0",
+            account.status === "active"
+              ? "bg-white/15 text-white"
+              : "bg-red-500/30 text-red-200",
+          )}
+        >
+          {account.status}
+        </Badge>
+      </div>
+    </button>
+  );
+};
+
+// ── Transaction row ─────────────────────────────────────────────────────────
+const TxRow: React.FC<{
+  tx: {
+    id: string;
+    type: string;
+    amount: number;
+    currency: string;
+    description?: string;
+    status: string;
+    created_at: string;
+  };
+}> = ({ tx }) => {
+  const isCredit = ["deposit", "refund"].includes(tx.type);
+  const icons: Record<string, string> = {
+    deposit: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    withdrawal: "bg-red-500/10 text-red-600 dark:text-red-400",
+    transfer: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+    payment: "bg-violet-500/10 text-violet-600 dark:text-violet-400",
+    refund: "bg-teal-500/10 text-teal-600 dark:text-teal-400",
+    fee: "bg-gray-500/10 text-gray-600 dark:text-gray-400",
+  };
+  return (
+    <div className="flex items-center gap-3 py-3 border-b border-border/50 last:border-0">
+      <div
+        className={cn(
+          "h-9 w-9 rounded-xl flex items-center justify-center shrink-0",
+          icons[tx.type] ?? icons.payment,
+        )}
+      >
+        {isCredit ? (
+          <ArrowDownLeft className="h-4 w-4" />
+        ) : (
+          <ArrowUpRight className="h-4 w-4" />
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium truncate">
+          {tx.description ?? tx.type}
+        </p>
+        <p className="text-xs text-muted-foreground">
+          {new Date(tx.created_at).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })}
+          {" · "}
+          <span
+            className={
+              tx.status === "completed"
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-amber-600 dark:text-amber-400"
+            }
+          >
+            {tx.status}
+          </span>
+        </p>
+      </div>
+      <p
+        className={cn(
+          "text-sm font-semibold tabular-nums shrink-0",
+          isCredit ? "text-emerald-600 dark:text-emerald-400" : "",
+        )}
+      >
+        {isCredit ? "+" : "-"}
+        {fmt(Math.abs(tx.amount), tx.currency)}
+      </p>
+    </div>
+  );
+};
+
+// ── Main ────────────────────────────────────────────────────────────────────
+const WalletScreen: React.FC = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { accounts, transactions, isLoading } = useAppSelector((s) => s.wallet);
+  const [activeIdx, setActiveIdx] = useState(0);
 
-  const accountNumber = "FL-4821-9034-7621";
+  useEffect(() => {
+    dispatch(fetchAccounts());
+  }, [dispatch]);
 
-  const copyAccountNumber = () => {
-    navigator.clipboard
-      .writeText(accountNumber)
-      .then(() => {
-        toast.success("Account number copied");
-      })
-      .catch(() => {
-        toast.error("Could not copy to clipboard");
-      });
+  useEffect(() => {
+    if (accounts[activeIdx]) {
+      dispatch(
+        fetchTransactions({
+          accountId: accounts[activeIdx].id,
+          filters: { per_page: 20 },
+        }),
+      );
+    }
+  }, [dispatch, accounts, activeIdx]);
+
+  const active = accounts[activeIdx];
+
+  const handleQuickDeposit = async () => {
+    if (!active) return;
+    try {
+      await dispatch(
+        depositFunds({
+          account_id: active.id,
+          amount: 100,
+          description: "Quick deposit",
+        }),
+      ).unwrap();
+      toast.success("$100 deposited!");
+    } catch {
+      toast.error("Deposit failed");
+    }
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Wallet</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Manage your funds and transactions
-        </p>
+    <div className="space-y-6 animate-fade-in-up">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Wallet</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Manage your accounts & funds
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => dispatch(fetchAccounts())}
+          >
+            <RefreshCw className="h-4 w-4 mr-1.5" /> Refresh
+          </Button>
+          <Button
+            size="sm"
+            className="bg-gradient-brand hover:opacity-90"
+            onClick={() => navigate("/cards")}
+          >
+            <Plus className="h-4 w-4 mr-1.5" /> New Account
+          </Button>
+        </div>
       </div>
 
-      {/* Balance card */}
-      <Card className="overflow-hidden border-0 bg-sidebar text-sidebar-foreground">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <p className="text-sidebar-foreground/60 text-xs font-medium uppercase tracking-widest mb-1">
-                Total Balance
-              </p>
-              <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold tabular-nums tracking-tight">
-                  {balanceVisible
-                    ? new Intl.NumberFormat("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      }).format(balance)
-                    : "••••••"}
-                </span>
-                <button
-                  onClick={() => setBalanceVisible(!balanceVisible)}
-                  aria-label="Toggle balance visibility"
-                  className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
-                >
-                  {balanceVisible ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <Badge className="bg-sidebar-accent text-sidebar-foreground border-0 text-xs">
-              USD
-            </Badge>
-          </div>
-
-          <div className="flex items-center gap-2 mb-6">
-            <span className="text-sidebar-foreground/50 text-xs font-mono">
-              {accountNumber}
-            </span>
-            <button
-              onClick={copyAccountNumber}
-              className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors"
-            >
-              <Copy className="h-3 w-3" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              onClick={() => navigate("/wallet/send")}
-              className="bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 gap-2"
-            >
-              <Send className="h-4 w-4" />
-              Send
-            </Button>
-            <Button
-              onClick={() => navigate("/wallet/receive")}
-              variant="outline"
-              className="border-sidebar-border text-sidebar-foreground bg-sidebar-accent hover:bg-sidebar-accent/80 gap-2"
-            >
-              <ArrowDownLeft className="h-4 w-4" />
-              Receive
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Summary */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Account cards carousel */}
+      {isLoading && accounts.length === 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1].map((i) => (
+            <Skeleton key={i} className="h-44 rounded-2xl" />
+          ))}
+        </div>
+      ) : accounts.length === 0 ? (
         <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
-                <ArrowDownLeft className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">This month in</p>
-                <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                  $4,200
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-5">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-red-50 dark:bg-red-950/30 flex items-center justify-center">
-                <ArrowUpRight className="h-4 w-4 text-red-600 dark:text-red-400" />
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground">This month out</p>
-                <p className="text-lg font-bold text-red-600 dark:text-red-400 tabular-nums">
-                  $2,850
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Transactions */}
-      <Card>
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Recent Activity</CardTitle>
+          <CardContent className="flex flex-col items-center gap-3 py-14 text-center">
+            <Wallet className="h-10 w-10 text-muted-foreground/40" />
+            <p className="font-medium">No accounts yet</p>
+            <p className="text-sm text-muted-foreground">
+              Create your first account to get started.
+            </p>
             <Button
-              variant="ghost"
               size="sm"
-              className="text-xs h-7 px-2"
-              onClick={() => navigate("/wallet/transactions")}
+              className="mt-2 bg-gradient-brand hover:opacity-90"
             >
-              View all
+              <Plus className="h-4 w-4 mr-1.5" /> Create Account
             </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="divide-y divide-border/50">
-            {recentTransactions.map((tx) => {
-              const isIncome = tx.amount > 0;
-              return (
-                <div key={tx.id} className="flex items-center gap-3 py-3">
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {accounts.map((acc, i) => (
+            <AccountCard
+              key={acc.id}
+              account={acc}
+              active={i === activeIdx}
+              onClick={() => setActiveIdx(i)}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Quick actions + transactions */}
+      {active && (
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Quick actions */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2.5">
+              {[
+                {
+                  label: "Send Money",
+                  icon: Send,
+                  action: () => navigate("/wallet"),
+                  color:
+                    "text-violet-600 dark:text-violet-400 bg-violet-500/10",
+                },
+                {
+                  label: "Receive Money",
+                  icon: ArrowDownLeft,
+                  action: () => navigate("/wallet"),
+                  color:
+                    "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10",
+                },
+                {
+                  label: "Quick +$100",
+                  icon: Plus,
+                  action: handleQuickDeposit,
+                  color: "text-blue-600 dark:text-blue-400 bg-blue-500/10",
+                },
+              ].map(({ label, icon: Icon, action, color }) => (
+                <button
+                  key={label}
+                  onClick={action}
+                  className="group flex w-full items-center gap-3 rounded-xl p-3 text-left transition-all hover:bg-accent"
+                >
                   <div
                     className={cn(
-                      "w-9 h-9 rounded-full flex items-center justify-center shrink-0",
-                      isIncome
-                        ? "bg-emerald-50 dark:bg-emerald-950/30"
-                        : "bg-slate-100 dark:bg-slate-800",
+                      "h-8 w-8 rounded-lg flex items-center justify-center shrink-0",
+                      color,
                     )}
                   >
-                    {isIncome ? (
-                      <ArrowDownLeft className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    ) : (
-                      <ArrowUpRight className="h-4 w-4 text-slate-500" />
-                    )}
+                    <Icon className="h-4 w-4" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">
-                      {tx.description}
-                    </p>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(tx.date).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </span>
-                      {tx.status === "pending" && (
-                        <Badge
-                          variant="secondary"
-                          className="text-[10px] h-3.5 px-1 py-0"
-                        >
-                          Pending
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  <span
-                    className={cn(
-                      "text-sm font-semibold tabular-nums",
-                      isIncome
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-foreground",
-                    )}
-                  >
-                    {isIncome ? "+" : "−"}${Math.abs(tx.amount).toFixed(2)}
-                  </span>
+                  <span className="text-sm font-medium">{label}</span>
+                  <ArrowUpRight className="ml-auto h-3.5 w-3.5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
+                </button>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Transactions */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Transactions</CardTitle>
+                  <Badge variant="secondary" className="text-xs">
+                    {transactions.length}
+                  </Badge>
                 </div>
-              );
-            })}
+              </CardHeader>
+              <CardContent>
+                <Tabs defaultValue="all">
+                  <TabsList className="h-8 mb-4">
+                    <TabsTrigger value="all" className="text-xs h-7">
+                      All
+                    </TabsTrigger>
+                    <TabsTrigger value="credits" className="text-xs h-7">
+                      Credits
+                    </TabsTrigger>
+                    <TabsTrigger value="debits" className="text-xs h-7">
+                      Debits
+                    </TabsTrigger>
+                  </TabsList>
+                  {(["all", "credits", "debits"] as const).map((tab) => (
+                    <TabsContent key={tab} value={tab}>
+                      {isLoading ? (
+                        <div className="space-y-3">
+                          {[0, 1, 2, 3].map((i) => (
+                            <div key={i} className="flex items-center gap-3">
+                              <Skeleton className="h-9 w-9 rounded-xl" />
+                              <div className="flex-1 space-y-1.5">
+                                <Skeleton className="h-3.5 w-36" />
+                                <Skeleton className="h-3 w-24" />
+                              </div>
+                              <Skeleton className="h-4 w-16" />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="max-h-80 overflow-y-auto">
+                          {transactions
+                            .filter((tx) =>
+                              tab === "all"
+                                ? true
+                                : tab === "credits"
+                                  ? ["deposit", "refund"].includes(tx.type)
+                                  : !["deposit", "refund"].includes(tx.type),
+                            )
+                            .slice(0, 20)
+                            .map((tx) => (
+                              <TxRow key={tx.id} tx={tx} />
+                            ))}
+                          {transactions.length === 0 && (
+                            <p className="py-8 text-center text-sm text-muted-foreground">
+                              No transactions yet
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </TabsContent>
+                  ))}
+                </Tabs>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
   );
 };

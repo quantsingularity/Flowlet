@@ -28,24 +28,27 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    preview: {
-      port: 3000,
-      host: true,
-    },
+    preview: { port: 3000, host: true },
     build: {
       outDir: "dist",
       sourcemap: mode !== "production",
+      chunkSizeWarningLimit: 700,
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ["react", "react-dom", "react-router-dom"],
-            redux: ["@reduxjs/toolkit", "react-redux"],
-            ui: [
+            "vendor-react": ["react", "react-dom", "react-router-dom"],
+            "vendor-redux": ["@reduxjs/toolkit", "react-redux"],
+            "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
+            "vendor-charts": ["recharts"],
+            "vendor-motion": ["framer-motion"],
+            "vendor-radix": [
               "@radix-ui/react-dialog",
               "@radix-ui/react-dropdown-menu",
               "@radix-ui/react-tabs",
+              "@radix-ui/react-tooltip",
+              "@radix-ui/react-popover",
+              "@radix-ui/react-select",
             ],
-            charts: ["recharts"],
           },
         },
       },

@@ -1,356 +1,371 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   CreditCard,
   Eye,
   EyeOff,
-  Globe,
   Lock,
   Plus,
-  Settings,
-  Smartphone,
+  RefreshCw,
+  ShieldCheck,
   Unlock,
-  Zap,
+  Wifi,
 } from "lucide-react";
-import React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useAppDispatch, useAppSelector } from "@/hooks/redux";
+import { fetchCards, toggleCardStatus } from "@/store/walletSlice";
 import { cn } from "@/lib/utils";
 
-interface CardData {
+type CardType = "debit" | "credit" | "prepaid";
+const cardGradients: Record<CardType, string> = {
+  debit: "from-[hsl(250,73%,34%)] via-[hsl(258,65%,26%)] to-[hsl(222,47%,12%)]",
+  credit: "from-[hsl(222,47%,18%)] via-[hsl(230,40%,14%)] to-[hsl(222,47%,8%)]",
+  prepaid:
+    "from-[hsl(38,78%,34%)]  via-[hsl(30,65%,26%)]  to-[hsl(222,47%,12%)]",
+};
+
+interface CardItem {
   id: string;
-  cardNumber: string;
-  cardType: "debit" | "credit" | "prepaid";
-  cardBrand: "visa" | "mastercard" | "amex" | "discover";
-  holderName: string;
-  expiryMonth: number;
-  expiryYear: number;
-  status: "active" | "blocked" | "expired" | "inactive";
-  isVirtual: boolean;
-  balance?: number;
-  creditLimit?: number;
-  lastUsed?: string;
+  card_number_masked: string;
+  card_type: CardType;
+  status: string;
+  expiry_month: number;
+  expiry_year: number;
+  cardholder_name: string;
+  daily_limit: number;
+  monthly_limit: number;
+  contactless_enabled: boolean;
+  online_enabled: boolean;
+  international_enabled: boolean;
+  created_at: string;
 }
 
-const SAMPLE_CARDS: CardData[] = [
-  {
-    id: "1",
-    cardNumber: "**** **** **** 1234",
-    cardType: "debit",
-    cardBrand: "visa",
-    holderName: "Demo User",
-    expiryMonth: 12,
-    expiryYear: 2028,
-    status: "active",
-    isVirtual: false,
-    balance: 12345.67,
-    lastUsed: "2025-01-14",
-  },
-  {
-    id: "2",
-    cardNumber: "**** **** **** 5678",
-    cardType: "credit",
-    cardBrand: "mastercard",
-    holderName: "Demo User",
-    expiryMonth: 8,
-    expiryYear: 2027,
-    status: "active",
-    isVirtual: false,
-    creditLimit: 5000,
-    lastUsed: "2025-01-13",
-  },
-  {
-    id: "3",
-    cardNumber: "**** **** **** 9012",
-    cardType: "credit",
-    cardBrand: "amex",
-    holderName: "Demo User",
-    expiryMonth: 6,
-    expiryYear: 2026,
-    status: "blocked",
-    isVirtual: true,
-    creditLimit: 10000,
-  },
-];
-
-const brandColors: Record<string, string> = {
-  visa: "from-blue-600 to-blue-800",
-  mastercard: "from-slate-700 to-slate-900",
-  amex: "from-emerald-600 to-emerald-900",
-  discover: "from-amber-500 to-orange-700",
-};
-
-const statusConfig = {
-  active: {
-    label: "Active",
-    className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  },
-  blocked: {
-    label: "Blocked",
-    className: "bg-red-500/20 text-red-400 border-red-500/30",
-  },
-  expired: {
-    label: "Expired",
-    className: "bg-slate-500/20 text-slate-400 border-slate-500/30",
-  },
-  inactive: {
-    label: "Inactive",
-    className: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-  },
-};
-
-const VisualCard: React.FC<{
-  card: CardData;
-  revealed: boolean;
-  onToggleReveal: () => void;
-}> = ({ card, revealed, onToggleReveal }) => {
-  const gradClass =
-    brandColors[card.cardBrand] ?? "from-slate-700 to-slate-900";
-  const cfg = statusConfig[card.status];
+const CardVisual: React.FC<{
+  card: CardItem;
+  active: boolean;
+  onClick: () => void;
+}> = ({ card, active, onClick }) => {
+  const [showNum, setShowNum] = useState(false);
+  const grad = cardGradients[card.card_type] ?? cardGradients.debit;
+  const isBlocked = card.status === "blocked" || card.status === "frozen";
 
   return (
-    <div
+    <button
+      onClick={onClick}
       className={cn(
-        "relative rounded-2xl p-6 bg-gradient-to-br text-white overflow-hidden",
-        gradClass,
-        card.status === "blocked" && "opacity-75",
+        "relative w-full rounded-2xl bg-gradient-to-br p-5 text-left transition-all",
+        grad,
+        active
+          ? "ring-2 ring-white/30 shadow-2xl scale-[1.01]"
+          : "opacity-75 hover:opacity-95",
+        isBlocked &&
+          "after:absolute after:inset-0 after:rounded-2xl after:bg-black/40 after:backdrop-blur-[1px]",
       )}
     >
-      {/* Card brand pattern */}
-      <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-white/5 -translate-y-32 translate-x-16" />
-      <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white/5 translate-y-20 -translate-x-12" />
-
-      <div className="relative z-10 space-y-4">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-white/60 text-xs uppercase tracking-widest">
-              {card.isVirtual ? "Virtual" : "Physical"} {card.cardType}
-            </p>
-            <Badge className={cn("mt-1 text-[10px] border", cfg.className)}>
-              {cfg.label}
-            </Badge>
-          </div>
-          <div className="text-right">
-            <p className="text-white/60 text-xs capitalize font-medium">
-              {card.cardBrand}
-            </p>
+      {isBlocked && (
+        <div className="absolute inset-0 flex items-center justify-center z-10 rounded-2xl">
+          <div className="bg-black/60 rounded-xl px-3 py-1.5 flex items-center gap-2">
+            <Lock className="h-3.5 w-3.5 text-white" />
+            <span className="text-xs font-semibold text-white uppercase tracking-wider">
+              Blocked
+            </span>
           </div>
         </div>
+      )}
 
-        <div className="space-y-1">
-          <p className="font-mono text-lg tracking-wider">
-            {revealed ? "4532 1234 5678 1234" : card.cardNumber}
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <p className="text-xs font-medium text-white/55 uppercase tracking-widest">
+            {card.card_type}
           </p>
-          <p className="text-white/60 text-xs">
-            Expires {String(card.expiryMonth).padStart(2, "0")}/
-            {String(card.expiryYear).slice(-2)}
+          <p className="text-sm font-semibold text-white mt-0.5">Flowlet</p>
+        </div>
+        <Wifi className="h-5 w-5 text-white/40 rotate-90" />
+      </div>
+
+      <div className="mb-5 flex items-center gap-2">
+        <p className="font-mono text-base text-white/80 tracking-[0.2em]">
+          {showNum
+            ? card.card_number_masked
+            : "•••• •••• •••• " + card.card_number_masked.slice(-4)}
+        </p>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowNum((v) => !v);
+          }}
+          className="text-white/40 hover:text-white/80 transition-colors relative z-20"
+        >
+          {showNum ? (
+            <EyeOff className="h-3.5 w-3.5" />
+          ) : (
+            <Eye className="h-3.5 w-3.5" />
+          )}
+        </button>
+      </div>
+
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-[10px] text-white/45 mb-0.5 uppercase tracking-wider">
+            Card Holder
+          </p>
+          <p className="text-sm font-medium text-white">
+            {card.cardholder_name}
           </p>
         </div>
-
-        <div className="flex items-end justify-between">
-          <p className="text-sm font-medium">{card.holderName}</p>
-          {card.balance !== undefined && (
-            <div className="text-right">
-              <p className="text-white/60 text-[10px] uppercase tracking-wide">
-                Balance
-              </p>
-              <p className="font-bold tabular-nums">
-                {revealed
-                  ? `$${card.balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}`
-                  : "••••••"}
-              </p>
-            </div>
-          )}
-          {card.creditLimit !== undefined && (
-            <div className="text-right">
-              <p className="text-white/60 text-[10px] uppercase tracking-wide">
-                Limit
-              </p>
-              <p className="font-bold tabular-nums">
-                ${card.creditLimit.toLocaleString()}
-              </p>
-            </div>
-          )}
+        <div className="text-right">
+          <p className="text-[10px] text-white/45 mb-0.5 uppercase tracking-wider">
+            Expires
+          </p>
+          <p className="text-sm font-medium text-white">
+            {String(card.expiry_month).padStart(2, "0")}/
+            {String(card.expiry_year).slice(-2)}
+          </p>
         </div>
       </div>
+    </button>
+  );
+};
+
+const CardSettings: React.FC<{ card: CardItem }> = ({ card }) => {
+  const dispatch = useAppDispatch();
+  const isBlocked = card.status === "blocked" || card.status === "frozen";
+
+  const handleToggleBlock = async () => {
+    try {
+      await dispatch(
+        toggleCardStatus({
+          cardId: card.id,
+          action: isBlocked ? "unblock" : "block",
+        }),
+      ).unwrap();
+      toast.success(isBlocked ? "Card unblocked" : "Card blocked");
+    } catch {
+      toast.error("Failed to update card status");
+    }
+  };
+
+  const fmt = (n: number) =>
+    n.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    });
+
+  return (
+    <div className="space-y-4">
+      {/* Block/unblock */}
+      <Card>
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-primary" />
+              <p className="text-sm font-medium">Card Control</p>
+            </div>
+            <Badge
+              className={cn(
+                "border-0 text-xs",
+                card.status === "active"
+                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                  : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+              )}
+            >
+              {card.status}
+            </Badge>
+          </div>
+          <Button
+            variant={isBlocked ? "default" : "destructive"}
+            size="sm"
+            className={cn(
+              "w-full",
+              !isBlocked && "bg-red-600 hover:bg-red-700",
+            )}
+            onClick={handleToggleBlock}
+          >
+            {isBlocked ? (
+              <>
+                <Unlock className="h-4 w-4 mr-2" /> Unblock Card
+              </>
+            ) : (
+              <>
+                <Lock className="h-4 w-4 mr-2" /> Block Card
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Limits */}
+      <Card>
+        <CardContent className="p-5">
+          <p className="text-sm font-medium mb-3">Spending Limits</p>
+          <div className="space-y-2.5">
+            {[
+              { label: "Daily limit", value: fmt(card.daily_limit) },
+              { label: "Monthly limit", value: fmt(card.monthly_limit) },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">{label}</span>
+                <span className="text-xs font-semibold">{value}</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Permissions */}
+      <Card>
+        <CardContent className="p-5">
+          <p className="text-sm font-medium mb-3">Permissions</p>
+          <div className="space-y-3.5">
+            {[
+              {
+                id: "contactless",
+                label: "Contactless",
+                value: card.contactless_enabled,
+              },
+              {
+                id: "online",
+                label: "Online Payments",
+                value: card.online_enabled,
+              },
+              {
+                id: "intl",
+                label: "International",
+                value: card.international_enabled,
+              },
+            ].map(({ id, label, value }) => (
+              <div key={id} className="flex items-center justify-between">
+                <Label htmlFor={id} className="text-xs cursor-pointer">
+                  {label}
+                </Label>
+                <Switch id={id} checked={value} disabled />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-const CardsScreen: React.FC<{ cards?: CardData[] }> = ({
-  cards = SAMPLE_CARDS,
-}) => {
-  const [revealedCards, setRevealedCards] = useState<Set<string>>(new Set());
-  const [cardStatuses, setCardStatuses] = useState<
-    Map<string, CardData["status"]>
-  >(new Map(cards.map((c) => [c.id, c.status])));
+const CardsScreen: React.FC = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { cards, isLoading } = useAppSelector((s) => s.wallet);
+  const [activeIdx, setActiveIdx] = useState(0);
 
-  const toggleReveal = (id: string) => {
-    setRevealedCards((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
+  useEffect(() => {
+    dispatch(fetchCards());
+  }, [dispatch]);
 
-  const toggleBlock = (id: string) => {
-    setCardStatuses((prev) => {
-      const next = new Map(prev);
-      const current = next.get(id);
-      next.set(id, current === "blocked" ? "active" : "blocked");
-      return next;
-    });
-    const current = cardStatuses.get(id);
-    toast.success(current === "blocked" ? "Card unblocked" : "Card blocked");
-  };
+  const active = cards[activeIdx];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in-up">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Cards</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Manage your virtual and physical cards
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Manage your payment cards
           </p>
         </div>
-        <Button
-          size="sm"
-          className="gap-1.5"
-          onClick={() => navigate("/cards/issue")}
-        >
-          <Plus className="h-4 w-4" />
-          Issue Card
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => dispatch(fetchCards())}
+          >
+            <RefreshCw className="h-4 w-4 mr-1.5" /> Refresh
+          </Button>
+          <Button
+            size="sm"
+            className="bg-gradient-brand hover:opacity-90"
+            onClick={() => navigate("/cards/issue")}
+          >
+            <Plus className="h-4 w-4 mr-1.5" /> Issue Card
+          </Button>
+        </div>
       </div>
 
-      {/* Summary */}
-      <div className="grid grid-cols-3 gap-4">
-        {[
-          {
-            label: "Total Cards",
-            value: cards.length,
-            icon: CreditCard,
-            color: "text-primary bg-primary/10",
-          },
-          {
-            label: "Active",
-            value: cards.filter((c) => c.status === "active").length,
-            icon: Zap,
-            color:
-              "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30",
-          },
-          {
-            label: "Virtual",
-            value: cards.filter((c) => c.isVirtual).length,
-            icon: Globe,
-            color:
-              "text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/30",
-          },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <Card key={label}>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div
-                  className={cn(
-                    "w-8 h-8 rounded-lg flex items-center justify-center",
-                    color,
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">{label}</p>
-                  <p className="text-lg font-bold tabular-nums">{value}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {isLoading && cards.length === 0 ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1].map((i) => (
+            <Skeleton key={i} className="h-48 rounded-2xl" />
+          ))}
+        </div>
+      ) : cards.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
+            <CreditCard className="h-10 w-10 text-muted-foreground/40" />
+            <p className="font-medium">No cards yet</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Issue your first virtual or physical card to start making
+              payments.
+            </p>
+            <Button
+              size="sm"
+              className="mt-2 bg-gradient-brand hover:opacity-90"
+              onClick={() => navigate("/cards/issue")}
+            >
+              <Plus className="h-4 w-4 mr-1.5" /> Issue a Card
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Card visuals */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {cards.map((card, i) => (
+                <CardVisual
+                  key={card.id}
+                  card={card as CardItem}
+                  active={i === activeIdx}
+                  onClick={() => setActiveIdx(i)}
+                />
+              ))}
+            </div>
+            {active && (
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Card Details</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    {[
+                      { label: "Type", value: active.card_type },
+                      { label: "Status", value: active.status },
+                      {
+                        label: "Issued",
+                        value: new Date(active.created_at).toLocaleDateString(),
+                      },
+                      {
+                        label: "Expires",
+                        value: `${String(active.expiry_month).padStart(2, "0")}/${active.expiry_year}`,
+                      },
+                    ].map(({ label, value }) => (
+                      <div key={label}>
+                        <p className="text-xs text-muted-foreground">{label}</p>
+                        <p className="font-medium capitalize mt-0.5">{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
 
-      {/* Cards list */}
-      <div className="space-y-5 stagger-children">
-        {cards.map((card) => {
-          const status = cardStatuses.get(card.id) ?? card.status;
-          const effectiveCard = { ...card, status };
-          const isRevealed = revealedCards.has(card.id);
-
-          return (
-            <Card key={card.id} className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="p-5">
-                  <VisualCard
-                    card={effectiveCard}
-                    revealed={isRevealed}
-                    onToggleReveal={() => toggleReveal(card.id)}
-                  />
-                </div>
-
-                <div className="px-5 pb-5 flex flex-wrap gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5 text-xs"
-                    onClick={() => toggleReveal(card.id)}
-                  >
-                    {isRevealed ? (
-                      <EyeOff className="h-3.5 w-3.5" />
-                    ) : (
-                      <Eye className="h-3.5 w-3.5" />
-                    )}
-                    {isRevealed ? "Hide" : "Reveal"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn(
-                      "gap-1.5 text-xs",
-                      status === "blocked" &&
-                        "border-emerald-500/30 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20",
-                    )}
-                    onClick={() => toggleBlock(card.id)}
-                    disabled={status === "expired" || status === "inactive"}
-                  >
-                    {status === "blocked" ? (
-                      <>
-                        <Unlock className="h-3.5 w-3.5" />
-                        Unblock
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="h-3.5 w-3.5" />
-                        Block
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5 text-xs"
-                    onClick={() => navigate(`/cards/${card.id}`)}
-                  >
-                    <Settings className="h-3.5 w-3.5" />
-                    Manage
-                  </Button>
-                  {card.isVirtual && (
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] gap-1 ml-auto self-center"
-                    >
-                      <Smartphone className="h-3 w-3" />
-                      Virtual
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+          {/* Settings sidebar */}
+          {active && <CardSettings card={active as CardItem} />}
+        </div>
+      )}
     </div>
   );
 };

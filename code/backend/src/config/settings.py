@@ -24,7 +24,8 @@ def _get_engine_options():
 class Config:
     """Base configuration class with security-focused defaults"""
 
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key-change-in-production"
+    _SECRET_KEY_DEFAULT = "dev-secret-key-change-in-production"  # noqa: S105
+    SECRET_KEY = os.environ.get("SECRET_KEY") or _SECRET_KEY_DEFAULT
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     DEFAULT_DB_PATH = os.path.join(BASE_DIR, "database", "app.db")
     SQLALCHEMY_DATABASE_URI = (
@@ -34,7 +35,7 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = _get_engine_options()
     REDIS_URL = os.environ.get("REDIS_URL") or "redis://localhost:6379/0"
     JWT_SECRET_KEY = (
-        os.environ.get("JWT_SECRET_KEY") or "dev-jwt-secret-change-in-production"
+        os.environ.get("JWT_SECRET_KEY") or "dev-jwt-secret-change-in-production"  # noqa: S105
     )
     JWT_ACCESS_TOKEN_EXPIRES = SecurityConfig.JWT_ACCESS_TOKEN_EXPIRES
     JWT_REFRESH_TOKEN_EXPIRES = SecurityConfig.JWT_REFRESH_TOKEN_EXPIRES
@@ -122,6 +123,18 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_ECHO = False
     SESSION_COOKIE_SECURE = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
+
+    def __init__(self) -> None:
+        import logging
+        _log = logging.getLogger(__name__)
+        if self.SECRET_KEY == self._SECRET_KEY_DEFAULT:
+            _log.warning(
+                "⚠️  Using default SECRET_KEY — set SECRET_KEY env var before deploying."
+            )
+        if self.JWT_SECRET_KEY == "dev-jwt-secret-change-in-production":
+            _log.warning(
+                "⚠️  Using default JWT_SECRET_KEY — set JWT_SECRET_KEY env var before deploying."
+            )
 
 
 class TestingConfig(Config):
