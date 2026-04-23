@@ -331,7 +331,6 @@ deployments/localhost/
 deployments/hardhat/
 broadcast/
 !broadcast/*/31337/
-lib/
 .anchor/
 .openzeppelin/
 flattened/
