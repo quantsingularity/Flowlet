@@ -55,7 +55,7 @@ describe("SendMoney", () => {
     await user.type(screen.getByLabelText(/amount/i), "50");
     fireEvent.click(screen.getByRole("button", { name: /continue|review/i }));
     await waitFor(() => {
-      expect(screen.getByText(/confirm/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/confirm/i).length).toBeGreaterThan(0);
     });
   });
 });

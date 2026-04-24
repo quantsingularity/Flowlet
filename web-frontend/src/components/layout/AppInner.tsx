@@ -93,13 +93,16 @@ const AppInner: React.FC = () => {
         {!isOnline && <OfflineIndicator />}
 
         <Routes>
+          {/* Root: redirect to public homepage */}
+          <Route path="/" element={<Navigate to="/home" replace />} />
+
           {/* Public marketing pages */}
           <Route path="/home" element={<HomePage />} />
           <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/compliance" element={<CompliancePage />} />
           <Route path="/developer" element={<DeveloperPortalPage />} />
 
-          {/* Auth routes — redirect to dashboard if already logged in */}
+          {/* Auth routes — redirect to /dashboard if already logged in */}
           <Route
             path="/login"
             element={
@@ -133,51 +136,52 @@ const AppInner: React.FC = () => {
             }
           />
 
-          {/* Protected app routes */}
+          {/*
+           * Protected app routes via a pathless layout route.
+           * Child paths are absolute (/dashboard, /wallet, etc.) so no existing
+           * navigation links or navigate() calls need to change.
+           */}
           <Route
-            path="/"
             element={
               <ProtectedRoute>
                 <Layout isMobile={isMobile} />
               </ProtectedRoute>
             }
           >
-            <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
 
-            <Route path="wallet" element={<WalletScreen />} />
+            <Route path="/wallet" element={<WalletScreen />} />
             <Route
-              path="wallet/transactions"
+              path="/wallet/transactions"
               element={<TransactionHistory />}
             />
-            <Route path="wallet/send" element={<SendMoney />} />
-            <Route path="wallet/receive" element={<ReceiveMoney />} />
+            <Route path="/wallet/send" element={<SendMoney />} />
+            <Route path="/wallet/receive" element={<ReceiveMoney />} />
 
-            {/* Specific card routes must come before parameterised :cardId */}
-            <Route path="cards" element={<CardsScreen />} />
-            <Route path="cards/issue" element={<IssueCard />} />
-            <Route path="cards/:cardId" element={<CardDetails />} />
+            <Route path="/cards" element={<CardsScreen />} />
+            <Route path="/cards/issue" element={<IssueCard />} />
+            <Route path="/cards/:cardId" element={<CardDetails />} />
 
-            <Route path="analytics" element={<AnalyticsScreen />} />
-            <Route path="financial-planning" element={<BudgetingScreen />} />
-            <Route path="budgeting" element={<BudgetingScreen />} />
+            <Route path="/analytics" element={<AnalyticsScreen />} />
+            <Route path="/financial-planning" element={<BudgetingScreen />} />
+            <Route path="/budgeting" element={<BudgetingScreen />} />
 
-            <Route path="chat" element={<ChatbotScreen />} />
-            <Route path="alerts" element={<FraudAlerts />} />
+            <Route path="/chat" element={<ChatbotScreen />} />
+            <Route path="/alerts" element={<FraudAlerts />} />
             <Route
-              path="fraud-detection"
+              path="/fraud-detection"
               element={<AIFraudDetectionScreen />}
             />
 
-            <Route path="security" element={<SecurityScreen />} />
+            <Route path="/security" element={<SecurityScreen />} />
             <Route
-              path="security/advanced"
+              path="/security/advanced"
               element={<EnhancedSecurityScreen />}
             />
-            <Route path="workflows" element={<WorkflowMain />} />
-            <Route path="settings" element={<SettingsScreen />} />
-            <Route path="profile" element={<ProfilePage />} />
-            <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="/workflows" element={<WorkflowMain />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

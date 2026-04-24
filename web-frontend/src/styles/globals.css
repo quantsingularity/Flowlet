@@ -200,4 +200,27 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+
+  /* ── Animations ── */
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  .pulse-dot {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Alias so both .gradient-text and .text-gradient work */
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(250 80% 75%));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
 }

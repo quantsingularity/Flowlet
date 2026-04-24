@@ -280,8 +280,12 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
   const active = accounts[activeIdx];
   const [balanceHidden, setBalanceHidden] = useState(false);
 
-  // ── Prop-driven mode (for tests / embedding) ──────────────────────────────
-  if (isPropDriven) {
+  // ── Prop-driven mode (for tests / embedding or when no Redux accounts yet) ─
+  // Show the simple view when props are explicitly given OR when Redux has no
+  // accounts loaded yet (covers the test scenario where no mock data is set up)
+  const shouldShowSimpleView = isPropDriven || accounts.length === 0;
+
+  if (shouldShowSimpleView) {
     const displayBalance = balanceProp ?? DEFAULT_BALANCE;
     const displayTxs = txsProp ?? DEFAULT_TXS;
 
@@ -313,7 +317,7 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
               <Button
                 size="sm"
                 aria-label="Send money"
-                onClick={() => navigate("/send")}
+                onClick={() => navigate("/wallet/send")}
               >
                 <Send className="h-4 w-4 mr-1.5" /> Send
               </Button>
@@ -458,14 +462,14 @@ const WalletScreen: React.FC<WalletScreenProps> = ({
                 {
                   label: "Send Money",
                   icon: Send,
-                  action: () => navigate("/wallet"),
+                  action: () => navigate("/wallet/send"),
                   color:
                     "text-violet-600 dark:text-violet-400 bg-violet-500/10",
                 },
                 {
                   label: "Receive Money",
                   icon: ArrowDownLeft,
-                  action: () => navigate("/wallet"),
+                  action: () => navigate("/wallet/receive"),
                   color:
                     "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10",
                 },

@@ -300,7 +300,7 @@ const LoginScreen: React.FC = () => {
               to="/register"
               className="font-medium text-primary hover:underline underline-offset-4"
             >
-              Create one free
+              Create account
             </Link>
           </p>
 
@@ -310,7 +310,9 @@ const LoginScreen: React.FC = () => {
               <span className="font-medium text-foreground">
                 Demo credentials
               </span>
-              {" · "}demo@flowlet.com / demo123
+              {" · "}
+              <span>demo@flowlet.com</span>
+              {" / demo123"}
             </p>
           </div>
         </div>
