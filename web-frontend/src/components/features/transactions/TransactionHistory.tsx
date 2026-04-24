@@ -172,7 +172,9 @@ const TransactionHistory: React.FC<{ transactions?: Transaction[] }> = ({
     <div className="space-y-5 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Transaction History
+          </h1>
           <p className="text-muted-foreground text-sm mt-1">
             {filtered.length} transaction{filtered.length !== 1 ? "s" : ""}{" "}
             found

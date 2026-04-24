@@ -6,10 +6,11 @@ import authReducer, {
   setLoading,
 } from "@/store/authSlice";
 
-const makeStore = (preloaded = {}) =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const makeStore = (preloaded?: any) =>
   configureStore({
     reducer: { auth: authReducer },
-    preloadedState: { auth: preloaded },
+    ...(preloaded ? { preloadedState: { auth: preloaded } } : {}),
   });
 
 describe("authSlice", () => {

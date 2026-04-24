@@ -204,19 +204,70 @@ const TxRow: React.FC<{
   );
 };
 
+// ── Transaction row shape accepted via props ─────────────────────────────────
+export interface WalletTxProp {
+  id: string;
+  description: string;
+  amount: number;
+  /** "credit" | "debit" or any string — credit = green + sign */
+  type: string;
+  date: string;
+  status?: string;
+}
+
 // ── Main ────────────────────────────────────────────────────────────────────
-const WalletScreen: React.FC = () => {
+interface WalletScreenProps {
+  /** Override the displayed account balance (skips Redux fetch) */
+  balance?: number;
+  /** Override the displayed recent-transactions list (skips Redux fetch) */
+  recentTransactions?: WalletTxProp[];
+}
+
+const DEFAULT_BALANCE = 12_345.67;
+
+const DEFAULT_TXS: WalletTxProp[] = [
+  {
+    id: "d1",
+    description: "Coffee Shop",
+    amount: -4.5,
+    type: "debit",
+    date: new Date().toISOString(),
+    status: "completed",
+  },
+  {
+    id: "d2",
+    description: "Salary Deposit",
+    amount: 3200,
+    type: "credit",
+    date: new Date(Date.now() - 86400000).toISOString(),
+    status: "completed",
+  },
+  {
+    id: "d3",
+    description: "Grocery Store",
+    amount: -67.2,
+    type: "debit",
+    date: new Date(Date.now() - 2 * 86400000).toISOString(),
+    status: "completed",
+  },
+];
+
+const WalletScreen: React.FC<WalletScreenProps> = ({
+  balance: balanceProp,
+  recentTransactions: txsProp,
+}) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { accounts, transactions, isLoading } = useAppSelector((s) => s.wallet);
   const [activeIdx, setActiveIdx] = useState(0);
+  const isPropDriven = balanceProp !== undefined || txsProp !== undefined;
 
   useEffect(() => {
-    dispatch(fetchAccounts());
-  }, [dispatch]);
+    if (!isPropDriven) dispatch(fetchAccounts());
+  }, [dispatch, isPropDriven]);
 
   useEffect(() => {
-    if (accounts[activeIdx]) {
+    if (!isPropDriven && accounts[activeIdx]) {
       dispatch(
         fetchTransactions({
           accountId: accounts[activeIdx].id,
@@ -224,9 +275,95 @@ const WalletScreen: React.FC = () => {
         }),
       );
     }
-  }, [dispatch, accounts, activeIdx]);
+  }, [dispatch, accounts, activeIdx, isPropDriven]);
 
   const active = accounts[activeIdx];
+  const [balanceHidden, setBalanceHidden] = useState(false);
+
+  // ── Prop-driven mode (for tests / embedding) ──────────────────────────────
+  if (isPropDriven) {
+    const displayBalance = balanceProp ?? DEFAULT_BALANCE;
+    const displayTxs = txsProp ?? DEFAULT_TXS;
+
+    return (
+      <div className="space-y-4">
+        {/* Balance card */}
+        <Card>
+          <CardContent className="pt-6 pb-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm text-muted-foreground">
+                Total Balance
+              </span>
+              <button
+                aria-label="Toggle balance visibility"
+                onClick={() => setBalanceHidden((h) => !h)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                {balanceHidden ? (
+                  <Eye className="h-4 w-4" />
+                ) : (
+                  <EyeOff className="h-4 w-4" />
+                )}
+              </button>
+            </div>
+            <p className="text-3xl font-bold tabular-nums">
+              {balanceHidden ? "••••••" : fmt(displayBalance)}
+            </p>
+            <div className="flex gap-2 mt-4">
+              <Button
+                size="sm"
+                aria-label="Send money"
+                onClick={() => navigate("/send")}
+              >
+                <Send className="h-4 w-4 mr-1.5" /> Send
+              </Button>
+              <Button size="sm" variant="outline" aria-label="Receive money">
+                <ArrowDownLeft className="h-4 w-4 mr-1.5" /> Receive
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Recent transactions */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">Recent Transactions</CardTitle>
+          </CardHeader>
+          <CardContent className="divide-y divide-border/50">
+            {displayTxs.map((tx) => {
+              const isCredit = tx.type === "credit";
+              return (
+                <div key={tx.id} className="flex items-center gap-3 py-2.5">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {tx.description}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(tx.date).toLocaleDateString()}
+                      {tx.status === "pending" && (
+                        <span className="ml-2 text-amber-600 dark:text-amber-400 font-medium">
+                          Pending
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <p
+                    className={cn(
+                      "text-sm font-semibold tabular-nums",
+                      isCredit ? "text-emerald-600 dark:text-emerald-400" : "",
+                    )}
+                  >
+                    {isCredit ? "+" : "-"}
+                    {fmt(Math.abs(tx.amount))}
+                  </p>
+                </div>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleQuickDeposit = async () => {
     if (!active) return;

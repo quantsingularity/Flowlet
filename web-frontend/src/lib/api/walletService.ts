@@ -1,5 +1,5 @@
 // Wallet service — wraps /api/v1/accounts/*, /api/v1/cards/*, /api/v1/analytics/*
-import { apiFetch } from "./client";
+import { apiFetch, TokenManager } from "./client";
 
 // ---------------------------------------------------------------------------
 // Exported types (consumed by walletSlice.ts)
@@ -95,13 +95,173 @@ interface SpendingAnalytics {
 }
 
 // ---------------------------------------------------------------------------
+// Demo mode helpers
+// ---------------------------------------------------------------------------
+const isDemoMode = (): boolean => {
+  const token = TokenManager.getAccessToken();
+  return token?.startsWith("demo.") ?? false;
+};
+
+const NOW = new Date().toISOString();
+const D1 = new Date(Date.now() - 86_400_000).toISOString();
+const D3 = new Date(Date.now() - 3 * 86_400_000).toISOString();
+const D7 = new Date(Date.now() - 7 * 86_400_000).toISOString();
+
+const DEMO_ACCOUNTS: Account[] = [
+  {
+    id: "demo-acc-001",
+    user_id: "demo-user-001",
+    account_number: "4532 •••• •••• 1234",
+    account_type: "checking",
+    currency: "USD",
+    balance: 12_450.75,
+    available_balance: 12_200.0,
+    status: "active",
+    daily_limit: 5_000,
+    monthly_limit: 50_000,
+    created_at: D7,
+    updated_at: NOW,
+  },
+  {
+    id: "demo-acc-002",
+    user_id: "demo-user-001",
+    account_number: "5678 •••• •••• 5678",
+    account_type: "savings",
+    currency: "USD",
+    balance: 28_930.2,
+    available_balance: 28_930.2,
+    status: "active",
+    daily_limit: 10_000,
+    monthly_limit: 100_000,
+    created_at: D7,
+    updated_at: NOW,
+  },
+];
+
+const DEMO_TRANSACTIONS: Transaction[] = [
+  {
+    id: "demo-tx-001",
+    account_id: "demo-acc-001",
+    type: "deposit",
+    amount: 3_200.0,
+    currency: "USD",
+    status: "completed",
+    description: "Salary — April 2026",
+    created_at: D1,
+    updated_at: D1,
+  },
+  {
+    id: "demo-tx-002",
+    account_id: "demo-acc-001",
+    type: "payment",
+    amount: 89.99,
+    currency: "USD",
+    status: "completed",
+    description: "Netflix subscription",
+    created_at: D1,
+    updated_at: D1,
+  },
+  {
+    id: "demo-tx-003",
+    account_id: "demo-acc-001",
+    type: "payment",
+    amount: 234.5,
+    currency: "USD",
+    status: "completed",
+    description: "Grocery store",
+    created_at: D3,
+    updated_at: D3,
+  },
+  {
+    id: "demo-tx-004",
+    account_id: "demo-acc-001",
+    type: "transfer",
+    amount: 500.0,
+    currency: "USD",
+    status: "completed",
+    description: "Transfer to savings",
+    to_account_id: "demo-acc-002",
+    created_at: D3,
+    updated_at: D3,
+  },
+  {
+    id: "demo-tx-005",
+    account_id: "demo-acc-001",
+    type: "payment",
+    amount: 45.0,
+    currency: "USD",
+    status: "pending",
+    description: "Coffee shop",
+    created_at: NOW,
+    updated_at: NOW,
+  },
+  {
+    id: "demo-tx-006",
+    account_id: "demo-acc-001",
+    type: "deposit",
+    amount: 150.0,
+    currency: "USD",
+    status: "completed",
+    description: "Freelance payment",
+    created_at: D7,
+    updated_at: D7,
+  },
+  {
+    id: "demo-tx-007",
+    account_id: "demo-acc-001",
+    type: "payment",
+    amount: 12.99,
+    currency: "USD",
+    status: "completed",
+    description: "Spotify",
+    created_at: D7,
+    updated_at: D7,
+  },
+  {
+    id: "demo-tx-008",
+    account_id: "demo-acc-001",
+    type: "payment",
+    amount: 78.6,
+    currency: "USD",
+    status: "completed",
+    description: "Electric bill",
+    created_at: D7,
+    updated_at: D7,
+  },
+];
+
+const DEMO_CARDS: Card[] = [
+  {
+    id: "demo-card-001",
+    account_id: "demo-acc-001",
+    card_number_masked: "•••• •••• •••• 4242",
+    card_type: "debit",
+    status: "active",
+    expiry_month: 12,
+    expiry_year: 2028,
+    cardholder_name: "Demo User",
+    daily_limit: 2_000,
+    monthly_limit: 10_000,
+    contactless_enabled: true,
+    online_enabled: true,
+    international_enabled: false,
+    created_at: D7,
+  },
+];
+
+// ---------------------------------------------------------------------------
 // walletService
 // ---------------------------------------------------------------------------
 export const walletService = {
   // ----- Accounts -----------------------------------------------------------
   async getAccounts(): Promise<Account[]> {
-    const data = await apiFetch<AccountsResponse>("/accounts/");
-    return data.accounts ?? [];
+    if (isDemoMode()) return DEMO_ACCOUNTS;
+    try {
+      const data = await apiFetch<AccountsResponse>("/accounts/");
+      return data.accounts ?? [];
+    } catch {
+      return DEMO_ACCOUNTS;
+    }
   },
 
   async getAccount(accountId: string): Promise<Account> {
@@ -123,12 +283,28 @@ export const walletService = {
     accountId: string,
     filters?: TransactionFilters,
   ): Promise<TransactionsResponse> {
-    const params = filters
-      ? "?" + new URLSearchParams(filters as Record<string, string>).toString()
-      : "";
-    return apiFetch<TransactionsResponse>(
-      `/accounts/${accountId}/transactions${params}`,
-    );
+    if (isDemoMode()) {
+      const txs = DEMO_TRANSACTIONS.filter(
+        (t) => t.account_id === accountId || accountId === "demo-acc-001",
+      );
+      return { data: txs, total: txs.length, page: 1, per_page: txs.length };
+    }
+    try {
+      const params = filters
+        ? "?" +
+          new URLSearchParams(filters as Record<string, string>).toString()
+        : "";
+      return apiFetch<TransactionsResponse>(
+        `/accounts/${accountId}/transactions${params}`,
+      );
+    } catch {
+      return {
+        data: DEMO_TRANSACTIONS,
+        total: DEMO_TRANSACTIONS.length,
+        page: 1,
+        per_page: DEMO_TRANSACTIONS.length,
+      };
+    }
   },
 
   async depositFunds(body: {
@@ -177,8 +353,13 @@ export const walletService = {
 
   // ----- Cards --------------------------------------------------------------
   async getCards(): Promise<Card[]> {
-    const data = await apiFetch<{ cards: Card[] }>("/cards/");
-    return data.cards ?? [];
+    if (isDemoMode()) return DEMO_CARDS;
+    try {
+      const data = await apiFetch<{ cards: Card[] }>("/cards/");
+      return data.cards ?? [];
+    } catch {
+      return DEMO_CARDS;
+    }
   },
 
   async getCard(cardId: string): Promise<Card> {
@@ -211,23 +392,51 @@ export const walletService = {
 
   // ----- Dashboard & Analytics ----------------------------------------------
   async getAccountSummary(): Promise<DashboardSummary> {
+    if (isDemoMode()) {
+      const totalBalance = DEMO_ACCOUNTS.reduce((s, a) => s + a.balance, 0);
+      const income = DEMO_TRANSACTIONS.filter(
+        (t) => t.type === "deposit",
+      ).reduce((s, t) => s + t.amount, 0);
+      const spending = DEMO_TRANSACTIONS.filter(
+        (t) => t.type !== "deposit",
+      ).reduce((s, t) => s + t.amount, 0);
+      return {
+        total_balance: totalBalance,
+        total_accounts: DEMO_ACCOUNTS.length,
+        total_cards: DEMO_CARDS.length,
+        recent_transactions: DEMO_TRANSACTIONS.slice(0, 5),
+        monthly_spending: spending,
+        monthly_income: income,
+      };
+    }
     // Aggregate from accounts + cards endpoints when a dedicated summary
     // endpoint is not available
     try {
       return await apiFetch<DashboardSummary>("/analytics/summary");
     } catch {
       // Fallback: build summary from accounts list
-      const accounts = await walletService.getAccounts();
-      const cards = await walletService.getCards();
-      const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
-      return {
-        total_balance: totalBalance,
-        total_accounts: accounts.length,
-        total_cards: cards.length,
-        recent_transactions: [],
-        monthly_spending: 0,
-        monthly_income: 0,
-      };
+      try {
+        const accounts = await walletService.getAccounts();
+        const cards = await walletService.getCards();
+        const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+        return {
+          total_balance: totalBalance,
+          total_accounts: accounts.length,
+          total_cards: cards.length,
+          recent_transactions: [],
+          monthly_spending: 0,
+          monthly_income: 0,
+        };
+      } catch {
+        return {
+          total_balance: 0,
+          total_accounts: 0,
+          total_cards: 0,
+          recent_transactions: [],
+          monthly_spending: 0,
+          monthly_income: 0,
+        };
+      }
     }
   },
 

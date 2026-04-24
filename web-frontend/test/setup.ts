@@ -49,14 +49,22 @@ Object.defineProperty(window, "matchMedia", {
   }),
 });
 
-// Mock navigator.clipboard
+// Mock navigator.clipboard — configurable so @testing-library/user-event can stub it
 Object.defineProperty(navigator, "clipboard", {
   value: {
     writeText: vi.fn().mockResolvedValue(undefined),
     readText: vi.fn().mockResolvedValue(""),
   },
   writable: true,
+  configurable: true,
 });
+
+// Mock ResizeObserver — required by @radix-ui/react-use-size (Select, Popover etc.)
+globalThis.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 // Suppress expected console noise in tests
 const originalError = console.error;
@@ -73,7 +81,6 @@ console.error = (...args: unknown[]) => {
 };
 
 // Global request animation frame mock
-globalThis.requestAnimationFrame = (callback: FrameRequestCallback) => {
-  return setTimeout(() => callback(Date.now()), 16) as unknown as number;
-};
+globalThis.requestAnimationFrame = (callback: FrameRequestCallback) =>
+  setTimeout(() => callback(Date.now()), 16) as unknown as number;
 globalThis.cancelAnimationFrame = (id: number) => clearTimeout(id);

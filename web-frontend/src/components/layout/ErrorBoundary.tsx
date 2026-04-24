@@ -18,6 +18,7 @@ interface State {
   hasError: boolean;
   error?: Error;
   errorInfo?: ErrorInfo;
+  erroredChildrenRef?: ReactNode;
 }
 
 class ErrorBoundary extends Component<Props, State> {
@@ -26,20 +27,44 @@ class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     return { hasError: true, error };
+  }
+
+  static getDerivedStateFromProps(
+    props: Props,
+    state: State,
+  ): Partial<State> | null {
+    if (
+      state.hasError &&
+      state.erroredChildrenRef !== undefined &&
+      props.children !== state.erroredChildrenRef
+    ) {
+      return {
+        hasError: false,
+        error: undefined,
+        errorInfo: undefined,
+        erroredChildrenRef: undefined,
+      };
+    }
+    return null;
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("ErrorBoundary caught an error:", error, errorInfo);
-    this.setState({ error, errorInfo });
+    this.setState({ errorInfo, erroredChildrenRef: this.props.children });
     if (import.meta.env.PROD) {
       // Send to error reporting service in production
     }
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: undefined, errorInfo: undefined });
+    this.setState({
+      hasError: false,
+      error: undefined,
+      errorInfo: undefined,
+      erroredChildrenRef: undefined,
+    });
   };
 
   handleReload = () => window.location.reload();

@@ -374,7 +374,7 @@ const SendMoney: React.FC<SendMoneyProps> = ({
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!isValid || insufficientFunds}
+                disabled={isLoading || insufficientFunds}
               >
                 <Send className="mr-2 h-4 w-4" />
                 Review & Send

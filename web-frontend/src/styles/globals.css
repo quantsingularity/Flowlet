@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* ── Tailwind v4: use class-based dark mode (html.dark) instead of media query ── */
+@variant dark (&:where(.dark, .dark *));
+
 /* ============================================================
    FLOWLET DESIGN SYSTEM — Modern Fintech v2
    ============================================================ */

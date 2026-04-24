@@ -21,6 +21,26 @@ export class TokenManager {
     }
   }
 
+  /** Convenience setter for a single access token (alias for setTokens) */
+  static setAccessToken(token: string): void {
+    TokenManager.accessToken = token;
+    try {
+      sessionStorage.setItem("flowlet_access_token", token);
+    } catch {
+      /* storage unavailable */
+    }
+  }
+
+  /** Convenience setter for a single refresh token */
+  static setRefreshToken(token: string): void {
+    TokenManager.refreshToken = token;
+    try {
+      sessionStorage.setItem("flowlet_refresh_token", token);
+    } catch {
+      /* storage unavailable */
+    }
+  }
+
   static getAccessToken(): string | null {
     if (TokenManager.accessToken) return TokenManager.accessToken;
     try {
@@ -43,18 +63,41 @@ export class TokenManager {
     }
   }
 
+  /** Store user data, stripping any password field */
+  static setUser(user: Record<string, unknown>): void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...safeUser } = user;
+    try {
+      sessionStorage.setItem("flowlet_user", JSON.stringify(safeUser));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  static getUser(): Record<string, unknown> | null {
+    try {
+      const raw = sessionStorage.getItem("flowlet_user");
+      return raw ? (JSON.parse(raw) as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  }
+
   static clearTokens(): void {
     TokenManager.accessToken = null;
     TokenManager.refreshToken = null;
     try {
       sessionStorage.removeItem("flowlet_access_token");
       sessionStorage.removeItem("flowlet_refresh_token");
+      sessionStorage.removeItem("flowlet_user");
     } catch {
       /* ignore */
     }
   }
 
   static isTokenExpired(token: string): boolean {
+    // Demo tokens are never expired
+    if (token.startsWith("demo.")) return false;
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       return Date.now() >= payload.exp * 1000;

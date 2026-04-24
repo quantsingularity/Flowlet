@@ -1,7 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 import WalletScreen from "@/components/features/wallet/WalletScreen";
+import walletReducer from "@/store/walletSlice";
+import authReducer from "@/store/authSlice";
+import uiReducer from "@/store/uiSlice";
+import transactionReducer from "@/store/transactionSlice";
 
 vi.mock("sonner", () => ({ toast: { success: vi.fn(), error: vi.fn() } }));
 vi.mock("react-router-dom", async () => {
@@ -9,12 +15,28 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => vi.fn() };
 });
 
-const renderWallet = (props = {}) =>
-  render(
-    <MemoryRouter>
-      <WalletScreen {...props} />
-    </MemoryRouter>,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const makeStore = () =>
+  configureStore({
+    reducer: {
+      auth: authReducer,
+      ui: uiReducer,
+      wallet: walletReducer,
+      transactions: transactionReducer,
+    },
+  });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const renderWallet = (props: any = {}) => {
+  const store = makeStore();
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <WalletScreen {...props} />
+      </MemoryRouter>
+    </Provider>,
   );
+};
 
 describe("WalletScreen", () => {
   it("renders account balance", () => {

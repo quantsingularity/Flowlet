@@ -150,6 +150,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isMobile, onClose }) => {
         {isMobile && (
           <button
             onClick={onClose}
+            aria-label="Close sidebar"
             className="rounded-lg p-1.5 text-sidebar-foreground/60 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
           >
             <X className="h-4 w-4" />
@@ -222,7 +223,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, isMobile, onClose }) => {
   }
 
   return (
-    <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:shrink-0 border-r border-sidebar-border/40">
+    <aside
+      className={cn(
+        "hidden lg:flex lg:flex-col lg:shrink-0 border-r border-sidebar-border/40 transition-all duration-300 ease-out overflow-hidden",
+        isOpen ? "lg:w-64" : "w-0",
+      )}
+    >
       {sidebarContent}
     </aside>
   );
