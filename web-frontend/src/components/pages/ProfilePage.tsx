@@ -53,7 +53,7 @@ const ProfilePage: React.FC = () => {
     toast.success("Profile updated successfully");
   };
 
-  const kycBadgeVariant =
+  const kycBadgeVariant: "success" | "warning" | "destructive" | "secondary" =
     user?.kycStatus === "completed"
       ? "success"
       : user?.kycStatus === "in_progress"
@@ -104,7 +104,7 @@ const ProfilePage: React.FC = () => {
               <h2 className="text-xl font-semibold">{displayName}</h2>
               <p className="text-muted-foreground text-sm">{user?.email}</p>
               <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                <Badge variant={kycBadgeVariant as any}>
+                <Badge variant={kycBadgeVariant}>
                   <Shield className="h-3 w-3 mr-1" />
                   KYC {kycLabel}
                 </Badge>

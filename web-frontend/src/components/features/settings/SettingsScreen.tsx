@@ -1,14 +1,4 @@
-import {
-  Bell,
-  Eye,
-  Globe,
-  Lock,
-  Moon,
-  Palette,
-  Shield,
-  Sun,
-  User,
-} from "lucide-react";
+import { Bell, Eye, Globe, Lock, Palette, Shield, User } from "lucide-react";
 import React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -30,16 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { useAuth } from "@/hooks/useAuth";
-import { setTheme } from "@/store/uiSlice";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 
 const SettingsScreen: React.FC = () => {
-  const dispatch = useAppDispatch();
   const { user } = useAuth();
-  const theme = useAppSelector((state) => state.ui.theme);
 
   const [notifications, setNotifications] = useState({
     transactions: true,
@@ -79,9 +65,9 @@ const SettingsScreen: React.FC = () => {
             <User className="h-3 w-3" />
             Profile
           </TabsTrigger>
-          <TabsTrigger value="appearance" className="text-xs gap-1.5">
+          <TabsTrigger value="display" className="text-xs gap-1.5">
             <Palette className="h-3 w-3" />
-            Appearance
+            Display
           </TabsTrigger>
           <TabsTrigger value="notifications" className="text-xs gap-1.5">
             <Bell className="h-3 w-3" />
@@ -169,48 +155,16 @@ const SettingsScreen: React.FC = () => {
           </Card>
         </TabsContent>
 
-        {/* Appearance Tab */}
-        <TabsContent value="appearance">
+        {/* Display Tab */}
+        <TabsContent value="display">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Appearance</CardTitle>
+              <CardTitle className="text-base">Display Preferences</CardTitle>
               <CardDescription className="text-xs">
-                Customize how Flowlet looks
+                Customize how Flowlet presents your data
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
-              <div>
-                <Label className="text-sm font-medium mb-3 block">Theme</Label>
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { value: "light", label: "Light", icon: Sun },
-                    { value: "dark", label: "Dark", icon: Moon },
-                    { value: "system", label: "System", icon: Eye },
-                  ].map(({ value, label, icon: Icon }) => (
-                    <button
-                      key={value}
-                      onClick={() =>
-                        dispatch(setTheme(value as "light" | "dark" | "system"))
-                      }
-                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
-                        theme === value
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/40"
-                      }`}
-                    >
-                      <Icon
-                        className={`h-5 w-5 ${theme === value ? "text-primary" : "text-muted-foreground"}`}
-                      />
-                      <span
-                        className={`text-xs font-medium ${theme === value ? "text-primary" : "text-muted-foreground"}`}
-                      >
-                        {label}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="space-y-1.5">
                 <Label>Currency Display</Label>
                 <Select defaultValue="USD">

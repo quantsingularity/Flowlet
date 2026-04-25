@@ -360,10 +360,14 @@ export function SecurityMonitor({
               Security Events
             </CardTitle>
             <div className="flex space-x-2">
-              {["all", "critical", "high", "medium", "low"].map((severity) => (
+              {(
+                ["all", "critical", "high", "medium", "low"] as Array<
+                  "all" | "critical" | "high" | "medium" | "low"
+                >
+              ).map((severity) => (
                 <Button
                   key={severity}
-                  onClick={() => setFilter(severity as any)}
+                  onClick={() => setFilter(severity)}
                   size="sm"
                   variant={filter === severity ? "default" : "outline"}
                   className="capitalize"

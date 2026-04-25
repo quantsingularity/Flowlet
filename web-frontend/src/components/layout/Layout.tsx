@@ -28,22 +28,22 @@ const Layout: React.FC<LayoutProps> = ({ isMobile }) => {
     <div className="min-h-screen bg-background">
       <Header onMenuClick={handleSidebarToggle} isMobile={isMobile} />
 
-      <Sidebar
-        isOpen={isOpen}
-        isMobile={isMobile}
-        onClose={() => dispatch(setMobileMenuOpen(false))}
-      />
+      {/* Body: sidebar + main content side-by-side */}
+      <div className="flex min-h-[calc(100vh-4rem)]">
+        <Sidebar
+          isOpen={isOpen}
+          isMobile={isMobile}
+          onClose={() => dispatch(setMobileMenuOpen(false))}
+        />
 
-      <main
-        className={cn(
-          "transition-all duration-300 ease-out pt-16",
-          !isMobile && sidebarOpen ? "ml-64" : "ml-0",
-        )}
-      >
-        <div className="p-4 md:p-6 max-w-7xl mx-auto">
-          <Outlet />
-        </div>
-      </main>
+        <main
+          className={cn("flex-1 min-w-0 transition-all duration-300 ease-out")}
+        >
+          <div className="p-4 md:p-6 max-w-7xl mx-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
     </div>
   );
 };

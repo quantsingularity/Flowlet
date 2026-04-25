@@ -164,8 +164,10 @@ const TransactionHistory: React.FC<{ transactions?: Transaction[] }> = ({
     const a = document.createElement("a");
     a.href = url;
     a.download = "transactions.csv";
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   };
 
   return (

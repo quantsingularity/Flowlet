@@ -13,7 +13,7 @@ import type {
 import type { RootState } from "./index";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseUrl: import.meta.env.VITE_API_BASE_URL || "/api/v1",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.token;
     if (token) {

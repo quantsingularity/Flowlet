@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
 import uiReducer, {
-  setTheme,
   toggleSidebar,
   setSidebarOpen,
   addNotification,
@@ -16,14 +15,6 @@ import uiReducer, {
 const makeStore = () => configureStore({ reducer: { ui: uiReducer } });
 
 describe("uiSlice", () => {
-  it("setTheme updates theme", () => {
-    const store = makeStore();
-    store.dispatch(setTheme("dark"));
-    expect(store.getState().ui.theme).toBe("dark");
-    store.dispatch(setTheme("light"));
-    expect(store.getState().ui.theme).toBe("light");
-  });
-
   it("toggleSidebar flips sidebarOpen", () => {
     const store = makeStore();
     const initial = store.getState().ui.sidebarOpen;

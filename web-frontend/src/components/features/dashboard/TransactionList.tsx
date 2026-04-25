@@ -128,14 +128,20 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions }) => {
 };
 
 function formatDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  const today = new Date();
-  const yesterday = new Date(today);
+  const inputDate = dateStr.slice(0, 10);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
 
-  if (date.toDateString() === today.toDateString()) return "Today";
-  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  if (inputDate === todayStr) return "Today";
+  if (inputDate === yesterdayStr) return "Yesterday";
+
+  const [year, month, day] = inputDate.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
 }
 
 export default TransactionList;

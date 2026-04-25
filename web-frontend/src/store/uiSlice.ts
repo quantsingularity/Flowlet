@@ -1,10 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Notification } from "@/types";
 
-type Theme = "light" | "dark" | "system";
-
 interface UIState {
-  theme: Theme;
   sidebarOpen: boolean;
   mobileMenuOpen: boolean;
   notifications: Notification[];
@@ -26,20 +23,7 @@ interface UIState {
   }>;
 }
 
-// Restore persisted theme from localStorage on store init
-const getInitialTheme = (): Theme => {
-  try {
-    const saved = localStorage.getItem("flowlet_theme");
-    if (saved === "light" || saved === "dark" || saved === "system")
-      return saved;
-  } catch {
-    // ignore
-  }
-  return "system";
-};
-
 const initialState: UIState = {
-  theme: getInitialTheme(),
   sidebarOpen: true,
   mobileMenuOpen: false,
   notifications: [],
@@ -57,9 +41,6 @@ const uiSlice = createSlice({
   name: "ui",
   initialState,
   reducers: {
-    setTheme: (state, action: PayloadAction<Theme>) => {
-      state.theme = action.payload;
-    },
     toggleSidebar: (state) => {
       state.sidebarOpen = !state.sidebarOpen;
     },
@@ -142,7 +123,6 @@ const uiSlice = createSlice({
 });
 
 export const {
-  setTheme,
   toggleSidebar,
   setSidebarOpen,
   toggleMobileMenu,

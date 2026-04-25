@@ -21,7 +21,11 @@ export const ROUTES = {
   FRAUD_DETECTION: "/fraud-detection",
   SECURITY: "/security",
   SECURITY_ADVANCED: "/security/advanced",
+  WORKFLOWS: "/workflows",
   SETTINGS: "/settings",
+  PROFILE: "/profile",
+  NOTIFICATIONS: "/notifications",
+  FINANCIAL_PLANNING: "/financial-planning",
 } as const;
 
 export const CURRENCIES = [

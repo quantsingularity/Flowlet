@@ -443,7 +443,7 @@ export function SecurityDashboard({
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+          setTimeout(() => URL.revokeObjectURL(url), 100);
 
           setState((prev) => ({
             ...prev,
@@ -581,7 +581,10 @@ export function SecurityDashboard({
               <Select
                 value={state.timeRange}
                 onValueChange={(value) =>
-                  setState((prev) => ({ ...prev, timeRange: value as any }))
+                  setState((prev) => ({
+                    ...prev,
+                    timeRange: value as "1h" | "24h" | "7d" | "30d",
+                  }))
                 }
               >
                 <SelectTrigger className="w-32">

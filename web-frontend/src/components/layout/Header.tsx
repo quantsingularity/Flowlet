@@ -1,16 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Bell,
-  LogOut,
-  Menu,
-  Monitor,
-  Moon,
-  Search,
-  Sun,
-  User,
-  X,
-} from "lucide-react";
+import { Bell, LogOut, Menu, Monitor, Search, User, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,16 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { useAuth } from "@/hooks/useAuth";
 import { logoutUser } from "@/store/authSlice";
-import { setTheme } from "@/store/uiSlice";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -41,12 +27,10 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { theme, unreadNotifications } = useAppSelector((state) => state.ui);
+  const { unreadNotifications } = useAppSelector((state) => state.ui);
   const [searchOpen, setSearchOpen] = useState(false);
 
   const handleLogout = () => dispatch(logoutUser());
-  const handleThemeChange = (newTheme: "light" | "dark" | "system") =>
-    dispatch(setTheme(newTheme));
 
   const initials = user
     ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() ||
@@ -114,41 +98,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick, isMobile }) => {
             </Badge>
           )}
         </Button>
-
-        {/* Theme picker */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              {theme === "dark" ? (
-                <Moon className="h-4 w-4" />
-              ) : theme === "light" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Monitor className="h-4 w-4" />
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-36">
-            <DropdownMenuItem
-              onClick={() => handleThemeChange("light")}
-              className="gap-2"
-            >
-              <Sun className="h-4 w-4" /> Light
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleThemeChange("dark")}
-              className="gap-2"
-            >
-              <Moon className="h-4 w-4" /> Dark
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleThemeChange("system")}
-              className="gap-2"
-            >
-              <Monitor className="h-4 w-4" /> System
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
 
         {/* User menu */}
         <DropdownMenu>

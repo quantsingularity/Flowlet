@@ -1,5 +1,4 @@
 import React from "react";
-import { useEffect } from "react";
 import {
   Navigate,
   Route,
@@ -45,45 +44,11 @@ import WorkflowMain from "@/components/features/workflow/WorkflowMain";
 
 import { useOnlineStatus, useResponsive } from "@/hooks";
 import { useAuth } from "@/hooks/useAuth";
-import { useAppSelector } from "@/hooks/redux";
 
 const AppInner: React.FC = () => {
   const { isLoading } = useAuth();
   const isOnline = useOnlineStatus();
   const { isMobile } = useResponsive();
-  const theme = useAppSelector((state) => state.ui.theme);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.remove("light", "dark");
-    if (theme === "system") {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)",
-      ).matches;
-      root.classList.add(prefersDark ? "dark" : "light");
-    } else {
-      root.classList.add(theme);
-    }
-  }, [theme]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    if (theme !== "system") return;
-    const handler = (e: MediaQueryListEvent) => {
-      document.documentElement.classList.remove("light", "dark");
-      document.documentElement.classList.add(e.matches ? "dark" : "light");
-    };
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, [theme]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem("flowlet_theme", theme);
-    } catch {
-      /* ignore storage errors */
-    }
-  }, [theme]);
 
   if (isLoading) return <LoadingScreen />;
 
@@ -138,8 +103,6 @@ const AppInner: React.FC = () => {
 
           {/*
            * Protected app routes via a pathless layout route.
-           * Child paths are absolute (/dashboard, /wallet, etc.) so no existing
-           * navigation links or navigate() calls need to change.
            */}
           <Route
             element={

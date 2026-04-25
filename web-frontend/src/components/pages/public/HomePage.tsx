@@ -3,9 +3,7 @@ import {
   CheckCircle,
   CreditCard,
   Globe,
-  Moon,
   Shield,
-  Sun,
   TrendingUp,
   Wallet,
   Zap,
@@ -13,7 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -79,31 +77,7 @@ const stats = [
 ];
 
 export default function HomePage() {
-  const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Sync with document theme and allow toggling
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, []);
-
-  const toggleTheme = () => {
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.remove("dark");
-      root.classList.add("light");
-      try {
-        localStorage.setItem("flowlet_theme", "light");
-      } catch {}
-    } else {
-      root.classList.remove("light");
-      root.classList.add("dark");
-      try {
-        localStorage.setItem("flowlet_theme", "dark");
-      } catch {}
-    }
-    setIsDark(!isDark);
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -145,19 +119,6 @@ export default function HomePage() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              {/* Theme toggle */}
-              <button
-                onClick={toggleTheme}
-                className="h-9 w-9 flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                aria-label="Toggle theme"
-              >
-                {isDark ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </button>
-
               <div className="hidden sm:flex items-center gap-2">
                 <Link to="/login">
                   <Button variant="ghost" size="sm">

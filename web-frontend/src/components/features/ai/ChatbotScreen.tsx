@@ -60,6 +60,14 @@ export default function ChatbotScreen() {
   const [isTyping, setIsTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -84,6 +92,7 @@ export default function ChatbotScreen() {
     const delay = 600 + Math.min(response.length * 8, 1800);
 
     setTimeout(() => {
+      if (!isMountedRef.current) return;
       setMessages((prev) => [
         ...prev,
         {
@@ -116,7 +125,7 @@ export default function ChatbotScreen() {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto animate-fade-in">
+    <div className="flex flex-col h-[calc(100vh-6rem)] max-w-3xl mx-auto animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">

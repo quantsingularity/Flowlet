@@ -658,7 +658,7 @@ export function ThreatDetection({
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+          setTimeout(() => URL.revokeObjectURL(url), 100);
 
           setState((prev) => ({
             ...prev,
@@ -775,7 +775,10 @@ export function ThreatDetection({
               <Select
                 value={state.timeRange}
                 onValueChange={(value) =>
-                  setState((prev) => ({ ...prev, timeRange: value as any }))
+                  setState((prev) => ({
+                    ...prev,
+                    timeRange: value as "1h" | "24h" | "7d" | "30d",
+                  }))
                 }
               >
                 <SelectTrigger className="w-32">
@@ -1614,42 +1617,48 @@ export function ThreatDetection({
               <div className="space-y-2">
                 <Label>Response Actions</Label>
                 <div className="space-y-2">
-                  {["isolate", "block", "quarantine", "monitor", "alert"].map(
-                    (action) => (
-                      <div key={action} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={state.responseActions.some(
-                            (a) => a.type === action,
-                          )}
-                          onCheckedChange={(checked) => {
-                            setState((prev) => ({
-                              ...prev,
-                              responseActions: checked
-                                ? [
-                                    ...prev.responseActions,
-                                    {
-                                      id: `${action}-${Date.now()}`,
-                                      type: action as any,
-                                      target:
-                                        prev.selectedDetection?.source
-                                          .identifier || "",
-                                      status: "pending",
-                                      timestamp: new Date().toISOString(),
-                                      automated: true,
-                                    },
-                                  ]
-                                : prev.responseActions.filter(
-                                    (a) => a.type !== action,
-                                  ),
-                            }));
-                          }}
-                        />
-                        <span className="text-sm capitalize">
-                          {action} {state.selectedDetection.source.identifier}
-                        </span>
-                      </div>
-                    ),
-                  )}
+                  {(
+                    [
+                      "isolate",
+                      "block",
+                      "quarantine",
+                      "monitor",
+                      "alert",
+                    ] as Array<ThreatResponseAction["type"]>
+                  ).map((action) => (
+                    <div key={action} className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={state.responseActions.some(
+                          (a) => a.type === action,
+                        )}
+                        onCheckedChange={(checked) => {
+                          setState((prev) => ({
+                            ...prev,
+                            responseActions: checked
+                              ? [
+                                  ...prev.responseActions,
+                                  {
+                                    id: `${action}-${Date.now()}`,
+                                    type: action,
+                                    target:
+                                      prev.selectedDetection?.source
+                                        .identifier || "",
+                                    status: "pending",
+                                    timestamp: new Date().toISOString(),
+                                    automated: true,
+                                  },
+                                ]
+                              : prev.responseActions.filter(
+                                  (a) => a.type !== action,
+                                ),
+                          }));
+                        }}
+                      />
+                      <span className="text-sm capitalize">
+                        {action} {state.selectedDetection.source.identifier}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
 

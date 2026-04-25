@@ -104,7 +104,7 @@ interface ComponentState {
   error: string | null;
   success: string | null;
   selectedRequest: DataSubjectRequest | null;
-  newRequestType: string;
+  newRequestType: DataSubjectRequest["type"];
   newRequestDescription: string;
   withdrawalReason: string;
   showWithdrawalDialog: string | null;
@@ -213,7 +213,7 @@ export function GDPRConsent({
       if (onDataSubjectRequest) {
         await onDataSubjectRequest({
           userId: "current-user", // This would come from auth context
-          type: state.newRequestType as any,
+          type: state.newRequestType,
           description: state.newRequestDescription,
         });
         setState((prev) => ({
@@ -243,7 +243,7 @@ export function GDPRConsent({
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        setTimeout(() => URL.revokeObjectURL(url), 100);
 
         setState((prev) => ({
           ...prev,
@@ -896,7 +896,8 @@ export function GDPRConsent({
                     onChange={(e) =>
                       setState((prev) => ({
                         ...prev,
-                        newRequestType: e.target.value,
+                        newRequestType: e.target
+                          .value as DataSubjectRequest["type"],
                       }))
                     }
                     className="w-full mt-1 p-2 border rounded-md"
